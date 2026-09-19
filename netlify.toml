@@ -13,6 +13,12 @@
   # Vite 8 and TypeScript 6 need a current Node.
   NODE_VERSION = "22"
 
+  # Netlify cannot run the .NET API, so the deployed SPA answers its own
+  # requests from the bundled seed content and keeps progress in localStorage.
+  # To point this deployment at a real API instead, set VITE_DEMO_MODE to
+  # "false" and API_PROXY_TARGET to the API's absolute URL.
+  VITE_DEMO_MODE = "true"
+
 [[headers]]
   for = "/*"
   [headers.values]

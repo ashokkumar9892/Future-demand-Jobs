@@ -10,6 +10,13 @@ const TOKEN_KEY = 'futuretech.token';
  */
 const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '/api').replace(/\/+$/, '');
 
+/**
+ * Demo mode answers every request in the browser from bundled seed content.
+ * It exists so a static host with no .NET API behind it is still a working
+ * product rather than a shell. Set at build time by VITE_DEMO_MODE.
+ */
+export const DEMO_MODE: boolean = typeof __DEMO_MODE__ !== 'undefined' && __DEMO_MODE__;
+
 export class ApiError extends Error {
   readonly status: number;
 
@@ -25,7 +32,37 @@ export const tokenStore = {
   clear: () => localStorage.removeItem(TOKEN_KEY),
 };
 
+/** Loaded on first use so the seed content is a separate chunk. */
+let demoModule: typeof import('@/demo') | null = null;
+
+async function demoRequest<T>(
+  method: string,
+  path: string,
+  body: Record<string, unknown> | undefined,
+): Promise<T> {
+  demoModule ??= await import('@/demo');
+  const token = tokenStore.get();
+  const { status, payload } = demoModule.demoRequest(method, path, body, token);
+
+  if (status === 204) return undefined as T;
+
+  if (status >= 400) {
+    if (status === 401 && token) {
+      tokenStore.clear();
+      if (!location.pathname.startsWith('/login')) location.assign('/login');
+    }
+    throw new ApiError(
+      status,
+      (payload as { message?: string } | null)?.message ?? `Request failed (${status})`,
+    );
+  }
+
+  return payload as T;
+}
+
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
+  if (DEMO_MODE) return demoRequest<T>(method, path, body as Record<string, unknown> | undefined);
+
   const token = tokenStore.get();
 
   let response: Response;

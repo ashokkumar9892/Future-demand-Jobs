@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Route as RouteIcon, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/app/providers';
+import { DEMO_MODE } from '@/lib/api';
 import { Button, ErrorPanel, Field, Input } from '@/components/ui';
 
 const HIGHLIGHTS = [
@@ -149,8 +150,17 @@ export default function Login({ mode = 'login' }: { mode?: 'login' | 'register' 
             </Button>
           </form>
 
+          {DEMO_MODE && (
+            <p className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] leading-relaxed text-amber-200">
+              This is a browser-only demo: the full platform runs locally with no API behind it.
+              Sign in with either account below — progress is saved to this browser.
+            </p>
+          )}
+
           <p className="mt-6 text-center text-xs text-ink-faint">
-            {mode === 'register' ? (
+            {DEMO_MODE ? (
+              'Account creation needs the API, which this demo does not run.'
+            ) : mode === 'register' ? (
               <>
                 Already have an account?{' '}
                 <Link to="/login" className="link">

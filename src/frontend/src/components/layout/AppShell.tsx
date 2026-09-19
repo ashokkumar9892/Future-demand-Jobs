@@ -30,6 +30,7 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth, useTheme } from '@/app/providers';
+import { DEMO_MODE } from '@/lib/api';
 import { api } from '@/lib/api';
 import { cn, initials } from '@/lib/format';
 import type { SearchResponse } from '@/types/api';
@@ -177,6 +178,16 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="shrink-0 border-t border-line p-3">
+          {DEMO_MODE && (
+            // Demo mode is a real product state, not a debug flag: say so plainly
+            // rather than letting anyone mistake browser storage for a backend.
+            <div className="mb-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-2">
+              <p className="text-[11px] font-medium text-amber-300">Demo mode</p>
+              <p className="mt-0.5 text-[10px] leading-relaxed text-amber-200/70">
+                Running in your browser with no API. Progress is saved to this browser only.
+              </p>
+            </div>
+          )}
           <div className="flex items-center gap-2.5 rounded-lg px-2 py-2">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-600/20 text-[11px] font-semibold text-brand-300">
               {initials(user?.displayName ?? 'FT')}

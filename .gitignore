@@ -10,6 +10,10 @@ obj/
 *.db-shm
 *.db-wal
 
+# Published Windows deployment package (built by deploy/windows/publish.ps1)
+deploy/windows/out/
+deploy/windows/*.zip
+
 # Node
 node_modules/
 dist/

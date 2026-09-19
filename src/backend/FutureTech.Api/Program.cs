@@ -12,6 +12,11 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Lets the same binary be registered with the Windows Service Control Manager
+// (see deploy/windows). It is a no-op when the process is not started as a
+// service, so console runs, Docker and Linux are unaffected.
+builder.Host.UseWindowsService();
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
