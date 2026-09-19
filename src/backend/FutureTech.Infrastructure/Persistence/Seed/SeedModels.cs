@@ -38,7 +38,9 @@ public record CareerSeed(
 
 public record ResourceSeed(string Title, string Url, string Kind);
 
-public record VideoSeed(string Title, string? Instructor, int DurationMinutes, string SkillLevel);
+public record VideoSeed(
+    string Title, string? Instructor, int DurationMinutes, string SkillLevel,
+    string? YouTubeUrl = null, bool Verified = false);
 
 public record QuizOptionSeed(string Text, bool IsCorrect);
 

@@ -261,16 +261,20 @@ public class DatabaseSeeder(
                         });
 
                     if (l.Video is { } v)
-                        // YouTubeUrl is deliberately left null: real links are added
-                        // through Admin, never fabricated by the content pack.
+                        // Links in the content pack were each checked against the
+                        // YouTube oEmbed endpoint, which answers only for a video
+                        // that exists and allows embedding; title, channel and
+                        // runtime come from that lookup rather than from us. A
+                        // lesson with no verified video keeps a null URL rather
+                        // than carrying an invented one.
                         lesson.Videos.Add(new Video
                         {
                             Title = v.Title,
-                            YouTubeUrl = null,
+                            YouTubeUrl = v.YouTubeUrl,
                             Instructor = v.Instructor,
                             DurationMinutes = v.DurationMinutes,
                             SkillLevel = Text.ParseEnum(v.SkillLevel, DifficultyLevel.Advanced),
-                            IsVerified = false
+                            IsVerified = v.Verified
                         });
 
                     if (l.Quiz is { } q)

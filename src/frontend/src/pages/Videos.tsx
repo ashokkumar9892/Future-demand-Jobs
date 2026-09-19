@@ -37,7 +37,7 @@ export default function Videos() {
     <>
       <PageHeader
         title="Video library"
-        description="Each lesson carries a video slot. The platform never invents URLs — an administrator attaches a verified link and it embeds in the lesson automatically."
+        description="Each lesson carries a video slot. Every linked URL was checked against YouTube before it shipped, so a slot stays empty rather than pointing at a video that may not exist. Administrators can attach more."
         actions={
           <div className="relative">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />

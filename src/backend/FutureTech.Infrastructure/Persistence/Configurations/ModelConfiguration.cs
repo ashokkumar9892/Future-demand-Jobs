@@ -277,3 +277,59 @@ public class ResumeProfileConfiguration : IEntityTypeConfiguration<ResumeProfile
             .HasForeignKey(i => i.ResumeProfileId).OnDelete(DeleteBehavior.Cascade);
     }
 }
+
+public class LoginEventConfiguration : IEntityTypeConfiguration<LoginEvent>
+{
+    public void Configure(EntityTypeBuilder<LoginEvent> b)
+    {
+        b.HasIndex(e => e.CreatedAt);
+        b.HasIndex(e => new { e.UserId, e.CreatedAt });
+        // The background geo backfill finds its work through this index.
+        b.HasIndex(e => new { e.IpAddress, e.GeoState });
+        b.Property(e => e.Email).HasMaxLength(256).IsRequired();
+        b.Property(e => e.IpAddress).HasMaxLength(64).IsRequired();
+        b.Property(e => e.UserAgent).HasMaxLength(512);
+        b.Property(e => e.Browser).HasMaxLength(64);
+        b.Property(e => e.OperatingSystem).HasMaxLength(64);
+        b.Property(e => e.DeviceKind).HasMaxLength(32);
+        b.Property(e => e.City).HasMaxLength(128);
+        b.Property(e => e.Region).HasMaxLength(128);
+        b.Property(e => e.Country).HasMaxLength(128);
+        b.Property(e => e.CountryCode).HasMaxLength(8);
+        b.Property(e => e.TimeZone).HasMaxLength(64);
+        b.Property(e => e.Isp).HasMaxLength(200);
+        // A deleted account takes its login history with it.
+        b.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public class IpLocationConfiguration : IEntityTypeConfiguration<IpLocation>
+{
+    public void Configure(EntityTypeBuilder<IpLocation> b)
+    {
+        b.HasIndex(x => x.IpAddress).IsUnique();
+        b.Property(x => x.IpAddress).HasMaxLength(64).IsRequired();
+        b.Property(x => x.City).HasMaxLength(128);
+        b.Property(x => x.Region).HasMaxLength(128);
+        b.Property(x => x.Country).HasMaxLength(128);
+        b.Property(x => x.CountryCode).HasMaxLength(8);
+        b.Property(x => x.TimeZone).HasMaxLength(64);
+        b.Property(x => x.Isp).HasMaxLength(200);
+        b.Property(x => x.Source).HasMaxLength(64);
+    }
+}
+
+public class FeedbackConfiguration : IEntityTypeConfiguration<Feedback>
+{
+    public void Configure(EntityTypeBuilder<Feedback> b)
+    {
+        b.HasIndex(f => f.Status);
+        b.HasIndex(f => new { f.UserId, f.CreatedAt });
+        b.Property(f => f.Subject).HasMaxLength(200).IsRequired();
+        b.Property(f => f.Message).HasMaxLength(4000).IsRequired();
+        b.Property(f => f.Area).HasMaxLength(200);
+        b.Property(f => f.RefType).HasMaxLength(32);
+        b.Property(f => f.HandledByName).HasMaxLength(128);
+        b.HasOne(f => f.User).WithMany().HasForeignKey(f => f.UserId).OnDelete(DeleteBehavior.Cascade);
+    }
+}

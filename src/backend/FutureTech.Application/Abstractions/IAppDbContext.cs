@@ -62,5 +62,9 @@ public interface IAppDbContext
     DbSet<ResumeProfile> ResumeProfiles { get; }
     DbSet<ResumeItem> ResumeItems { get; }
 
+    DbSet<LoginEvent> LoginEvents { get; }
+    DbSet<IpLocation> IpLocations { get; }
+    DbSet<Feedback> Feedback { get; }
+
     Task<int> SaveChangesAsync(CancellationToken ct = default);
 }

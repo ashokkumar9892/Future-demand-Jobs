@@ -50,3 +50,23 @@ public record AnswerEvaluation(
     IReadOnlyList<string> Strengths,
     IReadOnlyList<string> Weaknesses,
     string Method);
+
+/// <summary>
+/// The transport facts a use case may need. Implemented at the API edge so the
+/// Application layer never references ASP.NET.
+/// </summary>
+public interface IRequestContext
+{
+    /// <summary>Remote address, already unwrapped from any proxy header. Empty when there is no request.</summary>
+    string IpAddress { get; }
+    string UserAgent { get; }
+}
+
+/// <summary>
+/// Writes the sign-in audit trail the admin console reads. Geo resolution is
+/// deliberately not part of the call: sign-in must not wait on a third party.
+/// </summary>
+public interface ILoginAuditService
+{
+    Task RecordAsync(Guid? userId, string email, LoginOutcome outcome, CancellationToken ct = default);
+}

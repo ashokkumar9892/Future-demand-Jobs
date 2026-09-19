@@ -45,6 +45,7 @@ builder.Services.AddControllers()
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, HttpCurrentUser>();
+builder.Services.AddScoped<IRequestContext, HttpRequestContext>();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.ContentRootPath);
 
@@ -110,6 +111,10 @@ using (var scope = app.Services.CreateScope())
     // EnsureCreated keeps first-run friction at zero across both providers.
     // Switch to db.Database.MigrateAsync() once migrations are added.
     await db.Database.EnsureCreatedAsync();
+    // EnsureCreated does nothing to a database that already exists, so tables
+    // the model has gained since it was created are added here. Additive only.
+    await SchemaSync.EnsureTablesAsync(
+        db, scope.ServiceProvider.GetRequiredService<ILogger<Program>>());
     await scope.ServiceProvider.GetRequiredService<IDatabaseSeeder>().SeedAsync();
 }
 

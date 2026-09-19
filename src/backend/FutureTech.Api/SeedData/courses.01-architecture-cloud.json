@@ -16,7 +16,15 @@
       "Design for a numeric availability target rather than a vague one",
       "Explain caching, idempotency and backpressure as trade-offs, not slogans"
     ],
-    "skillSlugs": ["architecture", "system-design", "microservices", "event-driven", "ddd", "caching", "messaging"],
+    "skillSlugs": [
+      "architecture",
+      "system-design",
+      "microservices",
+      "event-driven",
+      "ddd",
+      "caching",
+      "messaging"
+    ],
     "modules": [
       {
         "order": 1,
@@ -42,10 +50,25 @@
               "Quality attributes need target numbers, not adjectives"
             ],
             "resources": [
-              { "title": "Azure Architecture Center", "url": "https://learn.microsoft.com/azure/architecture/", "kind": "Documentation" },
-              { "title": "AWS Well-Architected Framework", "url": "https://aws.amazon.com/architecture/well-architected/", "kind": "Documentation" }
+              {
+                "title": "Azure Architecture Center",
+                "url": "https://learn.microsoft.com/azure/architecture/",
+                "kind": "Documentation"
+              },
+              {
+                "title": "AWS Well-Architected Framework",
+                "url": "https://aws.amazon.com/architecture/well-architected/",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "Architecture decisions and ADRs for senior engineers", "instructor": null, "durationMinutes": 35, "skillLevel": "Advanced" },
+            "video": {
+              "title": "Architecture Decision Records (ADR) - The Basics",
+              "instructor": "Saxion Media Xpert Centre",
+              "durationMinutes": 8,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=7Gqn2dbt_JY",
+              "verified": true
+            },
             "quiz": {
               "title": "Architectural decision-making",
               "passMarkPercent": 70,
@@ -55,10 +78,22 @@
                   "explanation": "Significance is about the cost of reversal. Changing the communication style between two services later means changing contracts, error handling, the data model and the UI. Swapping a logging library or renaming a DTO is cheap.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "Choosing synchronous HTTP rather than messaging between two services", "isCorrect": true },
-                    { "text": "Choosing Serilog over NLog", "isCorrect": false },
-                    { "text": "Renaming a DTO property", "isCorrect": false },
-                    { "text": "Adding a new unit test project", "isCorrect": false }
+                    {
+                      "text": "Choosing synchronous HTTP rather than messaging between two services",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Choosing Serilog over NLog",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Renaming a DTO property",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Adding a new unit test project",
+                      "isCorrect": false
+                    }
                   ]
                 },
                 {
@@ -66,11 +101,26 @@
                   "explanation": "The alternatives and consequences carry most of the value. Without them an ADR is just a note saying what was built, which the code already tells you.",
                   "allowsMultiple": true,
                   "options": [
-                    { "text": "Context", "isCorrect": true },
-                    { "text": "Decision", "isCorrect": true },
-                    { "text": "Alternatives considered", "isCorrect": true },
-                    { "text": "Consequences, including the negative ones", "isCorrect": true },
-                    { "text": "A full class diagram of the implementation", "isCorrect": false }
+                    {
+                      "text": "Context",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Decision",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Alternatives considered",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Consequences, including the negative ones",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "A full class diagram of the implementation",
+                      "isCorrect": false
+                    }
                   ]
                 },
                 {
@@ -78,10 +128,22 @@
                   "explanation": "Adjectives cannot be designed against or tested. Convert them into measurable targets with a measurement point before making any design decision.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "Agree a numeric target, a measurement point and a recovery objective", "isCorrect": true },
-                    { "text": "Deploy to three regions immediately", "isCorrect": false },
-                    { "text": "Add retries everywhere", "isCorrect": false },
-                    { "text": "Record it in the ADR as written and proceed", "isCorrect": false }
+                    {
+                      "text": "Agree a numeric target, a measurement point and a recovery objective",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Deploy to three regions immediately",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Add retries everywhere",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Record it in the ADR as written and proceed",
+                      "isCorrect": false
+                    }
                   ]
                 }
               ]
@@ -105,9 +167,20 @@
               "If deleting Infrastructure breaks the Domain build, a dependency points the wrong way"
             ],
             "resources": [
-              { "title": ".NET application architecture guides", "url": "https://learn.microsoft.com/dotnet/architecture/", "kind": "Documentation" }
+              {
+                "title": ".NET application architecture guides",
+                "url": "https://learn.microsoft.com/dotnet/architecture/",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "Clean Architecture in .NET 8 for AI workloads", "instructor": null, "durationMinutes": 45, "skillLevel": "Advanced" },
+            "video": {
+              "title": "Unleashing Clean Architecture in .NET 8 - Jason Taylor - Copenhagen DevFest 2023",
+              "instructor": "NDC Conferences",
+              "durationMinutes": 47,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=yB01HaG0i0w",
+              "verified": true
+            },
             "quiz": {
               "title": "Clean Architecture",
               "passMarkPercent": 70,
@@ -117,10 +190,22 @@
                   "explanation": "The consumer declares the contract; the adapter implements it. That inversion is what lets you replace the store without touching orchestration logic.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "Declared in Application, implemented in Infrastructure", "isCorrect": true },
-                    { "text": "Declared and implemented in Infrastructure", "isCorrect": false },
-                    { "text": "In Domain, alongside the entities", "isCorrect": false },
-                    { "text": "In the API project next to the controller", "isCorrect": false }
+                    {
+                      "text": "Declared in Application, implemented in Infrastructure",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Declared and implemented in Infrastructure",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "In Domain, alongside the entities",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "In the API project next to the controller",
+                      "isCorrect": false
+                    }
                   ]
                 },
                 {
@@ -128,10 +213,22 @@
                   "explanation": "A provider SDK type in the Application layer means the layer is coupled to a vendor, defeating the point of the structure.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "An Application service that references a vendor SDK type directly", "isCorrect": true },
-                    { "text": "Application depending on Domain", "isCorrect": false },
-                    { "text": "Infrastructure depending on Application", "isCorrect": false },
-                    { "text": "The API project referencing both Application and Infrastructure", "isCorrect": false }
+                    {
+                      "text": "An Application service that references a vendor SDK type directly",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Application depending on Domain",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Infrastructure depending on Application",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The API project referencing both Application and Infrastructure",
+                      "isCorrect": false
+                    }
                   ]
                 }
               ]
@@ -163,9 +260,20 @@
               "Bounded contexts map onto retrieval scope in AI systems"
             ],
             "resources": [
-              { "title": "Microservices architecture guidance", "url": "https://learn.microsoft.com/dotnet/architecture/microservices/", "kind": "Documentation" }
+              {
+                "title": "Microservices architecture guidance",
+                "url": "https://learn.microsoft.com/dotnet/architecture/microservices/",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "Strategic DDD: bounded contexts in practice", "instructor": null, "durationMinutes": 50, "skillLevel": "Advanced" },
+            "video": {
+              "title": "DDD & Microservices: At Last, Some Boundaries! • Eric Evans • GOTO 2015",
+              "instructor": "GOTO Conferences",
+              "durationMinutes": 49,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=yPvef9R3k-M",
+              "verified": true
+            },
             "quiz": null
           },
           {
@@ -186,9 +294,20 @@
               "A modular monolith is the right default; extract a service for a specific stated reason"
             ],
             "resources": [
-              { "title": "Microservices patterns and anti-patterns", "url": "https://learn.microsoft.com/azure/architecture/microservices/", "kind": "Documentation" }
+              {
+                "title": "Microservices patterns and anti-patterns",
+                "url": "https://learn.microsoft.com/azure/architecture/microservices/",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "Service boundaries and the distributed monolith", "instructor": null, "durationMinutes": 40, "skillLevel": "Advanced" },
+            "video": {
+              "title": "DDD - Service Boundaries (Adam Ralph)",
+              "instructor": "Tech Excellence",
+              "durationMinutes": 92,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=I5fhtBQ2wQU",
+              "verified": true
+            },
             "quiz": {
               "title": "Boundaries and failure",
               "passMarkPercent": 70,
@@ -198,10 +317,22 @@
                   "explanation": "0.999^4 ≈ 0.996. Synchronous dependencies multiply, which is why each added hop is a real availability cost.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "About 99.6%", "isCorrect": true },
-                    { "text": "Still 99.9%", "isCorrect": false },
-                    { "text": "About 99.99%", "isCorrect": false },
-                    { "text": "About 95%", "isCorrect": false }
+                    {
+                      "text": "About 99.6%",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Still 99.9%",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "About 99.99%",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "About 95%",
+                      "isCorrect": false
+                    }
                   ]
                 },
                 {
@@ -209,10 +340,22 @@
                   "explanation": "Shared data ownership and coupled deployment are the two clearest indicators of a boundary drawn in the wrong place.",
                   "allowsMultiple": true,
                   "options": [
-                    { "text": "They write to the same database table", "isCorrect": true },
-                    { "text": "They must be released together", "isCorrect": true },
-                    { "text": "They always change in the same pull request", "isCorrect": true },
-                    { "text": "They are owned by the same team", "isCorrect": false }
+                    {
+                      "text": "They write to the same database table",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "They must be released together",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "They always change in the same pull request",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "They are owned by the same team",
+                      "isCorrect": false
+                    }
                   ]
                 }
               ]
@@ -244,10 +387,25 @@
               "Monitor the dead-letter queue and give it a named owner"
             ],
             "resources": [
-              { "title": "Azure Service Bus documentation", "url": "https://learn.microsoft.com/azure/service-bus-messaging/", "kind": "Documentation" },
-              { "title": "Apache Kafka documentation", "url": "https://kafka.apache.org/documentation/", "kind": "Documentation" }
+              {
+                "title": "Azure Service Bus documentation",
+                "url": "https://learn.microsoft.com/azure/service-bus-messaging/",
+                "kind": "Documentation"
+              },
+              {
+                "title": "Apache Kafka documentation",
+                "url": "https://kafka.apache.org/documentation/",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "Choosing a message broker: a decision framework", "instructor": null, "durationMinutes": 45, "skillLevel": "Advanced" },
+            "video": {
+              "title": "Azure Messaging, Queueing, and Events - Which service is right for your solution? - Brian Gorman",
+              "instructor": "NDC Conferences",
+              "durationMinutes": 53,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=vCeIlEhHF5Y",
+              "verified": true
+            },
             "quiz": {
               "title": "Messaging choices",
               "passMarkPercent": 70,
@@ -257,10 +415,22 @@
                   "explanation": "A distributed log retains messages and lets each consumer track its own offset, so a new consumer can start from the beginning. Queue brokers remove a message once it is handled.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "Kafka or Event Hubs", "isCorrect": true },
-                    { "text": "Azure Service Bus queue", "isCorrect": false },
-                    { "text": "Event Grid", "isCorrect": false },
-                    { "text": "A database table polled on a timer", "isCorrect": false }
+                    {
+                      "text": "Kafka or Event Hubs",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Azure Service Bus queue",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Event Grid",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A database table polled on a timer",
+                      "isCorrect": false
+                    }
                   ]
                 },
                 {
@@ -268,10 +438,22 @@
                   "explanation": "Practically every broker guarantees at-least-once delivery. Retries after partial failure mean the same message can legitimately arrive more than once.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "Because delivery is at-least-once, so duplicates are normal", "isCorrect": true },
-                    { "text": "Because messages always arrive out of order", "isCorrect": false },
-                    { "text": "Because brokers cannot guarantee delivery at all", "isCorrect": false },
-                    { "text": "Because it makes handlers faster", "isCorrect": false }
+                    {
+                      "text": "Because delivery is at-least-once, so duplicates are normal",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Because messages always arrive out of order",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Because brokers cannot guarantee delivery at all",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Because it makes handlers faster",
+                      "isCorrect": false
+                    }
                   ]
                 }
               ]
@@ -295,10 +477,25 @@
               "99.9% is 43 minutes a month; 99.99% means no human in the loop"
             ],
             "resources": [
-              { "title": "Reliability patterns", "url": "https://learn.microsoft.com/azure/architecture/patterns/", "kind": "Documentation" },
-              { "title": "Redis documentation", "url": "https://redis.io/docs/latest/", "kind": "Documentation" }
+              {
+                "title": "Reliability patterns",
+                "url": "https://learn.microsoft.com/azure/architecture/patterns/",
+                "kind": "Documentation"
+              },
+              {
+                "title": "Redis documentation",
+                "url": "https://redis.io/docs/latest/",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "Caching, scale and availability targets", "instructor": null, "durationMinutes": 45, "skillLevel": "Advanced" },
+            "video": {
+              "title": "Caching in distributed systems: A friendly introduction",
+              "instructor": "Gaurav Sen",
+              "durationMinutes": 11,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=zw7VwIlkPPc",
+              "verified": true
+            },
             "quiz": {
               "title": "Scale and caching",
               "passMarkPercent": 70,
@@ -308,10 +505,22 @@
                   "explanation": "This is a cache stampede. Per-key locking plus jittered expiry keeps one caller recomputing while the others wait for the populated value.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "A cache stampede — mitigate with per-key locking and jittered TTLs", "isCorrect": true },
-                    { "text": "Cache poisoning — mitigate by signing entries", "isCorrect": false },
-                    { "text": "A cold start — mitigate by increasing instance count", "isCorrect": false },
-                    { "text": "Thrashing — mitigate by disabling the cache", "isCorrect": false }
+                    {
+                      "text": "A cache stampede — mitigate with per-key locking and jittered TTLs",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Cache poisoning — mitigate by signing entries",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A cold start — mitigate by increasing instance count",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Thrashing — mitigate by disabling the cache",
+                      "isCorrect": false
+                    }
                   ]
                 },
                 {
@@ -319,10 +528,22 @@
                   "explanation": "About 4.3 minutes. That rules out manual recovery, which is why the cost jumps so steeply at that tier.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "About 4 minutes", "isCorrect": true },
-                    { "text": "About 43 minutes", "isCorrect": false },
-                    { "text": "About 7 hours", "isCorrect": false },
-                    { "text": "About 30 seconds", "isCorrect": false }
+                    {
+                      "text": "About 4 minutes",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "About 43 minutes",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "About 7 hours",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "About 30 seconds",
+                      "isCorrect": false
+                    }
                   ]
                 }
               ]
@@ -349,7 +570,15 @@
       "Instrument an application so a production problem is diagnosable",
       "Ship through Azure DevOps or GitHub Actions with environment gates"
     ],
-    "skillSlugs": ["azure", "identity", "networking", "cicd", "observability", "docker", "kubernetes"],
+    "skillSlugs": [
+      "azure",
+      "identity",
+      "networking",
+      "cicd",
+      "observability",
+      "docker",
+      "kubernetes"
+    ],
     "modules": [
       {
         "order": 1,
@@ -375,10 +604,25 @@
               "Consumption-plan Functions cold-start and time out; poor fit for long streaming responses"
             ],
             "resources": [
-              { "title": "Azure compute decision guide", "url": "https://learn.microsoft.com/azure/architecture/guide/technology-choices/compute-decision-tree", "kind": "Documentation" },
-              { "title": "Azure Container Apps documentation", "url": "https://learn.microsoft.com/azure/container-apps/", "kind": "Documentation" }
+              {
+                "title": "Azure compute decision guide",
+                "url": "https://learn.microsoft.com/azure/architecture/guide/technology-choices/compute-decision-tree",
+                "kind": "Documentation"
+              },
+              {
+                "title": "Azure Container Apps documentation",
+                "url": "https://learn.microsoft.com/azure/container-apps/",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "Azure compute options compared", "instructor": null, "durationMinutes": 40, "skillLevel": "Advanced" },
+            "video": {
+              "title": "AKS vs App Service vs Container Apps: Which Service Should You Choose?",
+              "instructor": "Brayan Ortiz",
+              "durationMinutes": 11,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=A0w_3DvOf6M",
+              "verified": true
+            },
             "quiz": {
               "title": "Azure compute",
               "passMarkPercent": 70,
@@ -388,10 +632,22 @@
                   "explanation": "Container Apps provides KEDA-based scaling on HTTP concurrency, revisions and traffic splitting, without the operational load of running AKS.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "Azure Container Apps", "isCorrect": true },
-                    { "text": "AKS", "isCorrect": false },
-                    { "text": "Azure Functions on the Consumption plan", "isCorrect": false },
-                    { "text": "A virtual machine scale set", "isCorrect": false }
+                    {
+                      "text": "Azure Container Apps",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "AKS",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Azure Functions on the Consumption plan",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A virtual machine scale set",
+                      "isCorrect": false
+                    }
                   ]
                 },
                 {
@@ -399,10 +655,22 @@
                   "explanation": "The service spends most of its time awaiting I/O. CPU stays low while every available request slot is occupied, so CPU-based autoscale under-provisions.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "The service is I/O-bound awaiting the model, so CPU stays low while it is saturated", "isCorrect": true },
-                    { "text": "CPU metrics are not available in Container Apps", "isCorrect": false },
-                    { "text": "LLM calls always pin the CPU at 100%", "isCorrect": false },
-                    { "text": "CPU scaling is deprecated in Azure", "isCorrect": false }
+                    {
+                      "text": "The service is I/O-bound awaiting the model, so CPU stays low while it is saturated",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "CPU metrics are not available in Container Apps",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "LLM calls always pin the CPU at 100%",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "CPU scaling is deprecated in Azure",
+                      "isCorrect": false
+                    }
                   ]
                 }
               ]
@@ -426,10 +694,25 @@
               "Blob-triggered ingestion with fan-out over chunks is the canonical RAG pipeline shape"
             ],
             "resources": [
-              { "title": "Azure Functions documentation", "url": "https://learn.microsoft.com/azure/azure-functions/", "kind": "Documentation" },
-              { "title": "Durable Functions overview", "url": "https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview", "kind": "Documentation" }
+              {
+                "title": "Azure Functions documentation",
+                "url": "https://learn.microsoft.com/azure/azure-functions/",
+                "kind": "Documentation"
+              },
+              {
+                "title": "Durable Functions overview",
+                "url": "https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "Durable Functions for document pipelines", "instructor": null, "durationMinutes": 45, "skillLevel": "Advanced" },
+            "video": {
+              "title": "Compare Azure Messaging Services | How to Chose | Azure Service Bus vs Event Hub vs Event Grid",
+              "instructor": "Sri Gunnala - Tech Talks",
+              "durationMinutes": 12,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=PpXP5-NhbSA",
+              "verified": true
+            },
             "quiz": null
           }
         ]
@@ -458,10 +741,25 @@
               "Azure SQL now has native vector support — worth considering before adding another store"
             ],
             "resources": [
-              { "title": "Azure Cosmos DB documentation", "url": "https://learn.microsoft.com/azure/cosmos-db/", "kind": "Documentation" },
-              { "title": "Azure SQL documentation", "url": "https://learn.microsoft.com/azure/azure-sql/", "kind": "Documentation" }
+              {
+                "title": "Azure Cosmos DB documentation",
+                "url": "https://learn.microsoft.com/azure/cosmos-db/",
+                "kind": "Documentation"
+              },
+              {
+                "title": "Azure SQL documentation",
+                "url": "https://learn.microsoft.com/azure/azure-sql/",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "Choosing an Azure data store", "instructor": null, "durationMinutes": 40, "skillLevel": "Advanced" },
+            "video": {
+              "title": "#3. Azure - Know when to use Azure SQL/Cosmos DB/Blob Storage",
+              "instructor": "Subashri Vasu",
+              "durationMinutes": 6,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=8lwVqJMSbVw",
+              "verified": true
+            },
             "quiz": {
               "title": "Azure data services",
               "passMarkPercent": 70,
@@ -471,10 +769,22 @@
                   "explanation": "A low-cardinality, skewed key concentrates traffic on one physical partition. Document type has few values and an uneven distribution; user or tenant identifiers spread load far better.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "documentType, where one type dominates the corpus", "isCorrect": true },
-                    { "text": "userId", "isCorrect": false },
-                    { "text": "tenantId in a balanced multi-tenant system", "isCorrect": false },
-                    { "text": "conversationId", "isCorrect": false }
+                    {
+                      "text": "documentType, where one type dominates the corpus",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "userId",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "tenantId in a balanced multi-tenant system",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "conversationId",
+                      "isCorrect": false
+                    }
                   ]
                 }
               ]
@@ -498,10 +808,25 @@
               "Apply user entitlements as a retrieval filter, never as a prompt instruction"
             ],
             "resources": [
-              { "title": "Managed identities for Azure resources", "url": "https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/", "kind": "Documentation" },
-              { "title": "Azure Key Vault documentation", "url": "https://learn.microsoft.com/azure/key-vault/", "kind": "Documentation" }
+              {
+                "title": "Managed identities for Azure resources",
+                "url": "https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/",
+                "kind": "Documentation"
+              },
+              {
+                "title": "Azure Key Vault documentation",
+                "url": "https://learn.microsoft.com/azure/key-vault/",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "Zero-secret Azure applications with managed identity", "instructor": null, "durationMinutes": 40, "skillLevel": "Advanced" },
+            "video": {
+              "title": "Use Azure Managed Identities and Azure Key Vault to Protect Your .NET API Secrets!",
+              "instructor": "Israel Quiroz",
+              "durationMinutes": 12,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=OeYx4vUs1vw",
+              "verified": true
+            },
             "quiz": {
               "title": "Identity and secrets",
               "passMarkPercent": 70,
@@ -511,10 +836,22 @@
                   "explanation": "Prompt instructions are advisory and can be overridden by crafted input. A query filter is enforced by the search engine before any content reaches the model.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "A filter is enforced before retrieval; a prompt instruction can be talked around", "isCorrect": true },
-                    { "text": "Filters are faster to write", "isCorrect": false },
-                    { "text": "Prompts have a character limit", "isCorrect": false },
-                    { "text": "Search filters are cheaper per token", "isCorrect": false }
+                    {
+                      "text": "A filter is enforced before retrieval; a prompt instruction can be talked around",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Filters are faster to write",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Prompts have a character limit",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Search filters are cheaper per token",
+                      "isCorrect": false
+                    }
                   ]
                 },
                 {
@@ -522,10 +859,22 @@
                   "explanation": "It has an independent lifecycle, so role assignments are made once in infrastructure code and survive redeployment or replacement of the compute resource.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "It outlives the resource, so role assignments survive redeployment", "isCorrect": true },
-                    { "text": "It is the only type that works with Key Vault", "isCorrect": false },
-                    { "text": "It issues longer-lived tokens", "isCorrect": false },
-                    { "text": "It is free while system-assigned is billed", "isCorrect": false }
+                    {
+                      "text": "It outlives the resource, so role assignments survive redeployment",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It is the only type that works with Key Vault",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It issues longer-lived tokens",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is free while system-assigned is billed",
+                      "isCorrect": false
+                    }
                   ]
                 }
               ]
@@ -557,10 +906,25 @@
               "Alert on error rate, p95 latency and cost per hour — not CPU"
             ],
             "resources": [
-              { "title": "Application Insights overview", "url": "https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview", "kind": "Documentation" },
-              { "title": "OpenTelemetry in .NET", "url": "https://learn.microsoft.com/dotnet/core/diagnostics/observability-with-otel", "kind": "Documentation" }
+              {
+                "title": "Application Insights overview",
+                "url": "https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview",
+                "kind": "Documentation"
+              },
+              {
+                "title": "OpenTelemetry in .NET",
+                "url": "https://learn.microsoft.com/dotnet/core/diagnostics/observability-with-otel",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "Observability and cost telemetry for AI systems", "instructor": null, "durationMinutes": 40, "skillLevel": "Advanced" },
+            "video": {
+              "title": "How to instrument your .NET applications with Open Telemetry",
+              "instructor": "dotnetFlix",
+              "durationMinutes": 55,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=v7h_s2IfZAI",
+              "verified": true
+            },
             "quiz": null
           },
           {
@@ -581,10 +945,25 @@
               "Gate releases on an evaluation score so quality regressions cannot ship silently"
             ],
             "resources": [
-              { "title": "GitHub Actions documentation", "url": "https://docs.github.com/actions", "kind": "Documentation" },
-              { "title": "Azure Pipelines documentation", "url": "https://learn.microsoft.com/azure/devops/pipelines/", "kind": "Documentation" }
+              {
+                "title": "GitHub Actions documentation",
+                "url": "https://docs.github.com/actions",
+                "kind": "Documentation"
+              },
+              {
+                "title": "Azure Pipelines documentation",
+                "url": "https://learn.microsoft.com/azure/devops/pipelines/",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "CI/CD for AI applications", "instructor": null, "durationMinutes": 35, "skillLevel": "Advanced" },
+            "video": {
+              "title": "CI/CD with GitHub Actions [8 of 8] | .NET on Azure for Beginners",
+              "instructor": "dotnet",
+              "durationMinutes": 24,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=7LkRipTlTzc",
+              "verified": true
+            },
             "quiz": {
               "title": "Delivery pipelines",
               "passMarkPercent": 70,
@@ -594,10 +973,22 @@
                   "explanation": "Rebuilding can pull different base layers or dependency versions, so the artefact you tested is not the artefact you deploy. Promotion guarantees they are identical.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "So the artefact tested is byte-for-byte the artefact deployed", "isCorrect": true },
-                    { "text": "Because rebuilding is not supported in Azure Container Registry", "isCorrect": false },
-                    { "text": "To avoid paying for build minutes", "isCorrect": false },
-                    { "text": "Because images cannot be tagged more than once", "isCorrect": false }
+                    {
+                      "text": "So the artefact tested is byte-for-byte the artefact deployed",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Because rebuilding is not supported in Azure Container Registry",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "To avoid paying for build minutes",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Because images cannot be tagged more than once",
+                      "isCorrect": false
+                    }
                   ]
                 },
                 {
@@ -605,10 +996,22 @@
                   "explanation": "Model and prompt changes degrade quality without throwing errors, so quality needs an explicit gate in the pipeline.",
                   "allowsMultiple": true,
                   "options": [
-                    { "text": "Prompt regression tests asserting structure and refusal behaviour", "isCorrect": true },
-                    { "text": "An evaluation gate that fails the build when groundedness drops", "isCorrect": true },
-                    { "text": "Compiler warnings treated as errors", "isCorrect": false },
-                    { "text": "Container image size limits", "isCorrect": false }
+                    {
+                      "text": "Prompt regression tests asserting structure and refusal behaviour",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "An evaluation gate that fails the build when groundedness drops",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Compiler warnings treated as errors",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Container image size limits",
+                      "isCorrect": false
+                    }
                   ]
                 }
               ]
@@ -635,7 +1038,13 @@
       "Design IAM roles and policies that follow least privilege",
       "Use Bedrock for generative AI in an AWS-primary enterprise"
     ],
-    "skillSlugs": ["aws", "architecture", "networking", "security", "llm"],
+    "skillSlugs": [
+      "aws",
+      "architecture",
+      "networking",
+      "security",
+      "llm"
+    ],
     "modules": [
       {
         "order": 1,
@@ -661,10 +1070,25 @@
               "Separate the ECS execution role from the task role: they answer different questions"
             ],
             "resources": [
-              { "title": "AWS documentation", "url": "https://docs.aws.amazon.com/", "kind": "Documentation" },
-              { "title": "Azure to AWS service comparison", "url": "https://learn.microsoft.com/azure/architecture/aws-professional/services", "kind": "Documentation" }
+              {
+                "title": "AWS documentation",
+                "url": "https://docs.aws.amazon.com/",
+                "kind": "Documentation"
+              },
+              {
+                "title": "Azure to AWS service comparison",
+                "url": "https://learn.microsoft.com/azure/architecture/aws-professional/services",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "AWS compute for Azure architects", "instructor": null, "durationMinutes": 40, "skillLevel": "Advanced" },
+            "video": {
+              "title": "AWS EC2 vs ECS vs Lambda | Which is right for YOU?",
+              "instructor": "Be A Better Dev",
+              "durationMinutes": 17,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=-L6g9J9_zB8",
+              "verified": true
+            },
             "quiz": {
               "title": "AWS compute",
               "passMarkPercent": 70,
@@ -674,10 +1098,22 @@
                   "explanation": "Lambda stops at 15 minutes regardless of configuration. Either decompose the work under Step Functions or run it on Fargate, which has no such limit.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "ECS Fargate, or Step Functions orchestrating shorter Lambdas", "isCorrect": true },
-                    { "text": "Lambda with the timeout raised to 60 minutes", "isCorrect": false },
-                    { "text": "Lambda with provisioned concurrency", "isCorrect": false },
-                    { "text": "API Gateway with a long integration timeout", "isCorrect": false }
+                    {
+                      "text": "ECS Fargate, or Step Functions orchestrating shorter Lambdas",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Lambda with the timeout raised to 60 minutes",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Lambda with provisioned concurrency",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "API Gateway with a long integration timeout",
+                      "isCorrect": false
+                    }
                   ]
                 }
               ]
@@ -701,10 +1137,25 @@
               "Secrets Manager for credentials that rotate, Parameter Store for static configuration"
             ],
             "resources": [
-              { "title": "IAM documentation", "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html", "kind": "Documentation" },
-              { "title": "AWS Secrets Manager", "url": "https://docs.aws.amazon.com/secretsmanager/", "kind": "Documentation" }
+              {
+                "title": "IAM documentation",
+                "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html",
+                "kind": "Documentation"
+              },
+              {
+                "title": "AWS Secrets Manager",
+                "url": "https://docs.aws.amazon.com/secretsmanager/",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "IAM least privilege in practice", "instructor": null, "durationMinutes": 45, "skillLevel": "Advanced" },
+            "video": {
+              "title": "AWS re:Inforce 2022 - Strategies for achieving least privilege (IAM303)",
+              "instructor": "AWS Events",
+              "durationMinutes": 54,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=j57tBC6U4kk",
+              "verified": true
+            },
             "quiz": null
           }
         ]
@@ -733,10 +1184,25 @@
               "S3 lifecycle policies move cold data down the tiers without anyone remembering to"
             ],
             "resources": [
-              { "title": "Amazon DynamoDB developer guide", "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html", "kind": "Documentation" },
-              { "title": "Amazon S3 user guide", "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html", "kind": "Documentation" }
+              {
+                "title": "Amazon DynamoDB developer guide",
+                "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html",
+                "kind": "Documentation"
+              },
+              {
+                "title": "Amazon S3 user guide",
+                "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "DynamoDB data modelling for SQL developers", "instructor": null, "durationMinutes": 50, "skillLevel": "Advanced" },
+            "video": {
+              "title": "AWS re:Invent 2024 - Data modeling core concepts for Amazon DynamoDB (DAT305)",
+              "instructor": "AWS Events",
+              "durationMinutes": 56,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=cyge2Lx4Jvw",
+              "verified": true
+            },
             "quiz": {
               "title": "AWS data",
               "passMarkPercent": 70,
@@ -746,10 +1212,22 @@
                   "explanation": "Scans read the whole table. Needing one means the partition and sort keys, or the indexes, do not serve the access pattern — a design problem rather than a tuning problem.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "The key design does not serve that access pattern", "isCorrect": true },
-                    { "text": "The table needs more provisioned capacity", "isCorrect": false },
-                    { "text": "The table should be moved to on-demand billing", "isCorrect": false },
-                    { "text": "Scans are the normal way to read DynamoDB", "isCorrect": false }
+                    {
+                      "text": "The key design does not serve that access pattern",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The table needs more provisioned capacity",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The table should be moved to on-demand billing",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Scans are the normal way to read DynamoDB",
+                      "isCorrect": false
+                    }
                   ]
                 }
               ]
@@ -773,10 +1251,25 @@
               "Step Functions is the AWS answer to Durable Functions for multi-step workflows"
             ],
             "resources": [
-              { "title": "Amazon SQS developer guide", "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html", "kind": "Documentation" },
-              { "title": "AWS Step Functions", "url": "https://docs.aws.amazon.com/step-functions/", "kind": "Documentation" }
+              {
+                "title": "Amazon SQS developer guide",
+                "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html",
+                "kind": "Documentation"
+              },
+              {
+                "title": "AWS Step Functions",
+                "url": "https://docs.aws.amazon.com/step-functions/",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "AWS messaging and orchestration", "instructor": null, "durationMinutes": 35, "skillLevel": "Advanced" },
+            "video": {
+              "title": "AWS SQS vs SNS vs EventBridge - When to Use What?",
+              "instructor": "Be A Better Dev",
+              "durationMinutes": 23,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=RoKAEzdcr7k",
+              "verified": true
+            },
             "quiz": null
           }
         ]
@@ -805,10 +1298,25 @@
               "API Gateway's 29-second integration timeout shapes how you handle long generations"
             ],
             "resources": [
-              { "title": "Amazon VPC user guide", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html", "kind": "Documentation" },
-              { "title": "Amazon API Gateway", "url": "https://docs.aws.amazon.com/apigateway/", "kind": "Documentation" }
+              {
+                "title": "Amazon VPC user guide",
+                "url": "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html",
+                "kind": "Documentation"
+              },
+              {
+                "title": "Amazon API Gateway",
+                "url": "https://docs.aws.amazon.com/apigateway/",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "AWS networking for application architects", "instructor": null, "durationMinutes": 45, "skillLevel": "Advanced" },
+            "video": {
+              "title": "AWS Overview Part 5: Network Services | VPC | Route 53 | CloudFront | API Gateway",
+              "instructor": "AWS with Jaymit",
+              "durationMinutes": 10,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=R8vRLMIw1EQ",
+              "verified": true
+            },
             "quiz": null
           },
           {
@@ -829,10 +1337,25 @@
               "Authorise tool calls in your own code; a tool request from a model is not permission"
             ],
             "resources": [
-              { "title": "Amazon Bedrock user guide", "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html", "kind": "Documentation" },
-              { "title": "Anthropic API documentation", "url": "https://docs.anthropic.com/", "kind": "Documentation" }
+              {
+                "title": "Amazon Bedrock user guide",
+                "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html",
+                "kind": "Documentation"
+              },
+              {
+                "title": "Anthropic API documentation",
+                "url": "https://docs.anthropic.com/",
+                "kind": "Documentation"
+              }
             ],
-            "video": { "title": "Amazon Bedrock for enterprise architects", "instructor": null, "durationMinutes": 40, "skillLevel": "Advanced" },
+            "video": {
+              "title": "Amazon Bedrock - Getting Started with AWS",
+              "instructor": "Michael AI",
+              "durationMinutes": 11,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=524J-y04Kx0",
+              "verified": true
+            },
             "quiz": {
               "title": "Bedrock",
               "passMarkPercent": 70,
@@ -842,10 +1365,22 @@
                   "explanation": "Converse normalises the request and response shape, including tool use, across model families, so changing model becomes configuration rather than code.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "It gives one request shape across model families, making model changes configuration", "isCorrect": true },
-                    { "text": "It is the only API that supports streaming", "isCorrect": false },
-                    { "text": "It is significantly cheaper per token", "isCorrect": false },
-                    { "text": "It is required for VPC endpoints", "isCorrect": false }
+                    {
+                      "text": "It gives one request shape across model families, making model changes configuration",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It is the only API that supports streaming",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is significantly cheaper per token",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is required for VPC endpoints",
+                      "isCorrect": false
+                    }
                   ]
                 },
                 {
@@ -853,10 +1388,22 @@
                   "explanation": "A tool request is an intent expressed by the model, not an authorisation. The application must check the caller's entitlement before executing anything.",
                   "allowsMultiple": false,
                   "options": [
-                    { "text": "Your code authorises the request against the caller's entitlements before executing", "isCorrect": true },
-                    { "text": "Execute it — the model has already validated the request", "isCorrect": false },
-                    { "text": "Ask the model to confirm the user is allowed", "isCorrect": false },
-                    { "text": "Log it and execute asynchronously", "isCorrect": false }
+                    {
+                      "text": "Your code authorises the request against the caller's entitlements before executing",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Execute it — the model has already validated the request",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Ask the model to confirm the user is allowed",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Log it and execute asynchronously",
+                      "isCorrect": false
+                    }
                   ]
                 }
               ]

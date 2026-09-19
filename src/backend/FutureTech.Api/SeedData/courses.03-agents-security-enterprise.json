@@ -56,10 +56,12 @@
               }
             ],
             "video": {
-              "title": "Workflows, agents and choosing between them",
-              "instructor": null,
-              "durationMinutes": 40,
-              "skillLevel": "Advanced"
+              "title": "How We Build Effective Agents: Barry Zhang, Anthropic",
+              "instructor": "AI Engineer",
+              "durationMinutes": 15,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=D7_ipDqhtwk",
+              "verified": true
             },
             "quiz": {
               "title": "Agents versus workflows",
@@ -116,10 +118,12 @@
               }
             ],
             "video": {
-              "title": "Building a bounded agent loop in .NET",
-              "instructor": null,
-              "durationMinutes": 50,
-              "skillLevel": "Expert"
+              "title": "Building more effective AI agents",
+              "instructor": "Anthropic",
+              "durationMinutes": 19,
+              "skillLevel": "Expert",
+              "youTubeUrl": "https://www.youtube.com/watch?v=uhJJgc-0iTQ",
+              "verified": true
             },
             "quiz": {
               "title": "Agent loops",
@@ -184,10 +188,12 @@
               }
             ],
             "video": {
-              "title": "Safe side effects in agent systems",
-              "instructor": null,
-              "durationMinutes": 45,
-              "skillLevel": "Expert"
+              "title": "Anthropic Workshop: Build Agents That Run for Hours — Ash Prabaker & Andrew Wilson",
+              "instructor": "AI Engineer",
+              "durationMinutes": 76,
+              "skillLevel": "Expert",
+              "youTubeUrl": "https://www.youtube.com/watch?v=mR-WAvEPRwE",
+              "verified": true
             },
             "quiz": {
               "title": "Agent side effects",
@@ -267,10 +273,12 @@
               }
             ],
             "video": {
-              "title": "Agent memory and multi-agent patterns",
-              "instructor": null,
-              "durationMinutes": 45,
-              "skillLevel": "Expert"
+              "title": "How Model Context Protocol (MCP) actually works",
+              "instructor": "Google Cloud Tech",
+              "durationMinutes": 8,
+              "skillLevel": "Expert",
+              "youTubeUrl": "https://www.youtube.com/watch?v=cGuyrANVi4A",
+              "verified": true
             },
             "quiz": null
           }
@@ -310,7 +318,9 @@
               "title": "Agents and enterprise system integration",
               "instructor": null,
               "durationMinutes": 45,
-              "skillLevel": "Expert"
+              "skillLevel": "Expert",
+              "youTubeUrl": null,
+              "verified": false
             },
             "quiz": null
           },
@@ -342,7 +352,9 @@
               "title": "Reliability patterns for agent workflows",
               "instructor": null,
               "durationMinutes": 40,
-              "skillLevel": "Expert"
+              "skillLevel": "Expert",
+              "youTubeUrl": null,
+              "verified": false
             },
             "quiz": null
           }
@@ -413,10 +425,12 @@
               }
             ],
             "video": {
-              "title": "Prompt injection and defence in depth",
-              "instructor": null,
-              "durationMinutes": 50,
-              "skillLevel": "Expert"
+              "title": "OWASP LLM01: 2025 Prompt Injection Explained | #1 AI Security Risk 2025",
+              "instructor": "Giskard",
+              "durationMinutes": 2,
+              "skillLevel": "Expert",
+              "youTubeUrl": "https://www.youtube.com/watch?v=zDZqLyhLAa0",
+              "verified": true
             },
             "quiz": {
               "title": "Prompt injection",
@@ -504,7 +518,9 @@
               "title": "Data protection in AI systems",
               "instructor": null,
               "durationMinutes": 45,
-              "skillLevel": "Expert"
+              "skillLevel": "Expert",
+              "youTubeUrl": null,
+              "verified": false
             },
             "quiz": {
               "title": "Data protection",
@@ -569,10 +585,12 @@
               }
             ],
             "video": {
-              "title": "Access control and content safety for AI",
-              "instructor": null,
-              "durationMinutes": 40,
-              "skillLevel": "Expert"
+              "title": "How to build safe and responsible AI applications with Azure AI Content Safety",
+              "instructor": "Microsoft Azure",
+              "durationMinutes": 2,
+              "skillLevel": "Expert",
+              "youTubeUrl": "https://www.youtube.com/watch?v=BcAAAleKcdE",
+              "verified": true
             },
             "quiz": {
               "title": "AI access control",
@@ -634,10 +652,12 @@
               }
             ],
             "video": {
-              "title": "AI governance for architects",
-              "instructor": null,
-              "durationMinutes": 40,
-              "skillLevel": "Expert"
+              "title": "AI Unlocked: Responsible AI & Azure AI Content Safety [English]",
+              "instructor": "Microsoft Academy Hub",
+              "durationMinutes": 36,
+              "skillLevel": "Expert",
+              "youTubeUrl": "https://www.youtube.com/watch?v=AEBs-cgwZDg",
+              "verified": true
             },
             "quiz": null
           }
@@ -682,7 +702,9 @@
               "title": "Securing the model layer and AI supply chain",
               "instructor": null,
               "durationMinutes": 40,
-              "skillLevel": "Expert"
+              "skillLevel": "Expert",
+              "youTubeUrl": null,
+              "verified": false
             },
             "quiz": {
               "title": "Model and supply chain security",
@@ -767,10 +789,12 @@
               }
             ],
             "video": {
-              "title": "Red teaming an AI feature",
-              "instructor": null,
-              "durationMinutes": 45,
-              "skillLevel": "Expert"
+              "title": "AI Red Teaming and Adversarial Testing (11 of 15)",
+              "instructor": "The Executive Briefing",
+              "durationMinutes": 14,
+              "skillLevel": "Expert",
+              "youTubeUrl": "https://www.youtube.com/watch?v=dkpJVdZm394",
+              "verified": true
             },
             "quiz": {
               "title": "Red teaming",
@@ -887,10 +911,12 @@
               }
             ],
             "video": {
-              "title": "Enterprise RAG reference architecture",
-              "instructor": null,
-              "durationMinutes": 50,
-              "skillLevel": "Expert"
+              "title": "YAAP | Building Enterprise RAG: Lessons from 2+ Years of Production Deployments",
+              "instructor": "AI21 Labs",
+              "durationMinutes": 38,
+              "skillLevel": "Expert",
+              "youTubeUrl": "https://www.youtube.com/watch?v=JRdElyOgloQ",
+              "verified": true
             },
             "quiz": {
               "title": "Enterprise RAG architecture",
@@ -947,10 +973,12 @@
               }
             ],
             "video": {
-              "title": "Designing an AI gateway",
-              "instructor": null,
-              "durationMinutes": 50,
-              "skillLevel": "Expert"
+              "title": "Stop Overpaying for LLMs: One API, Every Provider, Lowest Cost",
+              "instructor": "Nicolai Nielsen",
+              "durationMinutes": 30,
+              "skillLevel": "Expert",
+              "youTubeUrl": "https://www.youtube.com/watch?v=a3R0_ygdNXI",
+              "verified": true
             },
             "quiz": {
               "title": "AI gateway",
@@ -1038,10 +1066,12 @@
               }
             ],
             "video": {
-              "title": "Cost modelling for enterprise AI",
-              "instructor": null,
-              "durationMinutes": 45,
-              "skillLevel": "Expert"
+              "title": "How I cut token costs by 90%: AI cost optimization guide",
+              "instructor": "PropTech Founder",
+              "durationMinutes": 20,
+              "skillLevel": "Expert",
+              "youTubeUrl": "https://www.youtube.com/watch?v=4x4nM0uPmg0",
+              "verified": true
             },
             "quiz": {
               "title": "Cost modelling",
@@ -1116,15 +1146,17 @@
             "resources": [
               {
                 "title": "Architecture decision records",
-                "url": "https://learn.microsoft.com/azure/well-architected/architect-role/architecture-design-diagrams",
+                "url": "https://adr.github.io/",
                 "kind": "Documentation"
               }
             ],
             "video": {
-              "title": "Presenting architecture to mixed audiences",
-              "instructor": null,
-              "durationMinutes": 35,
-              "skillLevel": "Expert"
+              "title": "Effective Communication Techniques for a Solution Architect!",
+              "instructor": "Win The cloud 🙌🏻",
+              "durationMinutes": 12,
+              "skillLevel": "Expert",
+              "youTubeUrl": "https://www.youtube.com/watch?v=SeevmPEvPf8",
+              "verified": true
             },
             "quiz": null
           }
@@ -1164,7 +1196,9 @@
               "title": "Scaling AI workloads against provider quotas",
               "instructor": null,
               "durationMinutes": 45,
-              "skillLevel": "Expert"
+              "skillLevel": "Expert",
+              "youTubeUrl": null,
+              "verified": false
             },
             "quiz": {
               "title": "Scaling AI",
@@ -1224,7 +1258,9 @@
               "title": "Reviewing an enterprise AI architecture",
               "instructor": null,
               "durationMinutes": 45,
-              "skillLevel": "Expert"
+              "skillLevel": "Expert",
+              "youTubeUrl": null,
+              "verified": false
             },
             "quiz": {
               "title": "Architecture review",
@@ -1314,7 +1350,9 @@
               "title": "Planning a portfolio that gets interviews",
               "instructor": null,
               "durationMinutes": 30,
-              "skillLevel": "Advanced"
+              "skillLevel": "Advanced",
+              "youTubeUrl": null,
+              "verified": false
             },
             "quiz": null
           },
@@ -1340,7 +1378,9 @@
               "title": "Portfolio documentation that gets read",
               "instructor": null,
               "durationMinutes": 30,
-              "skillLevel": "Advanced"
+              "skillLevel": "Advanced",
+              "youTubeUrl": null,
+              "verified": false
             },
             "quiz": {
               "title": "Portfolio documentation",
@@ -1399,10 +1439,12 @@
             ],
             "resources": [],
             "video": {
-              "title": "Structuring architecture interview answers",
-              "instructor": null,
-              "durationMinutes": 45,
-              "skillLevel": "Expert"
+              "title": "How to Pass a System Design Interview (The 45-Minute Blueprint)",
+              "instructor": "Code with Lucian",
+              "durationMinutes": 13,
+              "skillLevel": "Expert",
+              "youTubeUrl": "https://www.youtube.com/watch?v=HcC9Du6RWwk",
+              "verified": true
             },
             "quiz": {
               "title": "Architecture interviews",
@@ -1476,10 +1518,12 @@
             ],
             "resources": [],
             "video": {
-              "title": "Behavioural interviews for career changers",
-              "instructor": null,
-              "durationMinutes": 35,
-              "skillLevel": "Advanced"
+              "title": "SOFTWARE ENGINEER Behavioral Interview Questions & ANSWERS! (STAR TECHNIQUE ANSWERS!)",
+              "instructor": "CareerVidz",
+              "durationMinutes": 16,
+              "skillLevel": "Advanced",
+              "youTubeUrl": "https://www.youtube.com/watch?v=ktUHzfvCNs8",
+              "verified": true
             },
             "quiz": {
               "title": "Behavioural interviews",
@@ -1570,7 +1614,9 @@
               "title": "Delivering the capstone engagement",
               "instructor": null,
               "durationMinutes": 45,
-              "skillLevel": "Expert"
+              "skillLevel": "Expert",
+              "youTubeUrl": null,
+              "verified": false
             },
             "quiz": null
           },
@@ -1596,7 +1642,9 @@
               "title": "Running the job search for a senior transition",
               "instructor": null,
               "durationMinutes": 35,
-              "skillLevel": "Advanced"
+              "skillLevel": "Advanced",
+              "youTubeUrl": null,
+              "verified": false
             },
             "quiz": null
           }

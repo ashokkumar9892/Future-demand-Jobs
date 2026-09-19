@@ -67,8 +67,9 @@ public class LessonResource : Entity
 }
 
 /// <summary>
-/// Video metadata. <see cref="YouTubeUrl"/> is intentionally null in all seeded
-/// content: real URLs are added through Admin, never invented by the platform.
+/// Video metadata. <see cref="YouTubeUrl"/> is either a link that was verified
+/// against YouTube's oEmbed endpoint, or null. The platform never invents one:
+/// a lesson with no verified video shows a search link instead of a dead embed.
 /// </summary>
 public class Video : Entity
 {

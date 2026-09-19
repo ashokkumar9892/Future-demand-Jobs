@@ -94,6 +94,8 @@ interface VideoSeed {
   instructor: string | null;
   durationMinutes: number;
   skillLevel: string;
+  youTubeUrl?: string | null;
+  verified?: boolean;
 }
 
 interface QuizSeed {

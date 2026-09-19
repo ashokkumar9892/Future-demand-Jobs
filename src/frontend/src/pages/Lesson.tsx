@@ -403,15 +403,26 @@ function VideoPanel({ lesson, onWatched }: { lesson: LessonDetail; onWatched: ()
           />
         </div>
       ) : (
-        // The content pack ships no invented URLs. An admin links a real video
-        // and this placeholder is replaced by the embedded player.
-        <div className="flex flex-col items-center justify-center gap-2 border-t border-line bg-surface-sunken px-6 py-10 text-center">
+        // No invented URLs: most lessons carry a link that was checked against
+        // YouTube's oEmbed endpoint. Where none was found, send the learner to a
+        // search for the topic rather than leaving them at a dead end.
+        <div className="flex flex-col items-center justify-center gap-3 border-t border-line bg-surface-sunken px-6 py-10 text-center">
           <PlayCircle size={28} className="text-ink-faint" />
-          <p className="text-sm text-ink-muted">No video linked to this lesson yet</p>
+          <p className="text-sm text-ink-muted">No verified video linked to this lesson</p>
           <p className="max-w-md text-[11px] leading-relaxed text-ink-faint">
-            This platform never fabricates video URLs. An administrator can attach a verified
-            YouTube link in Admin → Videos, and it will embed here automatically.
+            This platform only embeds links it has checked, so it shows nothing here rather
+            than a video that might not exist. The reading below covers the material, and an
+            administrator can attach a link in Admin → Videos.
           </p>
+          <a
+            href={`https://www.youtube.com/results?search_query=${encodeURIComponent(lesson.title)}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-[11px] text-ink-muted transition hover:bg-surface-overlay hover:text-ink"
+          >
+            <ExternalLink size={12} />
+            Search YouTube for “{lesson.title}”
+          </a>
         </div>
       )}
     </Card>

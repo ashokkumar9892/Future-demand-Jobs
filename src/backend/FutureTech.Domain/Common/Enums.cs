@@ -61,3 +61,34 @@ public enum EvidenceKind { ProfessionalExperience = 0, PersonalProject = 1, Trai
 public enum BadgeTier { Bronze = 0, Silver = 1, Gold = 2, Platinum = 3 }
 
 public enum ReadinessVerdict { NeedsTraining = 0, AlmostReady = 1, Ready = 2 }
+
+/// <summary>Why a sign-in attempt was recorded. Failures are kept so repeated
+/// attempts against an account are visible to an admin.</summary>
+public enum LoginOutcome { Success = 0, WrongPassword = 1, UnknownAccount = 2 }
+
+/// <summary>How far a login's IP address got through geo resolution.</summary>
+public enum GeoLookupState
+{
+    /// <summary>Queued for lookup; the row shows the IP until it resolves.</summary>
+    Pending = 0,
+    Resolved = 1,
+    /// <summary>Loopback or RFC1918 — there is nothing to resolve.</summary>
+    Private = 2,
+    /// <summary>Lookup is disabled, or the provider could not place the address.</summary>
+    Unavailable = 3
+}
+
+public enum FeedbackCategory
+{
+    General = 0, Course = 1, Lesson = 2, Video = 3, Practice = 4,
+    Project = 5, Bug = 6, FeatureRequest = 7, Content = 8
+}
+
+/// <summary>
+/// Triage state an admin moves feedback through. <see cref="Implemented"/> is
+/// terminal and records what was actually changed.
+/// </summary>
+public enum FeedbackStatus
+{
+    New = 0, UnderReview = 1, Planned = 2, InProgress = 3, Implemented = 4, Declined = 5
+}

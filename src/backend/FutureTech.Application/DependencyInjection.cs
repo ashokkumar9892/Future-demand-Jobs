@@ -27,6 +27,8 @@ public static class DependencyInjection
         services.AddScoped<INoteService, NoteService>();
         services.AddScoped<IBookmarkService, BookmarkService>();
         services.AddScoped<ISearchService, SearchService>();
+        services.AddScoped<IFeedbackService, FeedbackService>();
+        services.AddScoped<IEngagementService, EngagementService>();
         return services;
     }
 }

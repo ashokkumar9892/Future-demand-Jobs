@@ -60,6 +60,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ResumeProfile> ResumeProfiles => Set<ResumeProfile>();
     public DbSet<ResumeItem> ResumeItems => Set<ResumeItem>();
 
+    public DbSet<LoginEvent> LoginEvents => Set<LoginEvent>();
+    public DbSet<IpLocation> IpLocations => Set<IpLocation>();
+    public DbSet<Feedback> Feedback => Set<Feedback>();
+
     public override Task<int> SaveChangesAsync(CancellationToken ct = default) => base.SaveChangesAsync(ct);
 
     protected override void OnModelCreating(ModelBuilder b)

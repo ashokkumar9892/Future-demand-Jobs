@@ -20,7 +20,8 @@ public class AuthService(
     IPasswordHasher hasher,
     IJwtTokenService tokens,
     ICurrentUser currentUser,
-    IDateTimeProvider clock) : IAuthService
+    IDateTimeProvider clock,
+    ILoginAuditService loginAudit) : IAuthService
 {
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken ct = default)
     {
@@ -59,21 +60,37 @@ public class AuthService(
             SundayHours = 3
         });
 
+        user.LastLoginAt = clock.Now;
         await db.SaveChangesAsync(ct);
+
+        // Registering signs the account straight in, so it belongs in the audit
+        // trail like any other session.
+        await loginAudit.RecordAsync(user.Id, user.Email, LoginOutcome.Success, ct);
         return await IssueAsync(user, ct);
     }
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken ct = default)
     {
         var email = request.Email.Trim().ToLowerInvariant();
-        var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email, ct)
-                   ?? throw AppException.Unauthorized("Email or password is incorrect.");
+        var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email, ct);
+
+        // Failed attempts are audited too, and the caller is told the same thing
+        // either way so the response cannot be used to enumerate accounts.
+        if (user is null)
+        {
+            await loginAudit.RecordAsync(null, email, LoginOutcome.UnknownAccount, ct);
+            throw AppException.Unauthorized("Email or password is incorrect.");
+        }
 
         if (!hasher.Verify(request.Password, user.PasswordHash))
+        {
+            await loginAudit.RecordAsync(user.Id, email, LoginOutcome.WrongPassword, ct);
             throw AppException.Unauthorized("Email or password is incorrect.");
+        }
 
         user.LastLoginAt = clock.Now;
         await db.SaveChangesAsync(ct);
+        await loginAudit.RecordAsync(user.Id, email, LoginOutcome.Success, ct);
         return await IssueAsync(user, ct);
     }
 

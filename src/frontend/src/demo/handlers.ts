@@ -897,12 +897,15 @@ function videoDto(state: DemoState, lesson: (typeof lessons)[number]) {
   return {
     id: lesson.videoId,
     title: lesson.video!.title,
-    // Never fabricated — the same rule the API enforces.
-    youTubeUrl: (override.youTubeUrl as string) ?? null,
+    // The seeded link, unless an admin has replaced it. Still never fabricated:
+    // every seeded URL was checked against YouTube's oEmbed endpoint.
+    youTubeUrl: (override.youTubeUrl as string) ?? lesson.video!.youTubeUrl ?? null,
     instructor: lesson.video!.instructor,
     durationMinutes: lesson.video!.durationMinutes,
     skillLevel: lesson.video!.skillLevel,
-    isVerified: Boolean(override.isVerified),
+    isVerified: override.isVerified !== undefined
+      ? Boolean(override.isVerified)
+      : Boolean(lesson.video!.verified),
     lessonId: lesson.id,
     lessonTitle: lesson.title,
     lessonSlug: lesson.slug,

@@ -54,6 +54,31 @@ public static class DependencyInjection
 
         services.AddScoped<IAdminService, AdminService>();
 
+        // Sign-in auditing. Location lookup is off the request path: the audit
+        // writes whatever is cached and queues anything unseen for the worker.
+        var geo = new GeoIpOptions
+        {
+            Enabled = !bool.TryParse(configuration["GeoIp:Enabled"], out var geoEnabled) || geoEnabled,
+            Endpoint = configuration["GeoIp:Endpoint"] is { Length: > 0 } endpoint
+                ? endpoint
+                : new GeoIpOptions().Endpoint,
+            Source = configuration["GeoIp:Source"] ?? "ip-api.com",
+            TimeoutSeconds = int.TryParse(configuration["GeoIp:TimeoutSeconds"], out var timeout) ? timeout : 5,
+            CacheDays = int.TryParse(configuration["GeoIp:CacheDays"], out var cacheDays) ? cacheDays : 30,
+            MinIntervalMilliseconds =
+                int.TryParse(configuration["GeoIp:MinIntervalMilliseconds"], out var interval) ? interval : 1500
+        };
+        services.AddSingleton(geo);
+        services.AddSingleton<GeoLookupQueue>();
+        services.AddScoped<ILoginAuditService, LoginAuditService>();
+        services.AddHttpClient<IGeoIpResolver, HttpGeoIpResolver>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(geo.TimeoutSeconds);
+            // Free geo endpoints reject or throttle requests with no agent.
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("FutureTechAcademy/1.0");
+        });
+        services.AddHostedService<GeoLookupWorker>();
+
         services.AddSingleton(new SeedOptions
         {
             SeedDataPath = Path.Combine(contentRootPath, configuration["Seed:Path"] ?? "SeedData"),

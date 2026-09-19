@@ -192,10 +192,17 @@ progress and never as a professional qualification.
 `Certification`. The generator only ever emits the last three. The suggested
 headline changes only when there is measured evidence behind it.
 
-**No invented video URLs.** Every lesson has a video slot with authored
-metadata, and `YouTubeUrl` is null in all seeded content. The lesson player shows
-a placeholder explaining this. An administrator attaches a verified link in
-Admin → Videos and it embeds automatically.
+**No invented video URLs.** 49 of the 60 lessons carry a real YouTube link.
+Each one was found by search and then checked against YouTube's oEmbed endpoint,
+which answers only for a video that exists and permits embedding — so a
+fabricated or dead id cannot get in. The stored title, channel and runtime come
+from that lookup rather than being written by hand. The remaining 11 lessons
+have no link: rather than fill the gap with something plausible, the player says
+so and offers a YouTube search for the lesson topic. An administrator can attach
+a link in Admin → Videos and it embeds automatically.
+
+The same check covers written references: all 76 URLs in the content pack were
+requested and confirmed to resolve.
 
 **Answer scoring says what it is.** `IAnswerEvaluator` ships as a deterministic
 rubric scorer — keyword coverage, structure and depth. It never claims to be a
@@ -263,6 +270,10 @@ tested.
   file names its C# source, but the two copies can drift. Sharing one
   implementation would mean compiling the rules to WASM or generating the TS
   from the C# — neither was worth it at this size.
+- **Linked videos can rot.** Every URL resolved and embedded when it shipped,
+  but third-party videos get deleted, made private or have embedding disabled
+  later. There is no automated re-check; the admin video screen is how a broken
+  link gets replaced.
 - **Demo progress is per browser.** `localStorage` only: it does not sync across
   devices and clearing site data resets it. Real accounts need the API.
 - **The Windows package ships plain HTTP.** `deploy/windows/` binds Kestrel on

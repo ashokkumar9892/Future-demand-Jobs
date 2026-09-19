@@ -893,3 +893,185 @@ export interface AdminStats {
   badges: number;
   learners: number;
 }
+
+// ---------- feedback & engagement ----------
+// Optional fields are optional rather than nullable: the API omits nulls
+// (JsonIgnoreCondition.WhenWritingNull), so the key is absent, not null.
+
+export type FeedbackStatus =
+  | 'New'
+  | 'UnderReview'
+  | 'Planned'
+  | 'InProgress'
+  | 'Implemented'
+  | 'Declined';
+
+export type FeedbackCategory =
+  | 'General'
+  | 'Course'
+  | 'Lesson'
+  | 'Video'
+  | 'Practice'
+  | 'Project'
+  | 'Bug'
+  | 'FeatureRequest'
+  | 'Content';
+
+export interface Feedback {
+  id: string;
+  userId: string;
+  learnerName: string;
+  learnerEmail: string;
+  category: FeedbackCategory;
+  subject: string;
+  message: string;
+  rating: number;
+  area?: string;
+  refType?: string;
+  refId?: string;
+  status: FeedbackStatus;
+  adminResponse?: string;
+  implementationNote?: string;
+  handledByName?: string;
+  submittedAt: string;
+  respondedAt?: string;
+  implementedAt?: string;
+}
+
+/** The admin list adds the internal triage note, which learner endpoints never return. */
+export interface AdminFeedback {
+  item: Feedback;
+  adminNote?: string;
+}
+
+export interface FeedbackSummary {
+  total: number;
+  open: number;
+  new: number;
+  underReview: number;
+  planned: number;
+  inProgress: number;
+  implemented: number;
+  declined: number;
+  averageRating: number;
+  ratedCount: number;
+  byCategory: { category: string; count: number; averageRating: number }[];
+}
+
+export interface LoginEvent {
+  id: string;
+  userId?: string;
+  email: string;
+  displayName: string;
+  outcome: 'Success' | 'WrongPassword' | 'UnknownAccount';
+  at: string;
+  ipAddress: string;
+  location: string;
+  city?: string;
+  region?: string;
+  country?: string;
+  countryCode?: string;
+  timeZone?: string;
+  isp?: string;
+  latitude?: number;
+  longitude?: number;
+  browser: string;
+  operatingSystem: string;
+  deviceKind: string;
+  geoState: 'Pending' | 'Resolved' | 'Private' | 'Unavailable';
+}
+
+export interface LocationRollup {
+  location: string;
+  countryCode?: string;
+  loginCount: number;
+  learners: number;
+  lastSeenAt: string;
+}
+
+export interface LearnerRow {
+  id: string;
+  email: string;
+  displayName: string;
+  role: 'Learner' | 'Admin';
+  yearsExperience: number;
+  joinedAt: string;
+  onboardingCompleted: boolean;
+  targetCareer?: string;
+  lastLoginAt?: string;
+  lastLocation?: string;
+  lastDevice?: string;
+  lastIpAddress?: string;
+  loginCount: number;
+  failedLoginCount: number;
+  currentCourse?: string;
+  currentCourseId?: string;
+  currentCoursePercent: number;
+  coursesStarted: number;
+  coursesCompleted: number;
+  lessonsCompleted: number;
+  lessonsInProgress: number;
+  minutesStudied: number;
+  xp: number;
+  feedbackCount: number;
+  lastActivityAt?: string;
+}
+
+export interface LearnerCourseProgress {
+  courseId: string;
+  title: string;
+  slug: string;
+  phaseNumber: number;
+  level: string;
+  totalLessons: number;
+  completedLessons: number;
+  inProgressLessons: number;
+  percentComplete: number;
+  minutesSpent: number;
+  status: string;
+  startedAt?: string;
+  lastActivityAt?: string;
+}
+
+export interface LearnerDetail {
+  learner: LearnerRow;
+  courses: LearnerCourseProgress[];
+  logins: LoginEvent[];
+  locations: LocationRollup[];
+  feedback: Feedback[];
+}
+
+export interface CourseEngagement {
+  courseId: string;
+  title: string;
+  slug: string;
+  phaseNumber: number;
+  totalLessons: number;
+  learners: number;
+  activeLast7Days: number;
+  completedLearners: number;
+  averagePercent: number;
+  minutesStudied: number;
+  lastActivityAt?: string;
+}
+
+export interface EngagementOverview {
+  totalLearners: number;
+  newLast30Days: number;
+  activeLast7Days: number;
+  activeLast30Days: number;
+  loginsLast7Days: number;
+  failedLoginsLast7Days: number;
+  openFeedback: number;
+  implementedFeedback: number;
+  averageRating: number;
+  topLocations: LocationRollup[];
+  topCourses: CourseEngagement[];
+}
+
+export interface Paged<T> {
+  total: number;
+  page: number;
+  pageSize: number;
+  items: T[];
+}
