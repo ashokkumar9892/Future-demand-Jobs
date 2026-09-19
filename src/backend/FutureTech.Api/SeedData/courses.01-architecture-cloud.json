@@ -1,0 +1,869 @@
+[
+  {
+    "careerSlug": "ai-solutions-architect",
+    "order": 1,
+    "phaseNumber": 1,
+    "title": "Phase 1 — Modern Architecture",
+    "slug": "phase-1-modern-architecture",
+    "summary": "Formalise the architecture you already practise informally: Clean Architecture, DDD, microservice boundaries, event-driven design, distributed systems, caching and scale. Written for someone who has shipped enterprise systems, not for a beginner.",
+    "estimatedHours": 30,
+    "level": "Advanced",
+    "minimumTrack": "FastTrack",
+    "outcomes": [
+      "Defend a boundary decision with something stronger than instinct",
+      "Apply Clean Architecture and DDD without turning a codebase into ceremony",
+      "Choose between Service Bus, Kafka, RabbitMQ and Event Grid on stated criteria",
+      "Design for a numeric availability target rather than a vague one",
+      "Explain caching, idempotency and backpressure as trade-offs, not slogans"
+    ],
+    "skillSlugs": ["architecture", "system-design", "microservices", "event-driven", "ddd", "caching", "messaging"],
+    "modules": [
+      {
+        "order": 1,
+        "title": "Architecture Foundations & Clean Architecture",
+        "summary": "What architecture actually is, how to record decisions, and how Clean Architecture behaves in a real .NET 8 codebase.",
+        "estimatedHours": 10,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Architecture as Decision-Making",
+            "slug": "architecture-as-decision-making",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The shift you are making\n\nAfter twenty years you already make architectural decisions daily. The change from senior engineer to architect is not knowing more patterns — it is being able to **state the decision, the alternatives and the consequences** in a form someone else can challenge.\n\nMost architecture interviews fail on exactly this. The candidate describes a design. The panel asks \"why not X?\" and the answer is a shrug. The candidates who get offers answer: *\"X was the obvious alternative. I rejected it because of this constraint. If that constraint changed, I would revisit it.\"*\n\n## Significant decisions\n\nA decision is architecturally significant when it is expensive to reverse. Choosing a logging library is not. Choosing synchronous HTTP between two services that will later need to scale independently is.\n\nThe practical test: *if this turns out to be wrong in eighteen months, what does it cost to change?* High cost means it deserves an ADR, a diagram and a conversation. Low cost means make the call and move on — architecture that tries to decide everything is its own failure mode.\n\n## Architecture Decision Records\n\nAn ADR is one page: context, decision, alternatives considered, consequences. Store them in the repository next to the code. Their value is not documentation — it is that eighteen months later, when someone asks \"why on earth did we do this?\", the answer is written down and the constraint is visible.\n\n## Quality attributes drive design\n\nEvery non-trivial decision trades one quality attribute against another. Availability against consistency. Latency against cost. Flexibility against simplicity. Start by writing down which attributes matter and their target numbers. \"Highly available\" is not a requirement. \"99.9% monthly, measured at the API gateway, with a 30-second recovery objective\" is.",
+            "codeExample": "// docs/adr/0007-async-messaging-between-order-and-billing.md\n//\n// # 7. Asynchronous messaging between Order and Billing\n//\n// ## Status\n// Accepted — 2026-03-14\n//\n// ## Context\n// Order submission currently calls Billing over HTTP synchronously. Billing's\n// p99 is 1.8s and its maintenance windows take order submission down with it.\n// Order volume is projected to triple within a year.\n//\n// ## Decision\n// Order publishes OrderSubmitted to Azure Service Bus. Billing subscribes and\n// processes independently. Order returns as soon as the message is durably\n// enqueued.\n//\n// ## Alternatives considered\n// - Keep synchronous HTTP with retries and a circuit breaker.\n//   Rejected: does not decouple availability; a Billing outage still fails orders.\n// - Dual-write to a shared database table polled by Billing.\n//   Rejected: couples the two schemas and reintroduces the shared-database problem.\n//\n// ## Consequences\n// + Order availability no longer depends on Billing availability.\n// + Each service scales on its own load profile.\n// - The system becomes eventually consistent; the UI must show \"billing pending\".\n// - Message ordering and duplicate delivery now need explicit handling.\n// - Operational surface grows: a dead-letter queue needs monitoring and an owner.",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart LR\n  QA[Quality attributes\\nwith target numbers] --> D{Significant?\\nExpensive to reverse?}\n  D -->|No| J[Decide and move on]\n  D -->|Yes| ADR[Write an ADR]\n  ADR --> ALT[Record rejected alternatives]\n  ALT --> CON[Record consequences\\ngood and bad]\n  CON --> REV[Revisit when the\\nconstraint changes]",
+            "keyTakeaways": [
+              "Architecture is the set of decisions that are expensive to reverse — everything else is design",
+              "An ADR is one page: context, decision, alternatives, consequences",
+              "Always name the alternatives you rejected and why; that is what interviews probe",
+              "Quality attributes need target numbers, not adjectives"
+            ],
+            "resources": [
+              { "title": "Azure Architecture Center", "url": "https://learn.microsoft.com/azure/architecture/", "kind": "Documentation" },
+              { "title": "AWS Well-Architected Framework", "url": "https://aws.amazon.com/architecture/well-architected/", "kind": "Documentation" }
+            ],
+            "video": { "title": "Architecture decisions and ADRs for senior engineers", "instructor": null, "durationMinutes": 35, "skillLevel": "Advanced" },
+            "quiz": {
+              "title": "Architectural decision-making",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Which of these is most likely to be an architecturally significant decision?",
+                  "explanation": "Significance is about the cost of reversal. Changing the communication style between two services later means changing contracts, error handling, the data model and the UI. Swapping a logging library or renaming a DTO is cheap.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "Choosing synchronous HTTP rather than messaging between two services", "isCorrect": true },
+                    { "text": "Choosing Serilog over NLog", "isCorrect": false },
+                    { "text": "Renaming a DTO property", "isCorrect": false },
+                    { "text": "Adding a new unit test project", "isCorrect": false }
+                  ]
+                },
+                {
+                  "prompt": "Which sections belong in an ADR?",
+                  "explanation": "The alternatives and consequences carry most of the value. Without them an ADR is just a note saying what was built, which the code already tells you.",
+                  "allowsMultiple": true,
+                  "options": [
+                    { "text": "Context", "isCorrect": true },
+                    { "text": "Decision", "isCorrect": true },
+                    { "text": "Alternatives considered", "isCorrect": true },
+                    { "text": "Consequences, including the negative ones", "isCorrect": true },
+                    { "text": "A full class diagram of the implementation", "isCorrect": false }
+                  ]
+                },
+                {
+                  "prompt": "A stakeholder says the system must be \"highly available\". What is the correct next step?",
+                  "explanation": "Adjectives cannot be designed against or tested. Convert them into measurable targets with a measurement point before making any design decision.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "Agree a numeric target, a measurement point and a recovery objective", "isCorrect": true },
+                    { "text": "Deploy to three regions immediately", "isCorrect": false },
+                    { "text": "Add retries everywhere", "isCorrect": false },
+                    { "text": "Record it in the ADR as written and proceed", "isCorrect": false }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Clean Architecture in .NET 8, Without the Ceremony",
+            "slug": "clean-architecture-dotnet-8",
+            "type": "Lab",
+            "estimatedMinutes": 60,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The rule that matters\n\nClean Architecture reduces to one rule: **dependencies point inward**. Domain knows nothing. Application knows Domain. Infrastructure implements interfaces that Application declares. The API composes them.\n\nEverything else — the number of projects, the naming, whether you use MediatR — is negotiable.\n\n## Why it pays off here specifically\n\nFor an AI platform this structure is unusually valuable, because the volatile parts are all at the edge. The LLM provider will change. The vector store will change. The embedding model will change, probably twice. If `IEmbeddingProvider` and `IVectorStore` are declared in Application and implemented in Infrastructure, swapping Pinecone for Azure AI Search is a new class and a DI registration. If your retrieval logic imports the SDK directly, it is a rewrite.\n\nThis platform is built that way: `IAnswerEvaluator` is an Application abstraction with a deterministic implementation today. Replacing it with a model-backed one changes exactly one registration line.\n\n## Where teams overdo it\n\n- A separate project per layer for a service with four endpoints. Folders are fine until the build times or the team size justify projects.\n- Mapping the same shape three times — entity, DTO, view model — for no behavioural difference.\n- Putting orchestration in the controller so the Application layer becomes a pass-through.\n\nThe test for whether your structure is real: **can you delete Infrastructure and still compile Domain and Application?** If not, a dependency is pointing the wrong way.",
+            "codeExample": "// Application layer — declares what it needs, knows no SDK.\nnamespace Acme.Application.Abstractions;\n\npublic interface IEmbeddingProvider\n{\n    Task<ReadOnlyMemory<float>> EmbedAsync(string text, CancellationToken ct = default);\n}\n\npublic interface IVectorStore\n{\n    Task UpsertAsync(IEnumerable<VectorRecord> records, CancellationToken ct = default);\n    Task<IReadOnlyList<SearchHit>> SearchAsync(\n        ReadOnlyMemory<float> query, int topK, string? filter = null, CancellationToken ct = default);\n}\n\n// Application service — pure orchestration, fully unit-testable with fakes.\npublic class DocumentIngestionService(\n    IEmbeddingProvider embeddings,\n    IVectorStore store,\n    IChunker chunker)\n{\n    public async Task IngestAsync(Document document, CancellationToken ct = default)\n    {\n        var records = new List<VectorRecord>();\n\n        foreach (var chunk in chunker.Split(document.Text))\n        {\n            var vector = await embeddings.EmbedAsync(chunk.Text, ct);\n            records.Add(new VectorRecord(\n                Id: $\"{document.Id}:{chunk.Index}\",\n                Vector: vector,\n                Metadata: new()\n                {\n                    [\"documentId\"] = document.Id.ToString(),\n                    [\"page\"] = chunk.Page.ToString(),\n                    // Written at ingestion so retrieval can filter by entitlement\n                    // in the query instead of trusting the prompt.\n                    [\"acl\"] = string.Join(',', document.AllowedGroups)\n                }));\n        }\n\n        await store.UpsertAsync(records, ct);\n    }\n}\n\n// Infrastructure — the only place the vendor SDK appears.\n// Program.cs: services.AddScoped<IVectorStore, AzureAiSearchVectorStore>();",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart TD\n  API[API / Presentation] --> APP[Application\\nuse cases + interfaces]\n  INF[Infrastructure\\nEF Core, SDKs, HTTP] -->|implements| APP\n  APP --> DOM[Domain\\nentities, rules]\n  API --> INF\n  style DOM fill:#1e293b,color:#fff\n  style APP fill:#312e81,color:#fff",
+            "keyTakeaways": [
+              "One rule: dependencies point inward. Domain depends on nothing",
+              "Declare interfaces in Application, implement them in Infrastructure — that is what makes providers swappable",
+              "Volatile AI components (model, embeddings, vector store) belong behind abstractions from day one",
+              "If deleting Infrastructure breaks the Domain build, a dependency points the wrong way"
+            ],
+            "resources": [
+              { "title": ".NET application architecture guides", "url": "https://learn.microsoft.com/dotnet/architecture/", "kind": "Documentation" }
+            ],
+            "video": { "title": "Clean Architecture in .NET 8 for AI workloads", "instructor": null, "durationMinutes": 45, "skillLevel": "Advanced" },
+            "quiz": {
+              "title": "Clean Architecture",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Where should the interface for a vector database live?",
+                  "explanation": "The consumer declares the contract; the adapter implements it. That inversion is what lets you replace the store without touching orchestration logic.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "Declared in Application, implemented in Infrastructure", "isCorrect": true },
+                    { "text": "Declared and implemented in Infrastructure", "isCorrect": false },
+                    { "text": "In Domain, alongside the entities", "isCorrect": false },
+                    { "text": "In the API project next to the controller", "isCorrect": false }
+                  ]
+                },
+                {
+                  "prompt": "Which is a genuine smell in a Clean Architecture codebase?",
+                  "explanation": "A provider SDK type in the Application layer means the layer is coupled to a vendor, defeating the point of the structure.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "An Application service that references a vendor SDK type directly", "isCorrect": true },
+                    { "text": "Application depending on Domain", "isCorrect": false },
+                    { "text": "Infrastructure depending on Application", "isCorrect": false },
+                    { "text": "The API project referencing both Application and Infrastructure", "isCorrect": false }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "Domain-Driven Design & Microservice Boundaries",
+        "summary": "Getting boundaries right, and recognising when a distributed monolith is what you have actually built.",
+        "estimatedHours": 10,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Domain-Driven Design for Enterprise .NET",
+            "slug": "ddd-for-enterprise-dotnet",
+            "type": "Concept",
+            "estimatedMinutes": 50,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## The part of DDD that earns its keep\n\nStrategic DDD — bounded contexts and the ubiquitous language — is worth far more than the tactical patterns. Most teams adopt aggregates and value objects, skip the boundary work, and end up with an elaborately-decorated big ball of mud.\n\n## Bounded contexts\n\nA bounded context is a boundary within which one model is consistent and one vocabulary applies. \"Customer\" in Sales means a pipeline opportunity with a decision-maker. \"Customer\" in Support means an entitlement and a contact history. Forcing them into one shared `Customer` class produces a type with forty properties of which each consumer uses eight.\n\nTwo contexts, each with its own model, linked by an explicit translation, is almost always the better answer — and that translation layer is where you put the anti-corruption logic.\n\n## Aggregates and transactional boundaries\n\nAn aggregate is a consistency boundary: everything inside it commits together. The practical rules that survive contact with production:\n\n- One aggregate per transaction. Needing two means the boundary is probably wrong.\n- Reference other aggregates by ID, never by object reference.\n- Keep aggregates small. A large aggregate becomes a contention point under load.\n\n## For AI systems\n\nBounded contexts map directly onto retrieval scope. \"Which documents does this question draw on?\" is a context question. Indexing HR policies, engineering runbooks and customer contracts into one undifferentiated index is the retrieval equivalent of the shared `Customer` class: everything is technically available and nothing is reliably findable.",
+            "codeExample": "// Aggregate root: Order owns its lines; the whole thing commits together.\npublic class Order\n{\n    private readonly List<OrderLine> _lines = [];\n\n    public OrderId Id { get; private set; }\n    // Another aggregate — referenced by ID, never by object reference.\n    public CustomerId CustomerId { get; private set; }\n    public OrderStatus Status { get; private set; }\n    public IReadOnlyList<OrderLine> Lines => _lines;\n\n    public Money Total => _lines.Aggregate(Money.Zero, (sum, l) => sum + l.LineTotal);\n\n    public void AddLine(ProductId productId, int quantity, Money unitPrice)\n    {\n        // Invariants live on the aggregate, not in a service that callers may forget.\n        if (Status != OrderStatus.Draft)\n            throw new DomainException(\"Lines can only be added while the order is a draft.\");\n        if (quantity <= 0)\n            throw new DomainException(\"Quantity must be positive.\");\n\n        var existing = _lines.SingleOrDefault(l => l.ProductId == productId);\n        if (existing is not null) existing.IncreaseQuantity(quantity);\n        else _lines.Add(new OrderLine(productId, quantity, unitPrice));\n    }\n\n    public void Submit()\n    {\n        if (_lines.Count == 0)\n            throw new DomainException(\"An order needs at least one line.\");\n\n        Status = OrderStatus.Submitted;\n        // Cross-aggregate work happens through an event, not a direct call,\n        // so the transaction stays inside this boundary.\n        DomainEvents.Raise(new OrderSubmitted(Id, CustomerId, Total));\n    }\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart LR\n  subgraph Sales[Sales context]\n    SC[Customer = opportunity]\n  end\n  subgraph Support[Support context]\n    PC[Customer = entitlement]\n  end\n  subgraph Billing[Billing context]\n    BC[Customer = payer]\n  end\n  SC -->|translate| PC\n  PC -->|translate| BC\n  note[Each context owns its own model.\\nTranslation is explicit, not implicit.]",
+            "keyTakeaways": [
+              "Strategic DDD — bounded contexts and language — pays off far more than tactical patterns",
+              "One aggregate per transaction; reference other aggregates by ID",
+              "A shared model across contexts produces a type nobody fully uses",
+              "Bounded contexts map onto retrieval scope in AI systems"
+            ],
+            "resources": [
+              { "title": "Microservices architecture guidance", "url": "https://learn.microsoft.com/dotnet/architecture/microservices/", "kind": "Documentation" }
+            ],
+            "video": { "title": "Strategic DDD: bounded contexts in practice", "instructor": null, "durationMinutes": 50, "skillLevel": "Advanced" },
+            "quiz": null
+          },
+          {
+            "order": 2,
+            "title": "Microservice Boundaries and Failure Modes",
+            "slug": "microservice-boundaries-failure-modes",
+            "type": "Architecture",
+            "estimatedMinutes": 55,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## The distributed monolith\n\nThe most common microservices outcome is worse than the monolith it replaced: services that must deploy together, share a database, and fail together — but now over the network, with added latency and no transactions.\n\nThree questions expose it:\n\n1. Can this service be deployed without coordinating with another team? If no, the boundary is wrong.\n2. Does it own its data exclusively? If two services write the same table, they are one service.\n3. Can it serve a degraded response when its dependencies are down? If no, you have coupled availability.\n\n## Availability multiplies\n\nA synchronous chain of five services at 99.9% each yields 99.5% — roughly 3.6 hours of downtime a month rather than 43 minutes. Every synchronous hop multiplies. This is the single strongest argument for asynchronous messaging between services, and it is arithmetic rather than opinion.\n\n## Sizing\n\nBoundaries follow business capability and rate of change, not entity count. If two \"services\" always change in the same pull request, they are one service wearing a costume.\n\nFor most enterprises the right answer is a modular monolith with clean internal boundaries, extracting a service only when there is a specific reason: independent scaling, team autonomy, a differing compliance boundary, or a genuinely different technology need.\n\n## The AI angle\n\nAn AI orchestrator is a good extraction candidate because its scaling profile is genuinely different — long-lived streaming requests, large memory, burst load, a separate cost centre, and an independent release cadence driven by model changes rather than business changes.",
+            "codeExample": "// Availability of a synchronous chain is the product of its links.\n//   5 hops at 99.9%          -> 0.999^5  = 99.50%  (~3.6 h/month down)\n//   5 hops at 99.99%         -> 0.9999^5 = 99.95%  (~22 min/month down)\n//\n// Asynchronous decoupling removes the hop from the caller's availability budget.\n\npublic class OrderService(IMessagePublisher publisher, IOrderRepository repository)\n{\n    public async Task<OrderResult> SubmitAsync(SubmitOrder command, CancellationToken ct)\n    {\n        var order = await repository.GetAsync(command.OrderId, ct);\n        order.Submit();\n\n        // The outbox makes the state change and the message atomic: both land in\n        // one transaction, and a relay publishes afterwards. Without it a crash\n        // between save and publish silently loses the event.\n        await repository.SaveWithOutboxAsync(\n            order,\n            new OrderSubmitted(order.Id, order.CustomerId, order.Total),\n            ct);\n\n        // Billing may be down. The order is still accepted.\n        return OrderResult.Accepted(order.Id, billingStatus: \"pending\");\n    }\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart TD\n  subgraph Sync[Synchronous chain: availability multiplies]\n    A1[API 99.9%] --> B1[Orders 99.9%] --> C1[Billing 99.9%] --> D1[Tax 99.9%]\n    D1 --> R1[Effective 99.6%]\n  end\n  subgraph Async[Asynchronous: availability is isolated]\n    A2[API] --> B2[Orders] --> Q[(Queue)]\n    Q --> C2[Billing]\n    Q --> D2[Tax]\n    B2 --> R2[Order accepted\\neven if Billing is down]\n  end",
+            "keyTakeaways": [
+              "If two services must deploy together or share a table, they are one service",
+              "Synchronous chains multiply failure: five 99.9% hops give 99.5%",
+              "Use the outbox pattern so the state change and the event commit atomically",
+              "A modular monolith is the right default; extract a service for a specific stated reason"
+            ],
+            "resources": [
+              { "title": "Microservices patterns and anti-patterns", "url": "https://learn.microsoft.com/azure/architecture/microservices/", "kind": "Documentation" }
+            ],
+            "video": { "title": "Service boundaries and the distributed monolith", "instructor": null, "durationMinutes": 40, "skillLevel": "Advanced" },
+            "quiz": {
+              "title": "Boundaries and failure",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Four services each at 99.9% availability are called synchronously in a chain. What is the approximate end-to-end availability?",
+                  "explanation": "0.999^4 ≈ 0.996. Synchronous dependencies multiply, which is why each added hop is a real availability cost.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "About 99.6%", "isCorrect": true },
+                    { "text": "Still 99.9%", "isCorrect": false },
+                    { "text": "About 99.99%", "isCorrect": false },
+                    { "text": "About 95%", "isCorrect": false }
+                  ]
+                },
+                {
+                  "prompt": "Which signals suggest two microservices are actually one service?",
+                  "explanation": "Shared data ownership and coupled deployment are the two clearest indicators of a boundary drawn in the wrong place.",
+                  "allowsMultiple": true,
+                  "options": [
+                    { "text": "They write to the same database table", "isCorrect": true },
+                    { "text": "They must be released together", "isCorrect": true },
+                    { "text": "They always change in the same pull request", "isCorrect": true },
+                    { "text": "They are owned by the same team", "isCorrect": false }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Distributed Systems, Messaging, Caching & Scale",
+        "summary": "Service Bus, Kafka, RabbitMQ, Redis, API gateways and the patterns that keep a system up under load.",
+        "estimatedHours": 10,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Event-Driven Architecture: Service Bus, Kafka, RabbitMQ and Event Grid",
+            "slug": "event-driven-messaging-choices",
+            "type": "Architecture",
+            "estimatedMinutes": 55,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Choosing on criteria, not familiarity\n\nFour technologies, four genuinely different jobs. Interviewers ask this because the answer reveals whether you have operated them or only read about them.\n\n**Azure Service Bus** — enterprise message broker. Queues and topics, sessions for ordering, dead-letter queues, transactions, scheduled delivery, duplicate detection. Competing consumers: each message goes to one handler. Reach for it for commands and workflow.\n\n**Apache Kafka / Event Hubs** — distributed log. Messages persist and are replayable; consumers track their own offset. Ordering within a partition. Reach for it for event streams, analytics, and anywhere multiple independent consumers need the same events, possibly replayed from the beginning.\n\n**RabbitMQ** — flexible routing broker. Exchanges, bindings and routing keys give sophisticated topology. Common where the routing logic itself is complex or where you want to self-host.\n\n**Azure Event Grid** — lightweight event notification. Push-based, HTTP webhooks, near-infinite fan-out, small payloads. Reach for it for reactive glue: \"a blob landed, go process it\".\n\n## The decision in one line\n\nCommand that must be handled once → Service Bus. Event stream others may replay → Kafka. Complex routing or self-hosted → RabbitMQ. Cheap reactive notification → Event Grid.\n\n## What actually bites\n\n- **Delivery is at-least-once.** Handlers must be idempotent. Plan for duplicates rather than hoping.\n- **Ordering is per-partition or per-session**, never global. Design for it explicitly.\n- **Poison messages** will fill your dead-letter queue at 3am. Monitor it and give it an owner.\n- **Backpressure**: a producer faster than its consumer builds an invisible queue until it is a visible outage.",
+            "codeExample": "// Idempotent handler. At-least-once delivery means this WILL be called twice.\npublic class OrderSubmittedHandler(\n    IProcessedMessageStore processed,\n    IBillingService billing,\n    ILogger<OrderSubmittedHandler> logger)\n{\n    public async Task HandleAsync(ServiceBusReceivedMessage message, CancellationToken ct)\n    {\n        // MessageId is the idempotency key. A duplicate is a no-op, not an error.\n        if (await processed.ExistsAsync(message.MessageId, ct))\n        {\n            logger.LogInformation(\"Duplicate {MessageId} ignored\", message.MessageId);\n            return;\n        }\n\n        var evt = message.Body.ToObjectFromJson<OrderSubmitted>();\n\n        try\n        {\n            await billing.CreateInvoiceAsync(evt.OrderId, evt.Total, ct);\n            // Mark processed in the same transaction as the side effect where the\n            // store supports it; otherwise mark after, and accept a rare retry.\n            await processed.MarkAsync(message.MessageId, ct);\n        }\n        catch (TransientException) when (message.DeliveryCount < 5)\n        {\n            throw; // Let the broker redeliver with backoff.\n        }\n        catch (Exception ex)\n        {\n            // Permanent failure: dead-letter with a reason a human can act on.\n            logger.LogError(ex, \"Dead-lettering {MessageId}\", message.MessageId);\n            throw new ServiceBusDeadLetterException(\"InvoiceCreationFailed\", ex.Message);\n        }\n    }\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart TD\n  Q{What are you moving?} --> C[Command: handle exactly once]\n  Q --> E[Event stream: many consumers, replayable]\n  Q --> R[Complex routing topology]\n  Q --> N[Lightweight notification]\n  C --> SB[Azure Service Bus]\n  E --> K[Kafka / Event Hubs]\n  R --> RB[RabbitMQ]\n  N --> EG[Event Grid]",
+            "keyTakeaways": [
+              "Service Bus for commands, Kafka for replayable streams, RabbitMQ for routing, Event Grid for notifications",
+              "Delivery is at-least-once: every handler must be idempotent",
+              "Ordering is per-session or per-partition, never global",
+              "Monitor the dead-letter queue and give it a named owner"
+            ],
+            "resources": [
+              { "title": "Azure Service Bus documentation", "url": "https://learn.microsoft.com/azure/service-bus-messaging/", "kind": "Documentation" },
+              { "title": "Apache Kafka documentation", "url": "https://kafka.apache.org/documentation/", "kind": "Documentation" }
+            ],
+            "video": { "title": "Choosing a message broker: a decision framework", "instructor": null, "durationMinutes": 45, "skillLevel": "Advanced" },
+            "quiz": {
+              "title": "Messaging choices",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Several independent consumers need the same events, and a new consumer must be able to replay history from the beginning. Which fits best?",
+                  "explanation": "A distributed log retains messages and lets each consumer track its own offset, so a new consumer can start from the beginning. Queue brokers remove a message once it is handled.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "Kafka or Event Hubs", "isCorrect": true },
+                    { "text": "Azure Service Bus queue", "isCorrect": false },
+                    { "text": "Event Grid", "isCorrect": false },
+                    { "text": "A database table polled on a timer", "isCorrect": false }
+                  ]
+                },
+                {
+                  "prompt": "Why must message handlers be idempotent?",
+                  "explanation": "Practically every broker guarantees at-least-once delivery. Retries after partial failure mean the same message can legitimately arrive more than once.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "Because delivery is at-least-once, so duplicates are normal", "isCorrect": true },
+                    { "text": "Because messages always arrive out of order", "isCorrect": false },
+                    { "text": "Because brokers cannot guarantee delivery at all", "isCorrect": false },
+                    { "text": "Because it makes handlers faster", "isCorrect": false }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Scalability, Caching and High Availability",
+            "slug": "scalability-caching-high-availability",
+            "type": "Architecture",
+            "estimatedMinutes": 55,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Start from numbers\n\nEvery scale conversation should begin with four figures: requests per second at peak, payload size, latency budget, and growth rate. Without them you are guessing, and an interview panel can tell.\n\nWork it through: 10,000 daily active users, 20 requests each, gives 200,000 requests a day. If 60% land inside a four-hour window, peak is roughly 8 requests per second. That is a single well-configured instance, not a Kubernetes cluster. Most systems are over-engineered because nobody did this arithmetic.\n\n## Caching, and the part everyone skips\n\nCaching is the highest-leverage lever and the easiest to get wrong. The decisions are: what to cache, for how long, and how it gets invalidated. If you cannot answer the third, you have built a bug with a latency improvement.\n\n- **Cache-aside** — read cache, miss, read source, populate. The default.\n- **Write-through** — write both together. Consistent, slower writes.\n- **Stampede protection** — when a hot key expires, a thousand requests hit the database at once. Lock per key or jitter the expiry.\n\nFor AI systems caching is also a cost control: an embedding for unchanged text never needs recomputing, and semantic caching of near-identical questions can remove a substantial share of model spend outright.\n\n## Availability targets\n\n99.9% is 43 minutes a month. 99.99% is 4.3 minutes — which means no manual intervention, because nobody gets paged and fixes anything in four minutes. Each nine multiplies cost. Design to the number the business will actually pay for.\n\n## Patterns that earn their place\n\nHealth probes that check dependencies rather than returning 200 unconditionally. Circuit breakers so a slow dependency does not exhaust your thread pool. Bulkheads so one bad tenant cannot consume every connection. Graceful degradation: serve stale cached data rather than an error page.",
+            "codeExample": "// Cache-aside with stampede protection and jittered expiry.\npublic class CachedEmbeddingProvider(\n    IEmbeddingProvider inner,\n    IDistributedCache cache) : IEmbeddingProvider\n{\n    private static readonly SemaphoreSlim[] Locks =\n        Enumerable.Range(0, 64).Select(_ => new SemaphoreSlim(1, 1)).ToArray();\n\n    public async Task<ReadOnlyMemory<float>> EmbedAsync(string text, CancellationToken ct = default)\n    {\n        var key = $\"emb:{Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(text)))}\";\n\n        if (await cache.GetAsync(key, ct) is { } cached)\n            return Deserialize(cached);\n\n        // One caller per key recomputes; the rest wait and read the cached result.\n        var gate = Locks[Math.Abs(key.GetHashCode()) % Locks.Length];\n        await gate.WaitAsync(ct);\n        try\n        {\n            if (await cache.GetAsync(key, ct) is { } raced) return Deserialize(raced);\n\n            var vector = await inner.EmbedAsync(text, ct);\n\n            // Jitter stops a batch of keys expiring in the same second.\n            var ttl = TimeSpan.FromHours(24) + TimeSpan.FromMinutes(Random.Shared.Next(0, 120));\n            await cache.SetAsync(key, Serialize(vector),\n                new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = ttl }, ct);\n\n            return vector;\n        }\n        finally { gate.Release(); }\n    }\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart LR\n  R[Request] --> C{In cache?}\n  C -->|Hit| RET[Return cached]\n  C -->|Miss| L{Lock acquired?}\n  L -->|No| W[Wait, then read cache]\n  L -->|Yes| S[Call source]\n  S --> P[Populate with jittered TTL]\n  P --> RET\n  W --> RET",
+            "keyTakeaways": [
+              "Start every scale discussion with peak RPS, payload size, latency budget and growth",
+              "If you cannot explain cache invalidation, the cache is a bug with better latency",
+              "Protect hot keys against stampedes with per-key locking and jittered expiry",
+              "99.9% is 43 minutes a month; 99.99% means no human in the loop"
+            ],
+            "resources": [
+              { "title": "Reliability patterns", "url": "https://learn.microsoft.com/azure/architecture/patterns/", "kind": "Documentation" },
+              { "title": "Redis documentation", "url": "https://redis.io/docs/latest/", "kind": "Documentation" }
+            ],
+            "video": { "title": "Caching, scale and availability targets", "instructor": null, "durationMinutes": 45, "skillLevel": "Advanced" },
+            "quiz": {
+              "title": "Scale and caching",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "A popular cache key expires and a thousand concurrent requests all miss. What is this called and how is it mitigated?",
+                  "explanation": "This is a cache stampede. Per-key locking plus jittered expiry keeps one caller recomputing while the others wait for the populated value.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "A cache stampede — mitigate with per-key locking and jittered TTLs", "isCorrect": true },
+                    { "text": "Cache poisoning — mitigate by signing entries", "isCorrect": false },
+                    { "text": "A cold start — mitigate by increasing instance count", "isCorrect": false },
+                    { "text": "Thrashing — mitigate by disabling the cache", "isCorrect": false }
+                  ]
+                },
+                {
+                  "prompt": "Roughly how much downtime per month does a 99.99% availability target allow?",
+                  "explanation": "About 4.3 minutes. That rules out manual recovery, which is why the cost jumps so steeply at that tier.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "About 4 minutes", "isCorrect": true },
+                    { "text": "About 43 minutes", "isCorrect": false },
+                    { "text": "About 7 hours", "isCorrect": false },
+                    { "text": "About 30 seconds", "isCorrect": false }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "order": 2,
+    "phaseNumber": 2,
+    "title": "Phase 2 — Azure Cloud",
+    "slug": "phase-2-azure-cloud",
+    "summary": "The Azure services an AI architect is expected to design with: compute, data, integration, identity, observability and delivery — including the ones that matter specifically for AI workloads.",
+    "estimatedHours": 35,
+    "level": "Advanced",
+    "minimumTrack": "FastTrack",
+    "outcomes": [
+      "Choose between App Service, Functions, Container Apps and AKS with reasons",
+      "Design data storage across Azure SQL, Cosmos DB and Blob Storage",
+      "Use managed identities and Key Vault so no secret ever reaches configuration",
+      "Instrument an application so a production problem is diagnosable",
+      "Ship through Azure DevOps or GitHub Actions with environment gates"
+    ],
+    "skillSlugs": ["azure", "identity", "networking", "cicd", "observability", "docker", "kubernetes"],
+    "modules": [
+      {
+        "order": 1,
+        "title": "Compute and Hosting",
+        "summary": "App Service, Functions, Container Apps and AKS — and how to pick between them without hand-waving.",
+        "estimatedHours": 12,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Choosing Azure Compute: App Service, Functions, Container Apps, AKS",
+            "slug": "azure-compute-selection",
+            "type": "Architecture",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Four options, one decision\n\n**App Service** — managed web hosting. Deployment slots, autoscale, easy custom domains and certificates. Best for conventional web applications and APIs. Least operational burden.\n\n**Azure Functions** — event-driven, consumption-priced. Excellent for bursty or scheduled work. The Consumption plan cold-starts and caps execution duration; Premium removes both at a fixed cost. For AI workloads, note that a long streaming response is a poor fit for Consumption.\n\n**Container Apps** — managed containers on Kubernetes without the Kubernetes. KEDA-based scaling including scale-to-zero, Dapr if you want it, revisions and traffic splitting. For most AI orchestrators this is the right default: containerised, scales on concurrent requests, no cluster to run.\n\n**AKS** — full Kubernetes. Choose it when you need node-level control, GPUs, service mesh, or you are already running a platform team. A cluster is a commitment: upgrades, node pools, networking, RBAC and a rota.\n\n## The honest heuristic\n\nStart at App Service or Container Apps. Move to AKS when you can name the specific capability you need that Container Apps lacks. \"We might need it later\" is how teams acquire a cluster and a full-time operator they did not budget for.\n\n## AI-specific considerations\n\n- Streaming responses run long: check idle timeouts and load-balancer limits.\n- Scale on concurrent requests, not CPU. An orchestrator waiting on a model is idle on CPU while fully occupied.\n- Keep the AI orchestrator separately deployable: it will release far more often than your business services.",
+            "codeExample": "# Container Apps: scale on concurrency, not CPU.\n# An orchestrator awaiting a model response shows near-zero CPU while being busy.\n\naz containerapp create \\\n  --name ai-orchestrator \\\n  --resource-group rg-ai-platform \\\n  --environment cae-ai-platform \\\n  --image acrname.azurecr.io/ai-orchestrator:1.4.0 \\\n  --target-port 8080 \\\n  --ingress external \\\n  --min-replicas 1 \\\n  --max-replicas 30 \\\n  --scale-rule-name concurrent-requests \\\n  --scale-rule-type http \\\n  --scale-rule-http-concurrency 20 \\\n  --cpu 1.0 --memory 2.0Gi \\\n  --user-assigned /subscriptions/.../userAssignedIdentities/id-ai-orchestrator \\\n  --env-vars \\\n    AzureOpenAI__Endpoint=https://aoai-prod.openai.azure.com/ \\\n    AzureOpenAI__Deployment=gpt-4o-mini\n\n# min-replicas 1 rather than 0: scale-to-zero saves money but the first user\n# after an idle period pays the cold start. For an interactive assistant that\n# trade is usually wrong.",
+            "codeLanguage": "bash",
+            "diagramMermaid": "flowchart TD\n  S{Workload shape} --> W[Conventional web app or API]\n  S --> E[Event-driven or scheduled]\n  S --> C[Containerised service,\\nno cluster wanted]\n  S --> K[Needs GPUs, node control\\nor service mesh]\n  W --> AS[App Service]\n  E --> FN[Azure Functions]\n  C --> CA[Container Apps]\n  K --> AKS[AKS]",
+            "keyTakeaways": [
+              "Container Apps is the sensible default for an AI orchestrator: containers, autoscale, no cluster",
+              "Choose AKS only when you can name the capability Container Apps lacks",
+              "Scale AI services on concurrency — CPU is misleading while awaiting a model",
+              "Consumption-plan Functions cold-start and time out; poor fit for long streaming responses"
+            ],
+            "resources": [
+              { "title": "Azure compute decision guide", "url": "https://learn.microsoft.com/azure/architecture/guide/technology-choices/compute-decision-tree", "kind": "Documentation" },
+              { "title": "Azure Container Apps documentation", "url": "https://learn.microsoft.com/azure/container-apps/", "kind": "Documentation" }
+            ],
+            "video": { "title": "Azure compute options compared", "instructor": null, "durationMinutes": 40, "skillLevel": "Advanced" },
+            "quiz": {
+              "title": "Azure compute",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "You need a containerised AI orchestrator that scales on concurrent requests, with no cluster to operate. Which service fits best?",
+                  "explanation": "Container Apps provides KEDA-based scaling on HTTP concurrency, revisions and traffic splitting, without the operational load of running AKS.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "Azure Container Apps", "isCorrect": true },
+                    { "text": "AKS", "isCorrect": false },
+                    { "text": "Azure Functions on the Consumption plan", "isCorrect": false },
+                    { "text": "A virtual machine scale set", "isCorrect": false }
+                  ]
+                },
+                {
+                  "prompt": "Why is CPU a poor scaling metric for a service that calls an LLM?",
+                  "explanation": "The service spends most of its time awaiting I/O. CPU stays low while every available request slot is occupied, so CPU-based autoscale under-provisions.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "The service is I/O-bound awaiting the model, so CPU stays low while it is saturated", "isCorrect": true },
+                    { "text": "CPU metrics are not available in Container Apps", "isCorrect": false },
+                    { "text": "LLM calls always pin the CPU at 100%", "isCorrect": false },
+                    { "text": "CPU scaling is deprecated in Azure", "isCorrect": false }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Azure Functions, Service Bus and Event Grid in Anger",
+            "slug": "azure-functions-integration",
+            "type": "Lab",
+            "estimatedMinutes": 55,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Where Functions genuinely wins\n\nBackground processing, scheduled jobs, reactive glue between services, and fan-out work. Document ingestion for a RAG pipeline is a textbook fit: a blob lands, a Function extracts and chunks it, another embeds and indexes.\n\n## Plans, and the trap\n\n- **Consumption** — pay per execution, scales to zero, cold starts, 10-minute default timeout (5 by default, configurable to 10). Fine for background work, wrong for anything interactive.\n- **Premium** — pre-warmed instances, VNet integration, no timeout cap. The usual production answer.\n- **Dedicated** — runs on an App Service plan you already pay for.\n\nThe common mistake is putting an interactive, long-running AI endpoint on Consumption, then debugging \"random slowness\" that is cold starts and a timeout.\n\n## Durable Functions for multi-step work\n\nIngestion is naturally a workflow: extract, chunk, embed, index, notify. Durable Functions gives you orchestration with checkpointing and replay, so a failure at step four does not redo steps one to three. Fan-out/fan-in over chunks is a few lines.\n\nBe aware of the constraint that surprises people: orchestrator code must be deterministic. No `DateTime.Now`, no `Guid.NewGuid()`, no direct I/O — those belong in activity functions.\n\n## Bindings\n\nBindings remove connection plumbing, and they are also a coupling decision: your function signature becomes tied to the trigger. For simple pipelines that is a good trade. For complex logic, keep the function thin and push the work into a service you can unit test without the host.",
+            "codeExample": "// Durable Functions: document ingestion with fan-out over chunks.\n[Function(nameof(IngestDocumentOrchestrator))]\npublic static async Task<IngestResult> IngestDocumentOrchestrator(\n    [OrchestrationTrigger] TaskOrchestrationContext context)\n{\n    var request = context.GetInput<IngestRequest>()!;\n\n    // Each Call* is checkpointed. A crash resumes here, not at the beginning.\n    var text = await context.CallActivityAsync<string>(nameof(ExtractText), request.BlobUri);\n    var chunks = await context.CallActivityAsync<Chunk[]>(nameof(ChunkText), text);\n\n    // Fan out: embeddings run in parallel, bounded by the activity's own throttle.\n    var tasks = chunks.Select(c => context.CallActivityAsync<EmbeddedChunk>(nameof(EmbedChunk), c));\n    var embedded = await Task.WhenAll(tasks);\n\n    await context.CallActivityAsync(nameof(IndexChunks),\n        new IndexRequest(request.DocumentId, embedded));\n\n    // Deterministic replacement for DateTime.Now — orchestrators must be replayable.\n    return new IngestResult(request.DocumentId, chunks.Length, context.CurrentUtcDateTime);\n}\n\n[Function(nameof(EmbedChunk))]\npublic static async Task<EmbeddedChunk> EmbedChunk(\n    [ActivityTrigger] Chunk chunk, FunctionContext ctx)\n{\n    var embeddings = ctx.InstanceServices.GetRequiredService<IEmbeddingProvider>();\n    var vector = await embeddings.EmbedAsync(chunk.Text);\n    return new EmbeddedChunk(chunk, vector);\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart LR\n  B[(Blob upload)] --> EG[Event Grid]\n  EG --> O[Durable Orchestrator]\n  O --> A1[Extract text]\n  A1 --> A2[Chunk]\n  A2 --> F1[Embed chunk 1]\n  A2 --> F2[Embed chunk 2]\n  A2 --> F3[Embed chunk n]\n  F1 --> A3[Index]\n  F2 --> A3\n  F3 --> A3\n  A3 --> N[Notify]",
+            "keyTakeaways": [
+              "Consumption plan cold-starts and times out — use Premium for anything interactive",
+              "Durable Functions checkpoints each step, so a late failure does not redo earlier work",
+              "Orchestrator code must be deterministic: no DateTime.Now, no Guid.NewGuid, no direct I/O",
+              "Blob-triggered ingestion with fan-out over chunks is the canonical RAG pipeline shape"
+            ],
+            "resources": [
+              { "title": "Azure Functions documentation", "url": "https://learn.microsoft.com/azure/azure-functions/", "kind": "Documentation" },
+              { "title": "Durable Functions overview", "url": "https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview", "kind": "Documentation" }
+            ],
+            "video": { "title": "Durable Functions for document pipelines", "instructor": null, "durationMinutes": 45, "skillLevel": "Advanced" },
+            "quiz": null
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "Data, Identity and Secrets",
+        "summary": "Azure SQL, Cosmos DB, Blob Storage, Key Vault, managed identities and Entra ID.",
+        "estimatedHours": 12,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Azure Data Services: SQL, Cosmos DB and Blob Storage",
+            "slug": "azure-data-services",
+            "type": "Concept",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Picking a store\n\n**Azure SQL** — your home ground. Relational, ACID, mature tooling. Choose it for transactional business data with relationships and reporting needs. Note that Azure SQL now supports native vector search, which can remove the need for a separate vector store for modest corpora.\n\n**Cosmos DB** — distributed NoSQL with predictable latency, multi-region writes and five tunable consistency levels. Powerful, and unforgiving about partition key choice. A bad partition key produces hot partitions and throttling that you cannot fix without a migration.\n\n**Blob Storage** — files. Tiers from Hot through Cool, Cold and Archive. Source documents for a RAG pipeline live here; the index holds only chunks and vectors.\n\n## The partition key decision\n\nFor Cosmos DB this is the architectural decision. A good key spreads writes evenly and keeps most queries within one partition. `tenantId` is usually a reasonable start; `documentType` almost never is, because one type will dominate.\n\n## Consistency\n\nStrong consistency costs latency and rules out multi-region writes. Session consistency — read your own writes — is the right default for most applications and what people usually mean when they say they need strong consistency.\n\n## For AI systems\n\nA typical split: source documents in Blob, chunks and vectors in Azure AI Search or pgvector, conversation history in Cosmos DB or PostgreSQL, business entities in Azure SQL. Resist putting everything in one store because it is simpler; the access patterns are genuinely different, and cost per pattern differs by an order of magnitude.",
+            "codeExample": "// Cosmos DB: the partition key is the decision that matters.\n// Conversations partitioned by userId keep one user's history in one partition,\n// which makes the common query single-partition and cheap.\n\nvar container = await database.CreateContainerIfNotExistsAsync(\n    new ContainerProperties(id: \"conversations\", partitionKeyPath: \"/userId\")\n    {\n        // TTL housekeeping: transcripts expire automatically after 90 days\n        // rather than needing a cleanup job nobody remembers to run.\n        DefaultTimeToLive = (int)TimeSpan.FromDays(90).TotalSeconds,\n        IndexingPolicy = new IndexingPolicy\n        {\n            // Message bodies are never filtered on; excluding them cuts RU cost\n            // on every write.\n            ExcludedPaths = { new ExcludedPath { Path = \"/messages/*\" } }\n        }\n    },\n    throughput: ThroughputProperties.CreateAutoscaleThroughput(4000));\n\n// Single-partition query: cheap and predictable.\nvar query = new QueryDefinition(\n        \"SELECT * FROM c WHERE c.userId = @userId ORDER BY c.updatedAt DESC OFFSET 0 LIMIT 20\")\n    .WithParameter(\"@userId\", userId);\n\nusing var iterator = container.GetItemQueryIterator<Conversation>(\n    query,\n    requestOptions: new QueryRequestOptions { PartitionKey = new PartitionKey(userId) });",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart TD\n  D{Data shape} --> T[Transactional, relational]\n  D --> G[Global, low latency, high volume]\n  D --> F[Files and documents]\n  D --> V[Chunks and embeddings]\n  T --> SQL[(Azure SQL)]\n  G --> COS[(Cosmos DB)]\n  F --> BLOB[(Blob Storage)]\n  V --> IDX[(Azure AI Search / pgvector)]",
+            "keyTakeaways": [
+              "Cosmos DB partition key choice is architectural and expensive to change later",
+              "Session consistency is the right default; strong consistency costs latency and multi-region writes",
+              "A typical AI split: Blob for sources, search index for vectors, Cosmos or PostgreSQL for conversations, SQL for business data",
+              "Azure SQL now has native vector support — worth considering before adding another store"
+            ],
+            "resources": [
+              { "title": "Azure Cosmos DB documentation", "url": "https://learn.microsoft.com/azure/cosmos-db/", "kind": "Documentation" },
+              { "title": "Azure SQL documentation", "url": "https://learn.microsoft.com/azure/azure-sql/", "kind": "Documentation" }
+            ],
+            "video": { "title": "Choosing an Azure data store", "instructor": null, "durationMinutes": 40, "skillLevel": "Advanced" },
+            "quiz": {
+              "title": "Azure data services",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Which Cosmos DB partition key is most likely to create hot partitions?",
+                  "explanation": "A low-cardinality, skewed key concentrates traffic on one physical partition. Document type has few values and an uneven distribution; user or tenant identifiers spread load far better.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "documentType, where one type dominates the corpus", "isCorrect": true },
+                    { "text": "userId", "isCorrect": false },
+                    { "text": "tenantId in a balanced multi-tenant system", "isCorrect": false },
+                    { "text": "conversationId", "isCorrect": false }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Managed Identities, Key Vault and Entra ID",
+            "slug": "managed-identity-key-vault-entra",
+            "type": "Lab",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The target state: zero secrets in configuration\n\nIf your application configuration contains a connection string with a password or an API key, you have a secret rotation problem and an exfiltration risk. Managed identities remove both. Azure issues the resource an identity; the identity is granted a role; the SDK fetches a token. Nothing to rotate, nothing to leak.\n\n## User-assigned over system-assigned\n\nSystem-assigned identities are tied to the resource lifecycle — delete the app, lose the identity and every role assignment. User-assigned identities exist independently, so you can assign roles once in infrastructure code and attach the identity to whichever compute resource needs it. For anything beyond a demo, use user-assigned.\n\n## Key Vault is still needed\n\nManaged identity covers Azure-to-Azure. Third-party API keys, certificates and signing keys still need somewhere to live, and Key Vault is that somewhere — accessed *using* the managed identity, with no bootstrap secret.\n\nUse Key Vault references in app settings so the platform resolves them and the value never appears in your configuration files or deployment logs.\n\n## Entra ID for users\n\nFor user authentication: Entra ID, OIDC, and group claims your API maps to roles. Two rules that matter for AI systems specifically — keep authorisation decisions server-side, and pass entitlements into retrieval as a filter, never as a prompt instruction. A model can be talked out of following an instruction; a search filter cannot.",
+            "codeExample": "// DefaultAzureCredential: managed identity in Azure, developer credentials locally.\n// The same code path in both environments, with no secret in either.\nvar credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions\n{\n    ManagedIdentityClientId = builder.Configuration[\"Azure:UserAssignedClientId\"]\n});\n\nbuilder.Configuration.AddAzureKeyVault(\n    new Uri($\"https://{builder.Configuration[\"Azure:KeyVaultName\"]}.vault.azure.net/\"),\n    credential);\n\nbuilder.Services.AddSingleton(new AzureOpenAIClient(\n    new Uri(builder.Configuration[\"AzureOpenAI:Endpoint\"]!), credential));\n\nbuilder.Services.AddSingleton(new SearchClient(\n    new Uri(builder.Configuration[\"Search:Endpoint\"]!),\n    builder.Configuration[\"Search:Index\"], credential));\n\n// Entitlements come from the token and are applied as a SEARCH FILTER.\n// Putting them in the prompt would make them negotiable; a filter is not.\npublic async Task<IReadOnlyList<SearchHit>> SearchAsync(\n    string query, ClaimsPrincipal user, CancellationToken ct)\n{\n    var groups = user.FindAll(\"groups\").Select(c => c.Value).ToArray();\n    if (groups.Length == 0) return [];\n\n    var filter = string.Join(\" or \", groups.Select(g => $\"acl/any(a: a eq '{g.Replace(\"'\", \"''\")}')\"));\n\n    var response = await searchClient.SearchAsync<SearchHit>(\n        query, new SearchOptions { Filter = filter, Size = 10 }, ct);\n\n    return response.Value.GetResults().Select(r => r.Document).ToList();\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart LR\n  APP[Container App] -->|user-assigned identity| MI[Managed Identity]\n  MI -->|RBAC| KV[Key Vault]\n  MI -->|RBAC| AOAI[Azure OpenAI]\n  MI -->|RBAC| SRCH[Azure AI Search]\n  MI -->|RBAC| SQL[(Azure SQL)]\n  U[User] -->|OIDC| ENTRA[Entra ID]\n  ENTRA -->|group claims| APP",
+            "keyTakeaways": [
+              "Managed identity removes Azure-to-Azure secrets entirely — nothing to rotate or leak",
+              "Prefer user-assigned identities: they survive the resource and are assignable in IaC",
+              "Key Vault still holds third-party keys and certificates, reached via the managed identity",
+              "Apply user entitlements as a retrieval filter, never as a prompt instruction"
+            ],
+            "resources": [
+              { "title": "Managed identities for Azure resources", "url": "https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/", "kind": "Documentation" },
+              { "title": "Azure Key Vault documentation", "url": "https://learn.microsoft.com/azure/key-vault/", "kind": "Documentation" }
+            ],
+            "video": { "title": "Zero-secret Azure applications with managed identity", "instructor": null, "durationMinutes": 40, "skillLevel": "Advanced" },
+            "quiz": {
+              "title": "Identity and secrets",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why apply document permissions as a search filter rather than an instruction in the system prompt?",
+                  "explanation": "Prompt instructions are advisory and can be overridden by crafted input. A query filter is enforced by the search engine before any content reaches the model.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "A filter is enforced before retrieval; a prompt instruction can be talked around", "isCorrect": true },
+                    { "text": "Filters are faster to write", "isCorrect": false },
+                    { "text": "Prompts have a character limit", "isCorrect": false },
+                    { "text": "Search filters are cheaper per token", "isCorrect": false }
+                  ]
+                },
+                {
+                  "prompt": "Why is a user-assigned managed identity usually preferred over system-assigned?",
+                  "explanation": "It has an independent lifecycle, so role assignments are made once in infrastructure code and survive redeployment or replacement of the compute resource.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "It outlives the resource, so role assignments survive redeployment", "isCorrect": true },
+                    { "text": "It is the only type that works with Key Vault", "isCorrect": false },
+                    { "text": "It issues longer-lived tokens", "isCorrect": false },
+                    { "text": "It is free while system-assigned is billed", "isCorrect": false }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Observability and Delivery",
+        "summary": "Application Insights, Azure Monitor, and CI/CD through Azure DevOps or GitHub Actions.",
+        "estimatedHours": 11,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Application Insights and Azure Monitor for AI Workloads",
+            "slug": "observability-for-ai-workloads",
+            "type": "Lab",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Three signals, plus one\n\nLogs, metrics and traces — and for AI systems, **cost**. Token spend is a first-class operational signal. A prompt change that doubles context length doubles the bill silently unless you are measuring it.\n\n## What to record on every AI request\n\n- Correlation ID spanning gateway, orchestrator, retrieval and model call\n- Model and deployment name, and the prompt template version\n- Prompt tokens, completion tokens, and computed cost\n- Retrieval: documents considered, documents used, top score\n- Latency broken down: retrieval, model, total\n- Outcome: answered, refused, failed, fell back to secondary provider\n\nWith those fields you can answer the questions that actually get asked: why did the bill jump on Tuesday, why are answers worse since the last release, which tenant is driving the cost.\n\n## Sampling\n\nAt volume, Application Insights sampling will quietly discard telemetry. Configure it deliberately: sample the high-volume successful requests, keep every failure, and keep every request over a latency threshold. Do not discover this during an incident.\n\n## Alerting on the right things\n\nAlert on user-visible symptoms — error rate, p95 latency, cost per hour — rather than on CPU. Nobody has ever been paged usefully about CPU on a service that is waiting on a model.",
+            "codeExample": "// One activity per AI request, carrying the fields you will actually query on.\npublic class InstrumentedChatService(\n    IChatService inner,\n    TelemetryClient telemetry) : IChatService\n{\n    private static readonly ActivitySource Source = new(\"Acme.Ai\");\n\n    public async Task<ChatResponse> CompleteAsync(ChatRequest request, CancellationToken ct)\n    {\n        using var activity = Source.StartActivity(\"ai.chat\");\n        var started = Stopwatch.GetTimestamp();\n\n        activity?.SetTag(\"ai.model\", request.Model);\n        activity?.SetTag(\"ai.prompt_version\", request.PromptVersion);\n        activity?.SetTag(\"tenant.id\", request.TenantId);\n\n        try\n        {\n            var response = await inner.CompleteAsync(request, ct);\n\n            activity?.SetTag(\"ai.prompt_tokens\", response.Usage.PromptTokens);\n            activity?.SetTag(\"ai.completion_tokens\", response.Usage.CompletionTokens);\n            activity?.SetTag(\"ai.cost_usd\", response.Usage.EstimatedCostUsd);\n            activity?.SetTag(\"ai.outcome\", response.Outcome);\n\n            // A metric, not a log line: this is what the cost dashboard aggregates.\n            telemetry.GetMetric(\"ai.cost_usd\", \"model\", \"tenant\")\n                .TrackValue(response.Usage.EstimatedCostUsd, request.Model, request.TenantId);\n\n            telemetry.GetMetric(\"ai.latency_ms\", \"model\")\n                .TrackValue(Stopwatch.GetElapsedTime(started).TotalMilliseconds, request.Model);\n\n            return response;\n        }\n        catch (Exception ex)\n        {\n            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);\n            throw;\n        }\n    }\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart LR\n  REQ[Request + correlation ID] --> GW[Gateway span]\n  GW --> ORCH[Orchestrator span]\n  ORCH --> RET[Retrieval span\\ndocs, scores, latency]\n  ORCH --> MOD[Model span\\ntokens, cost, latency]\n  RET --> AI[(App Insights)]\n  MOD --> AI\n  AI --> DASH[Cost / latency / quality dashboards]\n  AI --> ALERT[Alerts on symptoms]",
+            "keyTakeaways": [
+              "Token cost is an operational signal alongside logs, metrics and traces",
+              "Record model, prompt version, tokens, cost, retrieval counts and outcome on every request",
+              "Configure sampling deliberately: keep all failures and all slow requests",
+              "Alert on error rate, p95 latency and cost per hour — not CPU"
+            ],
+            "resources": [
+              { "title": "Application Insights overview", "url": "https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview", "kind": "Documentation" },
+              { "title": "OpenTelemetry in .NET", "url": "https://learn.microsoft.com/dotnet/core/diagnostics/observability-with-otel", "kind": "Documentation" }
+            ],
+            "video": { "title": "Observability and cost telemetry for AI systems", "instructor": null, "durationMinutes": 40, "skillLevel": "Advanced" },
+            "quiz": null
+          },
+          {
+            "order": 2,
+            "title": "CI/CD with Azure DevOps and GitHub Actions",
+            "slug": "cicd-azure-devops-github-actions",
+            "type": "Lab",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Build once, promote the artefact\n\nBuild the container image once and promote that exact image through dev, test and production. Rebuilding per environment means the thing you tested is not the thing you shipped — and the difference will find you at the worst time.\n\nConfiguration changes per environment. The artefact does not.\n\n## OIDC instead of service principal secrets\n\nBoth Azure DevOps workload identity federation and GitHub Actions OIDC let the pipeline obtain a short-lived Azure token with no stored secret. If your pipeline still holds a service principal password, that is now avoidable technical debt.\n\n## What belongs in the pipeline for an AI system\n\nBeyond the usual build, test, scan and deploy, add two AI-specific gates:\n\n- **Prompt regression tests.** Prompts are code. A curated set of inputs with expected properties — contains a citation, refuses when unsupported, returns valid JSON — run on every change.\n- **Evaluation gate.** Run the groundedness evaluation set and fail the build if the score drops more than a defined threshold against the previous release. Without this, quality regressions ship invisibly because nothing throws an exception.\n\n## Environments and approvals\n\nUse environment protection rules for production: required reviewers, a wait timer, and branch restrictions. Deployment slots or Container Apps revisions give you a real rollback — shift traffic back rather than redeploying under pressure.",
+            "codeExample": "# .github/workflows/deploy.yml — OIDC, build once, promote, evaluate.\nname: build-and-deploy\n\non:\n  push:\n    branches: [main]\n\npermissions:\n  id-token: write   # required for OIDC; no stored service principal secret\n  contents: read\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    outputs:\n      image: ${{ steps.meta.outputs.image }}\n    steps:\n      - uses: actions/checkout@v4\n      - uses: azure/login@v2\n        with:\n          client-id: ${{ secrets.AZURE_CLIENT_ID }}\n          tenant-id: ${{ secrets.AZURE_TENANT_ID }}\n          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}\n\n      - id: meta\n        run: echo \"image=acrname.azurecr.io/ai-orchestrator:${GITHUB_SHA::8}\" >> $GITHUB_OUTPUT\n\n      - run: dotnet test --configuration Release --logger trx\n\n      # Prompts are code: assert structure, citations and refusal behaviour.\n      - run: dotnet run --project tools/PromptRegression -- --fail-on-regression\n\n      - run: |\n          az acr login --name acrname\n          docker build -t ${{ steps.meta.outputs.image }} .\n          docker push ${{ steps.meta.outputs.image }}\n\n  deploy-production:\n    needs: build\n    runs-on: ubuntu-latest\n    environment: production   # required reviewers configured on the environment\n    steps:\n      - uses: azure/login@v2\n        with:\n          client-id: ${{ secrets.AZURE_CLIENT_ID }}\n          tenant-id: ${{ secrets.AZURE_TENANT_ID }}\n          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}\n\n      # Same image built above — never rebuilt for this environment.\n      - run: |\n          az containerapp update -n ai-orchestrator -g rg-ai-platform \\\n            --image ${{ needs.build.outputs.image }}",
+            "codeLanguage": "yaml",
+            "diagramMermaid": "flowchart LR\n  C[Commit] --> B[Build image once]\n  B --> T[Unit tests]\n  T --> P[Prompt regression tests]\n  P --> E[Evaluation gate]\n  E --> D1[Deploy dev]\n  D1 --> D2[Deploy test]\n  D2 --> AP{Approval}\n  AP --> D3[Deploy production\\nsame image]\n  D3 --> RB[Revision rollback available]",
+            "keyTakeaways": [
+              "Build the image once and promote it; rebuilding per environment invalidates your testing",
+              "Use OIDC federation so the pipeline holds no long-lived Azure secret",
+              "Prompts are code: run regression tests on every change",
+              "Gate releases on an evaluation score so quality regressions cannot ship silently"
+            ],
+            "resources": [
+              { "title": "GitHub Actions documentation", "url": "https://docs.github.com/actions", "kind": "Documentation" },
+              { "title": "Azure Pipelines documentation", "url": "https://learn.microsoft.com/azure/devops/pipelines/", "kind": "Documentation" }
+            ],
+            "video": { "title": "CI/CD for AI applications", "instructor": null, "durationMinutes": 35, "skillLevel": "Advanced" },
+            "quiz": {
+              "title": "Delivery pipelines",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why should a container image be built once and promoted rather than rebuilt per environment?",
+                  "explanation": "Rebuilding can pull different base layers or dependency versions, so the artefact you tested is not the artefact you deploy. Promotion guarantees they are identical.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "So the artefact tested is byte-for-byte the artefact deployed", "isCorrect": true },
+                    { "text": "Because rebuilding is not supported in Azure Container Registry", "isCorrect": false },
+                    { "text": "To avoid paying for build minutes", "isCorrect": false },
+                    { "text": "Because images cannot be tagged more than once", "isCorrect": false }
+                  ]
+                },
+                {
+                  "prompt": "Which gates are specific to shipping AI features safely?",
+                  "explanation": "Model and prompt changes degrade quality without throwing errors, so quality needs an explicit gate in the pipeline.",
+                  "allowsMultiple": true,
+                  "options": [
+                    { "text": "Prompt regression tests asserting structure and refusal behaviour", "isCorrect": true },
+                    { "text": "An evaluation gate that fails the build when groundedness drops", "isCorrect": true },
+                    { "text": "Compiler warnings treated as errors", "isCorrect": false },
+                    { "text": "Container image size limits", "isCorrect": false }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "order": 3,
+    "phaseNumber": 3,
+    "title": "Phase 3 — AWS for the Azure-Primary Architect",
+    "slug": "phase-3-aws",
+    "summary": "Enough AWS to design credibly and pass an interview in a mixed-cloud enterprise: compute, storage, data, integration, networking and the AI services — mapped against what you already know in Azure.",
+    "estimatedHours": 30,
+    "level": "Advanced",
+    "minimumTrack": "Balanced",
+    "outcomes": [
+      "Map Azure services to AWS equivalents and explain where the mapping breaks down",
+      "Design on EC2, Lambda, ECS and EKS with reasons for the choice",
+      "Use S3, RDS and DynamoDB appropriately, including DynamoDB access-pattern design",
+      "Design IAM roles and policies that follow least privilege",
+      "Use Bedrock for generative AI in an AWS-primary enterprise"
+    ],
+    "skillSlugs": ["aws", "architecture", "networking", "security", "llm"],
+    "modules": [
+      {
+        "order": 1,
+        "title": "AWS Compute and Containers",
+        "summary": "EC2, Lambda, ECS and EKS, mapped against the Azure equivalents you already use.",
+        "estimatedHours": 10,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "AWS Compute Mapped from Azure",
+            "slug": "aws-compute-from-azure",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Translating what you already know\n\n| Azure | AWS | Notes |\n|---|---|---|\n| App Service | Elastic Beanstalk / App Runner | App Runner is the closer modern analogue |\n| Functions | Lambda | Lambda has a 15-minute hard limit |\n| Container Apps | ECS Fargate / App Runner | Fargate is serverless containers |\n| AKS | EKS | EKS charges for the control plane |\n| VM Scale Sets | EC2 Auto Scaling Groups | Broadly equivalent |\n\nThe mapping is useful for orientation and misleading if pushed too far. Two differences matter in design discussions:\n\n**Lambda's 15-minute ceiling is hard.** There is no premium plan that removes it. Long-running work becomes Step Functions orchestrating multiple Lambdas, or moves to Fargate. This changes the shape of an ingestion pipeline compared with Durable Functions.\n\n**IAM is more granular and more central.** In Azure, RBAC is one of several mechanisms. In AWS, IAM is *the* mechanism and it reaches everything. Expect to spend real time on policies, and expect interviews to probe it.\n\n## Choosing\n\nLambda for event-driven work under fifteen minutes. Fargate for containers without cluster management — the ECS analogue of Container Apps. EKS when you need Kubernetes specifically. EC2 when you need the machine.\n\n## Cost shape\n\nLambda is cheap at low volume and can become expensive at sustained high volume, where Fargate's flat rate wins. Run the arithmetic rather than assuming serverless is always cheaper — the crossover arrives sooner than most people expect.",
+            "codeExample": "# Fargate: the ECS equivalent of Container Apps. No instances to manage.\n{\n  \"family\": \"ai-orchestrator\",\n  \"networkMode\": \"awsvpc\",\n  \"requiresCompatibilities\": [\"FARGATE\"],\n  \"cpu\": \"1024\",\n  \"memory\": \"2048\",\n  \"executionRoleArn\": \"arn:aws:iam::123456789012:role/ecsTaskExecutionRole\",\n  \"taskRoleArn\": \"arn:aws:iam::123456789012:role/aiOrchestratorTaskRole\",\n  \"containerDefinitions\": [\n    {\n      \"name\": \"orchestrator\",\n      \"image\": \"123456789012.dkr.ecr.us-east-1.amazonaws.com/ai-orchestrator:1.4.0\",\n      \"portMappings\": [{ \"containerPort\": 8080, \"protocol\": \"tcp\" }],\n      \"environment\": [{ \"name\": \"BEDROCK_REGION\", \"value\": \"us-east-1\" }],\n      \"secrets\": [\n        {\n          \"name\": \"ThirdParty__ApiKey\",\n          \"valueFrom\": \"arn:aws:secretsmanager:us-east-1:123456789012:secret:third-party-api-key\"\n        }\n      ],\n      \"logConfiguration\": {\n        \"logDriver\": \"awslogs\",\n        \"options\": {\n          \"awslogs-group\": \"/ecs/ai-orchestrator\",\n          \"awslogs-region\": \"us-east-1\",\n          \"awslogs-stream-prefix\": \"ecs\"\n        }\n      }\n    }\n  ]\n}\n\n# Two roles, two jobs:\n#   executionRole - lets ECS pull the image and write logs\n#   taskRole      - what YOUR code is allowed to call (Bedrock, S3, DynamoDB)\n# Conflating them is the most common least-privilege mistake on ECS.",
+            "codeLanguage": "json",
+            "diagramMermaid": "flowchart LR\n  subgraph Azure\n    AS[App Service] --- FN[Functions] --- CA[Container Apps] --- AKS[AKS]\n  end\n  subgraph AWS\n    AR[App Runner] --- LM[Lambda] --- FG[ECS Fargate] --- EKS[EKS]\n  end\n  AS -.-> AR\n  FN -.-> LM\n  CA -.-> FG\n  AKS -.-> EKS",
+            "keyTakeaways": [
+              "Lambda's 15-minute limit is hard — long work becomes Step Functions or Fargate",
+              "Fargate is the closest analogue to Container Apps",
+              "IAM is central and granular in AWS in a way Azure RBAC is not",
+              "Separate the ECS execution role from the task role: they answer different questions"
+            ],
+            "resources": [
+              { "title": "AWS documentation", "url": "https://docs.aws.amazon.com/", "kind": "Documentation" },
+              { "title": "Azure to AWS service comparison", "url": "https://learn.microsoft.com/azure/architecture/aws-professional/services", "kind": "Documentation" }
+            ],
+            "video": { "title": "AWS compute for Azure architects", "instructor": null, "durationMinutes": 40, "skillLevel": "Advanced" },
+            "quiz": {
+              "title": "AWS compute",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "A document processing job regularly runs for 40 minutes. Which AWS option is appropriate?",
+                  "explanation": "Lambda stops at 15 minutes regardless of configuration. Either decompose the work under Step Functions or run it on Fargate, which has no such limit.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "ECS Fargate, or Step Functions orchestrating shorter Lambdas", "isCorrect": true },
+                    { "text": "Lambda with the timeout raised to 60 minutes", "isCorrect": false },
+                    { "text": "Lambda with provisioned concurrency", "isCorrect": false },
+                    { "text": "API Gateway with a long integration timeout", "isCorrect": false }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "IAM, Secrets Manager and Least Privilege",
+            "slug": "aws-iam-least-privilege",
+            "type": "Lab",
+            "estimatedMinutes": 50,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## IAM is the centre of AWS\n\nEvery AWS design question eventually becomes an IAM question. The model: **principals** assume **roles**, roles carry **policies**, policies allow or deny **actions** on **resources**, optionally under **conditions**.\n\nExplicit deny always wins. Without an explicit allow, the answer is deny.\n\n## Roles, not users\n\nApplications should never hold long-lived access keys. An ECS task assumes a task role. A Lambda assumes an execution role. An EC2 instance uses an instance profile. A pipeline uses OIDC federation. If a key is stored anywhere, that is a finding.\n\n## Writing a policy that is actually least privilege\n\nStart from the specific actions and specific resource ARNs. `\"Resource\": \"*\"` is almost always a sign that nobody worked out what was needed. Use IAM Access Analyzer to generate a policy from observed CloudTrail activity — that gives a real starting point instead of a guess.\n\nConditions add the controls that matter in regulated environments: source VPC endpoint, source IP range, MFA present, request tags.\n\n## Secrets Manager versus Parameter Store\n\nSecrets Manager rotates automatically and costs per secret per month. Parameter Store SecureString is cheaper and has no built-in rotation. Database credentials that should rotate: Secrets Manager. Static configuration values: Parameter Store.\n\n## In an interview\n\nBe ready to write a policy on a whiteboard and explain each element. \"We use IAM\" is not an answer; naming the actions, the resource ARNs and the conditions is.",
+            "codeExample": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"InvokeSpecificBedrockModelsOnly\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\"bedrock:InvokeModel\", \"bedrock:InvokeModelWithResponseStream\"],\n      \"Resource\": [\n        \"arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0\",\n        \"arn:aws:bedrock:us-east-1::foundation-model/amazon.titan-embed-text-v2:0\"\n      ]\n    },\n    {\n      \"Sid\": \"ReadTenantDocumentsOnly\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\"s3:GetObject\"],\n      \"Resource\": \"arn:aws:s3:::acme-documents/tenants/${aws:PrincipalTag/tenantId}/*\"\n    },\n    {\n      \"Sid\": \"DenyUnlessThroughVpcEndpoint\",\n      \"Effect\": \"Deny\",\n      \"Action\": \"s3:*\",\n      \"Resource\": \"*\",\n      \"Condition\": {\n        \"StringNotEquals\": { \"aws:SourceVpce\": \"vpce-0abc123def456\" }\n      }\n    }\n  ]\n}\n\n// Three things worth noticing:\n//   1. Specific model ARNs, not bedrock:* — a new expensive model cannot be\n//      invoked without a policy change.\n//   2. ${aws:PrincipalTag/tenantId} gives per-tenant isolation from one policy\n//      rather than one policy per tenant.\n//   3. The explicit deny wins over any allow, including future ones.",
+            "codeLanguage": "json",
+            "diagramMermaid": "flowchart TD\n  P[Principal: ECS task] --> R[Assumes task role]\n  R --> POL[Policy]\n  POL --> A{Explicit deny?}\n  A -->|Yes| D[Denied]\n  A -->|No| B{Explicit allow?}\n  B -->|No| D\n  B -->|Yes| C{Conditions met?}\n  C -->|No| D\n  C -->|Yes| ALLOW[Allowed]",
+            "keyTakeaways": [
+              "Roles and short-lived credentials only — a stored access key is a finding",
+              "Explicit deny always wins; absence of an allow is a deny",
+              "Name specific actions and resource ARNs; Resource: * means nobody did the work",
+              "Secrets Manager for credentials that rotate, Parameter Store for static configuration"
+            ],
+            "resources": [
+              { "title": "IAM documentation", "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html", "kind": "Documentation" },
+              { "title": "AWS Secrets Manager", "url": "https://docs.aws.amazon.com/secretsmanager/", "kind": "Documentation" }
+            ],
+            "video": { "title": "IAM least privilege in practice", "instructor": null, "durationMinutes": 45, "skillLevel": "Advanced" },
+            "quiz": null
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "AWS Data and Integration",
+        "summary": "S3, RDS, DynamoDB, SQS, SNS and EventBridge.",
+        "estimatedHours": 10,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "S3, RDS and DynamoDB Access Patterns",
+            "slug": "aws-data-services",
+            "type": "Concept",
+            "estimatedMinutes": 50,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## S3\n\nObject storage, effectively unlimited, eleven nines of durability. Storage classes from Standard through Intelligent-Tiering to Glacier. For AI systems: source documents, model artefacts, evaluation datasets.\n\nThe controls that matter: block public access at the account level, encrypt with KMS, enable versioning where deletion is a real risk, and use lifecycle policies to move cold data down the tiers automatically.\n\n## RDS and Aurora\n\nManaged relational databases. Aurora Serverless v2 scales capacity with load and is a good fit for variable workloads. Aurora PostgreSQL supports **pgvector**, which means your relational database can also be your vector store — one fewer system to operate, back up and secure, at the cost of the specialised features a dedicated vector database offers.\n\n## DynamoDB: design from queries backwards\n\nThis is the genuine mental shift for someone coming from SQL Server. You do not model entities and then query them. You enumerate every access pattern first, then design keys to serve them.\n\n- Partition key determines distribution. Sort key enables ranges and hierarchy.\n- Single-table design puts multiple entity types in one table using composite keys.\n- Global secondary indexes serve the access patterns the base table cannot.\n\nIf you find yourself scanning, the key design is wrong. A `Scan` on a large table is a cost and latency incident waiting for enough data to happen.\n\n## Choosing\n\nRelational data with joins and reporting: RDS or Aurora. Known access patterns needing single-digit-millisecond latency at any scale: DynamoDB. Files: S3.",
+            "codeExample": "// DynamoDB single-table design: derive the keys from the access patterns.\n//\n// Access patterns required:\n//   1. Get a conversation by id\n//   2. List a user's conversations, most recent first\n//   3. Get all messages in a conversation in order\n//\n// Base table: PK / SK\n//   CONV#<id>   | META                -> conversation metadata\n//   CONV#<id>   | MSG#<timestamp>     -> message, naturally ordered by SK\n// GSI1: GSI1PK / GSI1SK\n//   USER#<id>   | CONV#<updatedAt>    -> pattern 2, newest first\n\nvar request = new QueryRequest\n{\n    TableName = \"conversations\",\n    KeyConditionExpression = \"PK = :pk AND begins_with(SK, :prefix)\",\n    ExpressionAttributeValues = new Dictionary<string, AttributeValue>\n    {\n        [\":pk\"] = new($\"CONV#{conversationId}\"),\n        [\":prefix\"] = new(\"MSG#\")\n    },\n    ScanIndexForward = true   // chronological order comes free from the sort key\n};\n\n// Pattern 2 uses the index rather than scanning the table.\nvar listRequest = new QueryRequest\n{\n    TableName = \"conversations\",\n    IndexName = \"GSI1\",\n    KeyConditionExpression = \"GSI1PK = :pk\",\n    ExpressionAttributeValues = new Dictionary<string, AttributeValue>\n    {\n        [\":pk\"] = new($\"USER#{userId}\")\n    },\n    ScanIndexForward = false, // newest first\n    Limit = 20\n};",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart TD\n  AP[List every access pattern first] --> K[Design PK and SK to serve them]\n  K --> G{Any pattern unserved?}\n  G -->|Yes| GSI[Add a global secondary index]\n  G -->|No| DONE[Done]\n  GSI --> G\n  SCAN[Needing a Scan] -.->|means| WRONG[Key design is wrong]",
+            "keyTakeaways": [
+              "DynamoDB is designed from access patterns backwards, not from entities forwards",
+              "Needing a Scan means the key design is wrong",
+              "Aurora PostgreSQL with pgvector can remove the need for a separate vector store",
+              "S3 lifecycle policies move cold data down the tiers without anyone remembering to"
+            ],
+            "resources": [
+              { "title": "Amazon DynamoDB developer guide", "url": "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html", "kind": "Documentation" },
+              { "title": "Amazon S3 user guide", "url": "https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html", "kind": "Documentation" }
+            ],
+            "video": { "title": "DynamoDB data modelling for SQL developers", "instructor": null, "durationMinutes": 50, "skillLevel": "Advanced" },
+            "quiz": {
+              "title": "AWS data",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What does it usually indicate when a DynamoDB query requires a Scan?",
+                  "explanation": "Scans read the whole table. Needing one means the partition and sort keys, or the indexes, do not serve the access pattern — a design problem rather than a tuning problem.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "The key design does not serve that access pattern", "isCorrect": true },
+                    { "text": "The table needs more provisioned capacity", "isCorrect": false },
+                    { "text": "The table should be moved to on-demand billing", "isCorrect": false },
+                    { "text": "Scans are the normal way to read DynamoDB", "isCorrect": false }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "SQS, SNS and EventBridge",
+            "slug": "aws-messaging-services",
+            "type": "Concept",
+            "estimatedMinutes": 40,
+            "minimumTrack": "Deep",
+            "contentMarkdown": "## Three services, three jobs\n\n**SQS** — queues. Standard queues give at-least-once delivery with best-effort ordering; FIFO queues give exactly-once processing and strict ordering within a message group, at lower throughput. Every SQS design needs a dead-letter queue with a `maxReceiveCount`, or poison messages will retry forever.\n\n**SNS** — pub/sub fan-out. One publish, many subscribers: SQS queues, Lambda, HTTP endpoints, email. The standard pattern is SNS fanning out to several SQS queues, giving each consumer its own buffer and retry behaviour.\n\n**EventBridge** — event bus with content-based routing. Rules match on the event payload and route to targets. It also handles scheduled events and has built-in integrations with dozens of SaaS products. This is the closest AWS equivalent to Event Grid, with considerably more routing power.\n\n## The pattern to remember\n\nSNS → SQS → consumer. The queue decouples the consumer's availability from the publisher's, gives you retries and a dead-letter queue per consumer, and lets each consumer process at its own rate.\n\n## Step Functions\n\nFor multi-step workflows with retries, branching and compensation, Step Functions is the AWS answer to Durable Functions. The state machine is declarative, each step is visible in the console, and failures show exactly where the workflow stopped. For anything approaching an agent workflow with side effects, this is worth reaching for rather than hand-rolling orchestration.",
+            "codeExample": "{\n  \"Comment\": \"Document ingestion with retry, catch and compensation\",\n  \"StartAt\": \"ExtractText\",\n  \"States\": {\n    \"ExtractText\": {\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:aws:lambda:us-east-1:123456789012:function:extract-text\",\n      \"Retry\": [\n        {\n          \"ErrorEquals\": [\"States.TaskFailed\"],\n          \"IntervalSeconds\": 2,\n          \"MaxAttempts\": 3,\n          \"BackoffRate\": 2.0\n        }\n      ],\n      \"Catch\": [\n        { \"ErrorEquals\": [\"States.ALL\"], \"Next\": \"MarkIngestionFailed\" }\n      ],\n      \"Next\": \"EmbedChunks\"\n    },\n    \"EmbedChunks\": {\n      \"Type\": \"Map\",\n      \"ItemsPath\": \"$.chunks\",\n      \"MaxConcurrency\": 10,\n      \"Iterator\": {\n        \"StartAt\": \"Embed\",\n        \"States\": {\n          \"Embed\": {\n            \"Type\": \"Task\",\n            \"Resource\": \"arn:aws:lambda:us-east-1:123456789012:function:embed-chunk\",\n            \"End\": true\n          }\n        }\n      },\n      \"Next\": \"IndexChunks\"\n    },\n    \"IndexChunks\": {\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:aws:lambda:us-east-1:123456789012:function:index-chunks\",\n      \"End\": true\n    },\n    \"MarkIngestionFailed\": {\n      \"Type\": \"Task\",\n      \"Resource\": \"arn:aws:lambda:us-east-1:123456789012:function:mark-failed\",\n      \"End\": true\n    }\n  }\n}",
+            "codeLanguage": "json",
+            "diagramMermaid": "flowchart LR\n  P[Publisher] --> SNS[SNS Topic]\n  SNS --> Q1[SQS: indexer]\n  SNS --> Q2[SQS: auditor]\n  SNS --> Q3[SQS: notifier]\n  Q1 --> C1[Consumer 1]\n  Q2 --> C2[Consumer 2]\n  Q3 --> C3[Consumer 3]\n  Q1 -.poison.-> DLQ[(Dead-letter queue)]",
+            "keyTakeaways": [
+              "SNS fans out, SQS buffers per consumer — the two together are the default pattern",
+              "Every SQS queue needs a dead-letter queue and a maxReceiveCount",
+              "EventBridge does content-based routing and scheduling; it is Event Grid with more power",
+              "Step Functions is the AWS answer to Durable Functions for multi-step workflows"
+            ],
+            "resources": [
+              { "title": "Amazon SQS developer guide", "url": "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html", "kind": "Documentation" },
+              { "title": "AWS Step Functions", "url": "https://docs.aws.amazon.com/step-functions/", "kind": "Documentation" }
+            ],
+            "video": { "title": "AWS messaging and orchestration", "instructor": null, "durationMinutes": 35, "skillLevel": "Advanced" },
+            "quiz": null
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Networking, Edge and AWS AI Services",
+        "summary": "VPC, Route 53, CloudFront, API Gateway and Amazon Bedrock.",
+        "estimatedHours": 10,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "VPC, API Gateway, CloudFront and Route 53",
+            "slug": "aws-networking-edge",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## VPC fundamentals\n\nA VPC is your private network. Public subnets route to an internet gateway; private subnets do not. Anything holding data — databases, internal services — belongs in a private subnet, reached through a load balancer in a public subnet.\n\nSecurity groups are stateful and operate at the instance or task level: allow a rule inbound and the response flows out automatically. Network ACLs are stateless and operate at the subnet level, requiring both directions. Security groups do most of the work in practice.\n\n**VPC endpoints** keep traffic to AWS services off the public internet. For a regulated AI workload, a Bedrock VPC endpoint is often a hard requirement rather than an optimisation.\n\n## API Gateway\n\nREST or HTTP APIs, with throttling, API keys, usage plans, request validation and WAF integration. For an AI gateway, the per-key throttling and usage plans do real work: they give you per-tenant rate limits without writing any of it yourself.\n\nWatch the 29-second integration timeout — it is a hard constraint that shapes how you handle long generations. Streaming responses need Lambda function URLs with response streaming, or an ALB in front of Fargate, rather than standard API Gateway integrations.\n\n## CloudFront and Route 53\n\nCloudFront is the CDN and the sensible place for WAF rules and TLS termination. Route 53 does DNS with health checks and routing policies — latency-based, weighted, failover, geolocation. Weighted routing is how you run a controlled canary across regions.",
+            "codeExample": "# Terraform: private subnets plus a Bedrock VPC endpoint so model traffic\n# never traverses the public internet.\n\nresource \"aws_vpc_endpoint\" \"bedrock_runtime\" {\n  vpc_id              = aws_vpc.main.id\n  service_name        = \"com.amazonaws.${var.region}.bedrock-runtime\"\n  vpc_endpoint_type   = \"Interface\"\n  subnet_ids          = aws_subnet.private[*].id\n  security_group_ids  = [aws_security_group.bedrock_endpoint.id]\n  private_dns_enabled = true\n\n  # Belt and braces: even reaching the endpoint, only these models are callable.\n  policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [{\n      Effect    = \"Allow\"\n      Principal = \"*\"\n      Action    = [\"bedrock:InvokeModel\", \"bedrock:InvokeModelWithResponseStream\"]\n      Resource  = [\n        \"arn:aws:bedrock:${var.region}::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0\"\n      ]\n    }]\n  })\n}\n\nresource \"aws_security_group\" \"bedrock_endpoint\" {\n  name   = \"bedrock-endpoint\"\n  vpc_id = aws_vpc.main.id\n\n  ingress {\n    from_port       = 443\n    to_port         = 443\n    protocol        = \"tcp\"\n    # Only the orchestrator's security group, not the whole VPC CIDR.\n    security_groups = [aws_security_group.orchestrator.id]\n  }\n}",
+            "codeLanguage": "hcl",
+            "diagramMermaid": "flowchart TD\n  U[User] --> R53[Route 53]\n  R53 --> CF[CloudFront + WAF]\n  CF --> APIGW[API Gateway]\n  APIGW --> ALB[ALB in public subnet]\n  ALB --> FG[Fargate in private subnet]\n  FG --> VPCE[Bedrock VPC endpoint]\n  FG --> RDS[(RDS in private subnet)]\n  VPCE --> BR[Amazon Bedrock]",
+            "keyTakeaways": [
+              "Data-holding resources belong in private subnets, reached through a public-subnet load balancer",
+              "Security groups are stateful; network ACLs are stateless and need both directions",
+              "VPC endpoints keep AWS service traffic off the internet — often mandatory for regulated AI workloads",
+              "API Gateway's 29-second integration timeout shapes how you handle long generations"
+            ],
+            "resources": [
+              { "title": "Amazon VPC user guide", "url": "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html", "kind": "Documentation" },
+              { "title": "Amazon API Gateway", "url": "https://docs.aws.amazon.com/apigateway/", "kind": "Documentation" }
+            ],
+            "video": { "title": "AWS networking for application architects", "instructor": null, "durationMinutes": 45, "skillLevel": "Advanced" },
+            "quiz": null
+          },
+          {
+            "order": 2,
+            "title": "Amazon Bedrock and AWS AI Services",
+            "slug": "amazon-bedrock",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Bedrock in one paragraph\n\nOne API across multiple model families — Anthropic, Meta, Mistral, Amazon's own Titan and Nova, and others — with the models running inside your AWS account boundary. Your prompts are not used to train the underlying models. For AWS-primary enterprises this is usually the path of least resistance to production generative AI.\n\n## The pieces worth knowing\n\n- **Converse API** — a unified request shape across model families, including tool use. Prefer it to model-specific invocation: it makes switching models a configuration change rather than a rewrite.\n- **Knowledge Bases** — managed RAG: ingestion, chunking, embedding and retrieval, backed by OpenSearch Serverless, Aurora pgvector or others. Fast to stand up; less control over chunking and reranking than building it yourself.\n- **Agents** — managed tool-calling orchestration against OpenAPI-described action groups.\n- **Guardrails** — content filters, denied topics, PII redaction and word filters, applied independently of the model.\n- **Provisioned Throughput** — reserved capacity for predictable high volume, priced against on-demand.\n\n## Architectural judgement\n\nManaged Knowledge Bases get you to a demo quickly. When retrieval quality matters — and it always does eventually — you will want control over chunking strategy, metadata, hybrid search and reranking. Plan the migration path before you build on the managed abstraction, or budget for the rewrite.\n\n## Comparing with Azure OpenAI\n\nBoth keep data in-tenant and both offer content filtering. Azure OpenAI gives deeper access to the OpenAI model family; Bedrock gives breadth across vendors behind one API. In a mixed-cloud enterprise, expect to design for both and to keep the provider behind an abstraction.",
+            "codeExample": "// Bedrock Converse API with tool use. The same shape works across model\n// families, so switching models stays a configuration change.\nvar client = new AmazonBedrockRuntimeClient(RegionEndpoint.USEast1);\n\nvar request = new ConverseRequest\n{\n    ModelId = \"anthropic.claude-3-5-sonnet-20241022-v2:0\",\n    System = [new SystemContentBlock { Text = \"You are a claims assistant. Cite policy sections.\" }],\n    Messages =\n    [\n        new Message\n        {\n            Role = ConversationRole.User,\n            Content = [new ContentBlock { Text = \"Is water damage covered under policy P-4471?\" }]\n        }\n    ],\n    ToolConfig = new ToolConfiguration\n    {\n        Tools =\n        [\n            new Tool\n            {\n                ToolSpec = new ToolSpecification\n                {\n                    Name = \"lookup_policy\",\n                    Description = \"Retrieve the clauses of a policy by its number.\",\n                    InputSchema = new ToolInputSchema\n                    {\n                        Json = Document.FromObject(new\n                        {\n                            type = \"object\",\n                            properties = new { policyNumber = new { type = \"string\" } },\n                            required = new[] { \"policyNumber\" }\n                        })\n                    }\n                }\n            }\n        ]\n    },\n    InferenceConfig = new InferenceConfiguration { MaxTokens = 1024, Temperature = 0.2f }\n};\n\nvar response = await client.ConverseAsync(request);\n\n// The model asks for a tool; YOUR code decides whether this caller may run it.\nif (response.StopReason == StopReason.Tool_use)\n{\n    // Authorise here — never assume the model's request is permitted.\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart LR\n  APP[Application] --> CONV[Bedrock Converse API]\n  CONV --> M1[Anthropic Claude]\n  CONV --> M2[Meta Llama]\n  CONV --> M3[Amazon Nova / Titan]\n  APP --> GR[Guardrails]\n  APP --> KB[Knowledge Bases]\n  KB --> OS[(OpenSearch Serverless)]\n  KB --> PG[(Aurora pgvector)]",
+            "keyTakeaways": [
+              "The Converse API gives one request shape across model families — use it rather than model-specific calls",
+              "Bedrock Guardrails apply content filtering and PII redaction independently of the model",
+              "Managed Knowledge Bases trade retrieval control for speed — plan the migration path early",
+              "Authorise tool calls in your own code; a tool request from a model is not permission"
+            ],
+            "resources": [
+              { "title": "Amazon Bedrock user guide", "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html", "kind": "Documentation" },
+              { "title": "Anthropic API documentation", "url": "https://docs.anthropic.com/", "kind": "Documentation" }
+            ],
+            "video": { "title": "Amazon Bedrock for enterprise architects", "instructor": null, "durationMinutes": 40, "skillLevel": "Advanced" },
+            "quiz": {
+              "title": "Bedrock",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why prefer the Bedrock Converse API over model-specific invocation?",
+                  "explanation": "Converse normalises the request and response shape, including tool use, across model families, so changing model becomes configuration rather than code.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "It gives one request shape across model families, making model changes configuration", "isCorrect": true },
+                    { "text": "It is the only API that supports streaming", "isCorrect": false },
+                    { "text": "It is significantly cheaper per token", "isCorrect": false },
+                    { "text": "It is required for VPC endpoints", "isCorrect": false }
+                  ]
+                },
+                {
+                  "prompt": "A model returns a tool-use request to read a customer record. What must happen next?",
+                  "explanation": "A tool request is an intent expressed by the model, not an authorisation. The application must check the caller's entitlement before executing anything.",
+                  "allowsMultiple": false,
+                  "options": [
+                    { "text": "Your code authorises the request against the caller's entitlements before executing", "isCorrect": true },
+                    { "text": "Execute it — the model has already validated the request", "isCorrect": false },
+                    { "text": "Ask the model to confirm the user is allowed", "isCorrect": false },
+                    { "text": "Log it and execute asynchronously", "isCorrect": false }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

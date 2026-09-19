@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Dark is the default: this is a tool people use for long evening sessions. */
+  :root {
+    --surface-base: 9 11 18;
+    --surface-raised: 17 20 31;
+    --surface-overlay: 24 28 42;
+    --surface-sunken: 6 8 13;
+    --line: 39 44 62;
+    --line-strong: 56 62 84;
+    --ink: 237 240 248;
+    --ink-muted: 156 163 185;
+    --ink-faint: 107 114 133;
+    color-scheme: dark;
+  }
+
+  :root.light {
+    --surface-base: 247 248 251;
+    --surface-raised: 255 255 255;
+    --surface-overlay: 255 255 255;
+    --surface-sunken: 238 241 247;
+    --line: 223 227 236;
+    --line-strong: 199 205 218;
+    --ink: 17 21 32;
+    --ink-muted: 84 92 110;
+    --ink-faint: 133 141 158;
+    color-scheme: light;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-surface-base text-ink antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-line-strong/60;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-line-strong;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-500/70 ring-offset-2 ring-offset-surface-base;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-surface-raised shadow-card;
+  }
+
+  .card-pad {
+    @apply p-5;
+  }
+
+  .label {
+    @apply text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-faint;
+  }
+
+  .stat-value {
+    @apply text-2xl font-semibold tracking-tight text-ink;
+  }
+
+  .field {
+    @apply w-full rounded-lg border border-line bg-surface-sunken px-3 py-2 text-sm text-ink
+           placeholder:text-ink-faint focus:border-brand-500 focus:outline-none;
+  }
+
+  .link {
+    @apply text-brand-400 underline-offset-4 hover:underline;
+  }
+
+  /* Long-form lesson content. Tailwind typography is deliberately not used —
+     the lesson reader needs tighter control than the plugin's defaults give. */
+  .prose-lesson {
+    @apply text-[15px] leading-7 text-ink-muted;
+  }
+  .prose-lesson h2 {
+    @apply mb-3 mt-8 text-xl font-semibold tracking-tight text-ink first:mt-0;
+  }
+  .prose-lesson h3 {
+    @apply mb-2 mt-6 text-base font-semibold text-ink;
+  }
+  .prose-lesson p {
+    @apply mb-4;
+  }
+  .prose-lesson ul {
+    @apply mb-4 list-disc space-y-1.5 pl-5;
+  }
+  .prose-lesson ol {
+    @apply mb-4 list-decimal space-y-1.5 pl-5;
+  }
+  .prose-lesson strong {
+    @apply font-semibold text-ink;
+  }
+  .prose-lesson code {
+    @apply rounded bg-surface-sunken px-1.5 py-0.5 font-mono text-[13px] text-brand-300;
+  }
+  .prose-lesson pre {
+    @apply mb-4 overflow-x-auto rounded-xl border border-line bg-surface-sunken p-4;
+  }
+  .prose-lesson pre code {
+    @apply bg-transparent p-0 text-ink-muted;
+  }
+  .prose-lesson blockquote {
+    @apply mb-4 border-l-2 border-brand-500/60 pl-4 italic;
+  }
+  .prose-lesson table {
+    @apply mb-4 w-full border-collapse text-sm;
+  }
+  .prose-lesson th {
+    @apply border-b border-line px-3 py-2 text-left font-semibold text-ink;
+  }
+  .prose-lesson td {
+    @apply border-b border-line/60 px-3 py-2 align-top;
+  }
+  .prose-lesson a {
+    @apply text-brand-400 underline-offset-4 hover:underline;
+  }
+}

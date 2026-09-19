@@ -1,0 +1,308 @@
+[
+  {
+    "order": 1,
+    "title": "AI Chat Application",
+    "slug": "ai-chat-application",
+    "summary": "A production-shaped chat app: Angular front end, ASP.NET Core API, streaming responses, conversation memory and token accounting.",
+    "briefMarkdown": "## Goal\n\nShip the smallest useful LLM application end to end, with the production concerns already in place. This is the project that converts *\"I've read about the API\"* into *\"I've shipped against the API\"*.\n\n## What you build\n\nAn Angular chat UI talking to an ASP.NET Core API that proxies an LLM provider. The API owns the system prompt, the conversation history, the streaming and the cost accounting — the browser never sees a provider key.\n\n## Why it matters for the target role\n\nEvery later project assumes this skeleton. An AI Solutions Architect is expected to know exactly where the key lives, where the history lives, what a token costs, and what happens when the provider returns a 429.\n\n## Requirements\n\n- Server-sent streaming so the first token appears in under a second.\n- Conversation history persisted per user, with a bounded context window.\n- A system prompt managed as configuration, not hard-coded in a controller.\n- Token usage and estimated cost recorded per message.\n- Graceful degradation on rate limits: retry with backoff, then a clear user-facing message.\n\n## Stretch goals\n\n- Swap providers behind one interface (OpenAI / Azure OpenAI / Anthropic).\n- Add a \"regenerate with a different model\" control and compare cost and latency.",
+    "techStack": "Angular, .NET 8, ASP.NET Core, OpenAI or Azure OpenAI, SQL Server or PostgreSQL",
+    "difficulty": "Intermediate",
+    "estimatedHours": 20,
+    "architectureMermaid": "flowchart LR\n  U[User] --> A[Angular SPA]\n  A -->|SSE| B[ASP.NET Core API]\n  B --> C[Chat Orchestrator]\n  C --> D[(Conversation Store)]\n  C --> E[LLM Provider]\n  C --> F[Token & Cost Log]",
+    "acceptanceCriteria": [
+      "Responses stream token by token rather than arriving as one block.",
+      "No provider API key is ever present in browser-delivered code or network traffic.",
+      "Conversation history survives a page refresh and is scoped to the signed-in user.",
+      "Context is trimmed to a configured token budget instead of growing unbounded.",
+      "Rate-limit and timeout failures produce a readable message, not a stack trace.",
+      "Token usage per message is queryable from the database."
+    ],
+    "resumeBullets": [
+      "Built a streaming LLM chat application with Angular and ASP.NET Core, including server-side prompt management, bounded context windows and per-message token cost accounting"
+    ],
+    "skillSlugs": ["csharp", "dotnet", "angular", "llm", "prompt-engineering"],
+    "milestones": [
+      { "order": 1, "title": "API skeleton and provider abstraction", "description": "ASP.NET Core project, typed client behind an ILlmProvider interface, configuration-bound keys via user secrets.", "estimatedHours": 3 },
+      { "order": 2, "title": "Streaming endpoint", "description": "Server-sent events from the API to the browser; verify first-token latency.", "estimatedHours": 4 },
+      { "order": 3, "title": "Angular chat UI", "description": "Message list, streaming renderer, markdown formatting, error and retry states.", "estimatedHours": 5 },
+      { "order": 4, "title": "Conversation persistence", "description": "Per-user conversations and messages, with a context-window trimming strategy.", "estimatedHours": 4 },
+      { "order": 5, "title": "Cost and resilience", "description": "Token accounting, retry with exponential backoff, structured logging.", "estimatedHours": 4 }
+    ]
+  },
+  {
+    "order": 2,
+    "title": "Enterprise Document Chat",
+    "slug": "enterprise-document-chat",
+    "summary": "Upload PDF, Word and Excel documents, then ask questions and get answers with citations, backed by Azure AI Search.",
+    "briefMarkdown": "## Goal\n\nBuild the single most requested enterprise AI feature: *\"let me ask questions about our own documents\"*. This is your first real RAG system.\n\n## What you build\n\nAn ingestion pipeline (upload → extract → chunk → embed → index) and a query pipeline (question → retrieve → rerank → generate → cite). Users upload PDF, DOCX and XLSX files and interrogate them in natural language.\n\n## Why it matters for the target role\n\nRAG quality is an architecture problem, not a prompting problem. Chunk size, overlap, metadata and reranking decide whether the answer is useful. Being able to explain those trade-offs is a large part of an AI Solutions Architect interview.\n\n## Requirements\n\n- Extraction for PDF, DOCX and XLSX, preserving page or sheet references.\n- A documented chunking strategy with a stated size and overlap, and a reason for both.\n- Embeddings stored in Azure AI Search (or pgvector) with document metadata.\n- Hybrid retrieval: keyword plus vector, with a reranking step.\n- Every answer cites the source document and location; unsupported answers say so.\n\n## Stretch goals\n\n- Per-document access control enforced at query time, not in the prompt.\n- An evaluation set of 20 question/answer pairs and a measured groundedness score.",
+    "techStack": "Angular, .NET 8, Azure OpenAI, Azure AI Search, Azure Blob Storage",
+    "difficulty": "Advanced",
+    "estimatedHours": 28,
+    "architectureMermaid": "flowchart TD\n  U[User] --> A[Angular]\n  A --> B[.NET API]\n  B --> C[Blob Storage]\n  B --> D[Extraction & Chunking]\n  D --> E[Embedding Model]\n  E --> F[(Azure AI Search Index)]\n  A --> G[Ask Question]\n  G --> B\n  B --> H[Hybrid Retrieve + Rerank]\n  H --> F\n  H --> I[Azure OpenAI]\n  I --> J[Answer with Citations]",
+    "acceptanceCriteria": [
+      "PDF, DOCX and XLSX all ingest successfully and report page or sheet numbers.",
+      "Chunk size and overlap are configurable and the chosen values are justified in the README.",
+      "Retrieval combines keyword and vector search rather than vector search alone.",
+      "Every answer renders clickable citations back to the source location.",
+      "When retrieval returns nothing relevant, the system declines instead of inventing an answer.",
+      "Ingestion of a 100-page PDF completes without timing out the request thread."
+    ],
+    "resumeBullets": [
+      "Delivered an enterprise document question-answering system over PDF, Word and Excel sources using Azure OpenAI and Azure AI Search, with hybrid retrieval, reranking and enforced citations"
+    ],
+    "skillSlugs": ["rag", "vector-db", "azure", "dotnet", "angular", "llm"],
+    "milestones": [
+      { "order": 1, "title": "Upload and storage", "description": "Multi-format upload to Blob Storage with virus-scan hook and metadata record.", "estimatedHours": 4 },
+      { "order": 2, "title": "Extraction and chunking", "description": "Text extraction per format, chunking with configurable size and overlap, location metadata retained.", "estimatedHours": 6 },
+      { "order": 3, "title": "Embedding and indexing", "description": "Batch embedding, Azure AI Search index schema with vector and filterable fields.", "estimatedHours": 5 },
+      { "order": 4, "title": "Hybrid retrieval and reranking", "description": "Keyword plus vector query, semantic reranking, top-k tuning.", "estimatedHours": 5 },
+      { "order": 5, "title": "Grounded answering with citations", "description": "Prompt construction, citation extraction, refusal behaviour when unsupported.", "estimatedHours": 5 },
+      { "order": 6, "title": "Evaluation set", "description": "20 question/answer pairs with measured groundedness and retrieval hit rate.", "estimatedHours": 3 }
+    ]
+  },
+  {
+    "order": 3,
+    "title": "AI Customer Service Agent",
+    "slug": "ai-customer-service-agent",
+    "summary": "An agent that answers customer questions by querying live order data, customer records and a knowledge base before it replies.",
+    "briefMarkdown": "## Goal\n\nMove from \"chat over documents\" to \"chat over systems\". The model decides which tool to call, the API decides what it is allowed to call.\n\n## What you build\n\nA customer service agent with three tools: customer lookup, order lookup and knowledge-base search. The agent plans, calls tools, and composes a grounded reply. Every tool call is authorised against the signed-in user.\n\n## Why it matters for the target role\n\nThis is where AI meets your existing enterprise integration experience. The hard parts — authorisation, idempotency, audit, partial failure — are exactly the parts you already know how to do; the new part is putting a non-deterministic planner in front of them.\n\n## Requirements\n\n- At least three tools exposed through function/tool calling with strict JSON schemas.\n- Tool authorisation on the server: a customer can never read another customer's orders.\n- A bounded reasoning loop with a maximum step count and a timeout.\n- Structured audit log of every tool call: who, what, when, arguments, result status.\n- A fallback to human handoff when confidence is low or a tool fails repeatedly.\n\n## Stretch goals\n\n- Add a sentiment check that escalates angry conversations immediately.\n- Cache knowledge-base lookups and measure the cost saving.",
+    "techStack": "Angular, .NET 8, Azure OpenAI or Anthropic, SQL Server, Azure AI Search",
+    "difficulty": "Advanced",
+    "estimatedHours": 26,
+    "architectureMermaid": "flowchart TD\n  C[Customer] --> UI[Angular Support UI]\n  UI --> API[.NET Agent API]\n  API --> P[Planner / LLM]\n  P --> T1[Tool: Customer Lookup]\n  P --> T2[Tool: Order Lookup]\n  P --> T3[Tool: KB Search]\n  T1 --> DB[(CRM / SQL)]\n  T2 --> DB\n  T3 --> IDX[(Knowledge Index)]\n  API --> AUD[(Audit Log)]\n  P --> R[Grounded Reply]",
+    "acceptanceCriteria": [
+      "Tool schemas are strict: unknown or malformed arguments are rejected before execution.",
+      "A user cannot retrieve another user's records, even if the prompt instructs the model to try.",
+      "The reasoning loop terminates after a configured maximum number of steps.",
+      "Every tool invocation is recorded with caller identity, arguments and outcome.",
+      "Repeated tool failure results in a human handoff rather than a fabricated answer."
+    ],
+    "resumeBullets": [
+      "Built a tool-calling customer service agent over live CRM and order systems with server-side authorisation, bounded reasoning loops and full tool-call auditing"
+    ],
+    "skillSlugs": ["ai-agents", "llm", "dotnet", "sql", "ai-security"],
+    "milestones": [
+      { "order": 1, "title": "Tool contracts", "description": "Define three tools with strict JSON schemas and server-side validation.", "estimatedHours": 4 },
+      { "order": 2, "title": "Authorisation layer", "description": "Bind every tool call to the authenticated principal; write the negative tests first.", "estimatedHours": 5 },
+      { "order": 3, "title": "Agent loop", "description": "Planner, tool dispatch, step limit, timeout and cancellation.", "estimatedHours": 6 },
+      { "order": 4, "title": "Knowledge base retrieval", "description": "Index support articles and wire them in as the third tool.", "estimatedHours": 4 },
+      { "order": 5, "title": "Audit and handoff", "description": "Structured audit log and human escalation path.", "estimatedHours": 4 }
+    ]
+  },
+  {
+    "order": 4,
+    "title": "AI Email Assistant",
+    "slug": "ai-email-assistant",
+    "summary": "Reads a mailbox, categorises and summarises messages, drafts replies, and requires explicit human approval before anything is sent.",
+    "briefMarkdown": "## Goal\n\nBuild an assistant that does real work in a real inbox while keeping a human firmly in the loop. Human-in-the-loop design is a recurring interview topic and a recurring production requirement.\n\n## What you build\n\nA background worker that pulls messages, classifies them, summarises threads and prepares draft replies. Drafts land in an approval queue; nothing leaves the building without a click.\n\n## Why it matters for the target role\n\nApproval workflows, idempotency and replay are where AI automation projects actually fail. Designing them correctly is a differentiator.\n\n## Requirements\n\n- Classification into a fixed taxonomy with a confidence score, using structured output.\n- Thread summarisation that survives long reply chains.\n- Draft generation in the user's tone, grounded in the thread and linked records.\n- An approval queue: approve, edit-then-approve, or reject with a reason.\n- Idempotent processing — reprocessing the same message never sends twice.\n\n## Stretch goals\n\n- Learn from rejections: store edited drafts and feed the deltas into the prompt.\n- Add PII redaction before any content leaves your tenant.",
+    "techStack": ".NET 8 Worker Service, Angular, Microsoft Graph or IMAP, Azure OpenAI, PostgreSQL",
+    "difficulty": "Advanced",
+    "estimatedHours": 24,
+    "architectureMermaid": "flowchart TD\n  M[(Mailbox)] --> W[.NET Worker]\n  W --> C[Classify + Summarise]\n  C --> L[LLM with Structured Output]\n  C --> D[Draft Reply]\n  D --> Q[(Approval Queue)]\n  Q --> UI[Angular Review UI]\n  UI -->|Approve| S[Send]\n  UI -->|Reject| F[Feedback Store]",
+    "acceptanceCriteria": [
+      "Classification returns a validated enum plus confidence, never free text.",
+      "Nothing is sent without an explicit human approval action.",
+      "Reprocessing the same message ID does not create a duplicate draft or a duplicate send.",
+      "Long threads are summarised without exceeding the context window.",
+      "Rejected drafts are stored with the reviewer's reason for later analysis."
+    ],
+    "resumeBullets": [
+      "Built a human-in-the-loop email automation service that classifies, summarises and drafts replies with structured outputs, idempotent processing and an explicit approval gate before any send"
+    ],
+    "skillSlugs": ["ai-agents", "llm", "dotnet", "prompt-engineering", "ai-security"],
+    "milestones": [
+      { "order": 1, "title": "Mailbox ingestion", "description": "Connect to the mailbox, poll or subscribe, store message metadata idempotently.", "estimatedHours": 4 },
+      { "order": 2, "title": "Structured classification", "description": "Fixed taxonomy, JSON schema output, confidence thresholds.", "estimatedHours": 4 },
+      { "order": 3, "title": "Thread summarisation", "description": "Chunk and summarise long threads within a token budget.", "estimatedHours": 4 },
+      { "order": 4, "title": "Draft generation", "description": "Tone-matched drafts grounded in the thread and related records.", "estimatedHours": 5 },
+      { "order": 5, "title": "Approval workflow", "description": "Angular review queue with approve, edit, reject and audit trail.", "estimatedHours": 5 },
+      { "order": 6, "title": "Safety pass", "description": "PII redaction and prompt-injection defences on untrusted email content.", "estimatedHours": 2 }
+    ]
+  },
+  {
+    "order": 5,
+    "title": "AI SQL Assistant",
+    "slug": "ai-sql-assistant",
+    "summary": "Turns \"show sales from last month\" into safe, read-only SQL against a governed schema, then renders the results.",
+    "briefMarkdown": "## Goal\n\nNatural-language querying is the demo every executive asks for and the feature most teams implement dangerously. Build the safe version.\n\n## What you build\n\nA text-to-SQL service that is given a curated schema subset, generates a read-only query, validates it against an allowlist, executes it under a restricted database principal, and renders a table and chart.\n\n## Why it matters for the target role\n\nThis project is a masterclass in constraining a model. The architecture — not the prompt — is what keeps it safe.\n\n## Requirements\n\n- Schema context is curated: only whitelisted tables and columns are described to the model.\n- Generated SQL is parsed and validated; anything that is not a single SELECT is rejected.\n- Execution uses a dedicated read-only login with a row and time limit.\n- The generated SQL is always shown to the user before or alongside results.\n- Ambiguous questions trigger a clarifying question rather than a guess.\n\n## Stretch goals\n\n- Few-shot examples drawn from a curated query library.\n- Result caching keyed on the normalised question.",
+    "techStack": ".NET 8, Angular, Azure OpenAI, SQL Server or PostgreSQL",
+    "difficulty": "Advanced",
+    "estimatedHours": 22,
+    "architectureMermaid": "flowchart LR\n  Q[Natural language question] --> API[.NET API]\n  API --> SC[Curated Schema Context]\n  SC --> LLM[LLM]\n  LLM --> SQLG[Generated SQL]\n  SQLG --> V{Validator: single SELECT?}\n  V -->|No| REJ[Reject]\n  V -->|Yes| EX[Read-only execution]\n  EX --> R[Results + Chart]",
+    "acceptanceCriteria": [
+      "INSERT, UPDATE, DELETE, DROP and multi-statement SQL are all rejected by the validator, not just discouraged by the prompt.",
+      "The execution principal has read-only rights and cannot see tables outside the curated set.",
+      "Every result set is accompanied by the SQL that produced it.",
+      "Queries are bounded by a row limit and a command timeout.",
+      "An ambiguous question produces a clarifying question instead of a plausible wrong answer."
+    ],
+    "resumeBullets": [
+      "Implemented a natural-language-to-SQL assistant with curated schema grounding, AST-level query validation and execution under a restricted read-only principal"
+    ],
+    "skillSlugs": ["llm", "sql", "dotnet", "ai-security", "data-governance"],
+    "milestones": [
+      { "order": 1, "title": "Curated schema context", "description": "Build the whitelisted schema description passed to the model.", "estimatedHours": 4 },
+      { "order": 2, "title": "Generation prompt", "description": "System prompt, dialect rules, few-shot examples, structured output.", "estimatedHours": 4 },
+      { "order": 3, "title": "Validator", "description": "Parse and assert single read-only SELECT; reject everything else.", "estimatedHours": 5 },
+      { "order": 4, "title": "Constrained execution", "description": "Read-only login, row cap, timeout, cancellation.", "estimatedHours": 4 },
+      { "order": 5, "title": "Results UI", "description": "Table, chart, generated-SQL panel, clarifying-question flow.", "estimatedHours": 5 }
+    ]
+  },
+  {
+    "order": 6,
+    "title": "AI Help Desk",
+    "slug": "ai-help-desk",
+    "summary": "Answers internal IT questions from the knowledge base and opens a ticket automatically when it cannot resolve the issue.",
+    "briefMarkdown": "## Goal\n\nAn internal help desk assistant: resolve what it can, escalate what it cannot, and never leave the employee without a next step.\n\n## What you build\n\nRetrieval over internal runbooks plus a ticketing integration. The decision to create a ticket is explicit, logged, and based on retrieval confidence and user confirmation.\n\n## Why it matters for the target role\n\nThis is the archetypal \"AI with a business process attached\" system — and the decision boundary between answer and escalate is an architecture decision.\n\n## Requirements\n\n- Retrieval over internal runbooks with freshness metadata.\n- A confidence threshold that drives the answer-versus-escalate decision.\n- Ticket creation through a real API integration with idempotency keys.\n- Conversation context carried into the ticket description.\n- Deflection metrics: resolved without ticket, escalated, reopened.\n\n## Stretch goals\n\n- Detect near-duplicate tickets and link them.\n- Surface the top unanswered questions weekly as a content gap report.",
+    "techStack": ".NET 8, Angular, Azure AI Search, Azure OpenAI, ticketing API",
+    "difficulty": "Advanced",
+    "estimatedHours": 20,
+    "architectureMermaid": "flowchart TD\n  E[Employee] --> UI[Chat UI]\n  UI --> API[.NET API]\n  API --> R[Retrieve runbooks]\n  R --> IDX[(Knowledge Index)]\n  R --> CONF{Confidence high?}\n  CONF -->|Yes| ANS[Answer + steps]\n  CONF -->|No| TCK[Create ticket]\n  TCK --> SYS[(Ticketing System)]\n  API --> MET[(Deflection Metrics)]",
+    "acceptanceCriteria": [
+      "Low-confidence retrieval results in escalation rather than a guessed answer.",
+      "Ticket creation is idempotent: a retry never creates a second ticket.",
+      "The ticket contains the conversation transcript and the articles that were consulted.",
+      "Stale runbooks are flagged in the answer with their last-updated date.",
+      "Deflection metrics are recorded and queryable."
+    ],
+    "resumeBullets": [
+      "Built an internal IT help desk assistant with runbook retrieval, confidence-based escalation and idempotent ticket creation, instrumented with deflection metrics"
+    ],
+    "skillSlugs": ["rag", "ai-agents", "dotnet", "azure", "observability"],
+    "milestones": [
+      { "order": 1, "title": "Runbook ingestion", "description": "Index internal documentation with freshness and ownership metadata.", "estimatedHours": 4 },
+      { "order": 2, "title": "Answer pipeline", "description": "Retrieve, ground, produce step-by-step resolution instructions.", "estimatedHours": 5 },
+      { "order": 3, "title": "Confidence and escalation policy", "description": "Define and tune the threshold; make the decision explainable.", "estimatedHours": 4 },
+      { "order": 4, "title": "Ticketing integration", "description": "Idempotent ticket creation with transcript attachment.", "estimatedHours": 4 },
+      { "order": 5, "title": "Metrics dashboard", "description": "Deflection rate, escalation rate, content gap report.", "estimatedHours": 3 }
+    ]
+  },
+  {
+    "order": 7,
+    "title": "AI Invoice Processing",
+    "slug": "ai-invoice-processing",
+    "summary": "Extracts vendor, amount, invoice number and date from uploaded invoices with confidence scores and a human review queue.",
+    "briefMarkdown": "## Goal\n\nDocument extraction at production quality: structured output, per-field confidence, validation rules and a review queue for anything uncertain.\n\n## What you build\n\nAn upload pipeline that runs extraction, validates the result against business rules, writes confident records straight to the database, and routes the rest to a reviewer.\n\n## Why it matters for the target role\n\nExtraction is the highest-volume enterprise AI workload. The architecture question is always the same: what is your confidence threshold and what happens below it?\n\n## Requirements\n\n- Structured extraction against a strict schema with per-field confidence.\n- Validation rules: totals reconcile, dates are plausible, vendor matches a known list.\n- Straight-through processing above the threshold; review queue below it.\n- Duplicate invoice detection on vendor plus invoice number.\n- Full audit of what was extracted, what was corrected, and by whom.\n\n## Stretch goals\n\n- Measure extraction accuracy against a labelled set of 50 invoices.\n- Feed reviewer corrections back as few-shot examples.",
+    "techStack": ".NET 8, Angular, Azure AI Document Intelligence or vision model, PostgreSQL",
+    "difficulty": "Intermediate",
+    "estimatedHours": 18,
+    "architectureMermaid": "flowchart TD\n  U[Upload invoice] --> S[Blob Storage]\n  S --> X[Extraction Service]\n  X --> SCH[Strict JSON Schema]\n  SCH --> V{Confidence + rules pass?}\n  V -->|Yes| DB[(Invoices)]\n  V -->|No| RQ[Review Queue]\n  RQ --> H[Human Reviewer]\n  H --> DB",
+    "acceptanceCriteria": [
+      "Extraction output always conforms to the declared schema or is rejected.",
+      "Each extracted field carries a confidence value used by the routing rule.",
+      "Line items reconcile with the invoice total, or the invoice is flagged.",
+      "The same invoice uploaded twice is detected and not double-recorded.",
+      "Reviewer corrections are stored alongside the original extraction."
+    ],
+    "resumeBullets": [
+      "Delivered an invoice extraction pipeline with schema-constrained output, per-field confidence routing, business-rule validation and a human review queue"
+    ],
+    "skillSlugs": ["llm", "dotnet", "azure", "data-governance"],
+    "milestones": [
+      { "order": 1, "title": "Upload and storage", "description": "Secure upload, format checks, blob storage with metadata.", "estimatedHours": 3 },
+      { "order": 2, "title": "Schema-constrained extraction", "description": "Strict JSON schema, per-field confidence, retries on schema failure.", "estimatedHours": 5 },
+      { "order": 3, "title": "Validation rules", "description": "Total reconciliation, date sanity, vendor matching, duplicate detection.", "estimatedHours": 4 },
+      { "order": 4, "title": "Review queue", "description": "Angular review screen with side-by-side document and fields.", "estimatedHours": 4 },
+      { "order": 5, "title": "Accuracy measurement", "description": "Labelled test set and a field-level accuracy report.", "estimatedHours": 2 }
+    ]
+  },
+  {
+    "order": 8,
+    "title": "AI Business Automation Agent",
+    "slug": "ai-business-automation-agent",
+    "summary": "An end-to-end agent: reads an inbound request, extracts intent, calls line-of-business APIs, updates the database, raises a ticket and replies.",
+    "briefMarkdown": "## Goal\n\nChain everything you have built into one autonomous workflow with real side effects — and make it safe to run unattended.\n\n## What you build\n\nAn agent that ingests a request, plans a multi-step workflow, executes it against real systems, and reports back. Side-effecting steps are transactional, idempotent and reversible where possible.\n\n## Why it matters for the target role\n\nThis is the system an AI Solutions Architect is actually hired to design. Everything about it — retries, compensation, authorisation, observability, cost — is an architecture concern.\n\n## Requirements\n\n- A planner that produces an explicit, inspectable step list before execution.\n- Idempotency keys on every side-effecting call.\n- Compensating actions for partial failure.\n- A policy layer that decides which steps may run unattended and which need approval.\n- End-to-end tracing: one correlation ID across the agent, the APIs and the database.\n\n## Stretch goals\n\n- Replay a failed run from the last successful step.\n- Cost ceiling per run with hard cutoff.",
+    "techStack": ".NET 8 Worker, Angular, Azure OpenAI, Azure Service Bus, PostgreSQL, Application Insights",
+    "difficulty": "Expert",
+    "estimatedHours": 30,
+    "architectureMermaid": "flowchart TD\n  IN[Inbound request] --> ING[Ingestion]\n  ING --> PL[Planner]\n  PL --> STEPS[Explicit step list]\n  STEPS --> POL{Policy: unattended?}\n  POL -->|No| APR[Approval]\n  POL -->|Yes| EXEC[Executor]\n  APR --> EXEC\n  EXEC --> API1[LOB API]\n  EXEC --> DB[(Database)]\n  EXEC --> TCK[Ticketing]\n  EXEC --> OUT[Reply]\n  EXEC --> TR[(Traces & Cost)]",
+    "acceptanceCriteria": [
+      "The planned steps are persisted and viewable before execution begins.",
+      "Re-running a workflow with the same input produces no duplicate side effects.",
+      "A mid-workflow failure triggers compensating actions and leaves a consistent state.",
+      "Policy determines which steps require human approval; the policy is data, not code.",
+      "A single correlation ID links every log, span and database write for one run.",
+      "A per-run cost ceiling stops execution rather than silently overspending."
+    ],
+    "resumeBullets": [
+      "Designed and built a multi-step business automation agent with an inspectable planner, idempotent side effects, compensating transactions, policy-driven approval gates and end-to-end distributed tracing"
+    ],
+    "skillSlugs": ["ai-agents", "event-driven", "dotnet", "observability", "ai-security", "architecture"],
+    "milestones": [
+      { "order": 1, "title": "Ingestion and intent extraction", "description": "Normalise inbound requests and extract structured intent.", "estimatedHours": 4 },
+      { "order": 2, "title": "Planner", "description": "Produce and persist an explicit step list with preconditions.", "estimatedHours": 6 },
+      { "order": 3, "title": "Executor with idempotency", "description": "Step execution, idempotency keys, retry policy.", "estimatedHours": 6 },
+      { "order": 4, "title": "Compensation", "description": "Compensating actions and consistent-state guarantees on failure.", "estimatedHours": 5 },
+      { "order": 5, "title": "Policy and approval", "description": "Data-driven policy layer with an approval UI.", "estimatedHours": 4 },
+      { "order": 6, "title": "Observability and cost control", "description": "Correlation IDs, traces, per-run cost ceiling and alerts.", "estimatedHours": 5 }
+    ]
+  },
+  {
+    "order": 9,
+    "title": "Enterprise RAG System",
+    "slug": "enterprise-rag-system",
+    "summary": "Multi-tenant RAG with authentication, per-document permissions, vector search, citations, logging and monitoring.",
+    "briefMarkdown": "## Goal\n\nTake RAG from prototype to something you would actually deploy in a regulated enterprise.\n\n## What you build\n\nA multi-user RAG platform where document access is enforced at retrieval time, every answer is cited, every query is logged, and the whole thing is observable and cost-controlled.\n\n## Why it matters for the target role\n\nThe difference between a RAG demo and an enterprise RAG system is permissions, auditability and evaluation. This project is the portfolio centrepiece before the capstone.\n\n## Requirements\n\n- Authentication with Entra ID (or JWT) and role-based authorisation.\n- Document-level permissions applied as a retrieval filter, never as a prompt instruction.\n- Vector plus keyword retrieval with reranking and configurable top-k.\n- Citations on every answer, with a refusal path when nothing relevant is found.\n- Structured query logging: user, question, documents retrieved, tokens, latency, cost.\n- Dashboards for latency, cost per query and retrieval hit rate.\n\n## Stretch goals\n\n- An evaluation harness scoring groundedness and answer relevance over a fixed question set.\n- Semantic caching for repeat questions with measured savings.",
+    "techStack": "Angular, .NET 8, Entra ID, Azure OpenAI, Azure AI Search or pgvector, Application Insights",
+    "difficulty": "Expert",
+    "estimatedHours": 32,
+    "architectureMermaid": "flowchart TD\n  U[User] --> A[Angular]\n  A --> ID[Entra ID]\n  A --> API[.NET API]\n  API --> AZ[Authorisation: user groups]\n  AZ --> RET[Retriever with permission filter]\n  RET --> VDB[(Vector + Keyword Index)]\n  RET --> RR[Reranker]\n  RR --> LLM[Azure OpenAI]\n  LLM --> ANS[Answer + Citations]\n  API --> LOG[(Query Log)]\n  API --> MON[App Insights]",
+    "acceptanceCriteria": [
+      "A user cannot retrieve content from a document they are not entitled to, verified by an automated test.",
+      "Permission filtering happens in the retrieval query, not in the prompt.",
+      "Every answer includes citations resolving to a document and location.",
+      "Query logs capture tokens, latency and estimated cost per request.",
+      "Dashboards show p50/p95 latency, cost per query and retrieval hit rate.",
+      "An evaluation run produces a groundedness score that can be compared release over release."
+    ],
+    "resumeBullets": [
+      "Built a multi-tenant enterprise RAG platform with Entra ID authentication, retrieval-time document permission filtering, hybrid search with reranking, enforced citations and cost/latency observability"
+    ],
+    "skillSlugs": ["rag", "vector-db", "identity", "azure", "observability", "ai-security", "architecture"],
+    "milestones": [
+      { "order": 1, "title": "Identity and roles", "description": "Entra ID sign-in, role mapping, group claims available to the API.", "estimatedHours": 5 },
+      { "order": 2, "title": "Permission-aware index", "description": "Index schema carrying ACL metadata; filter applied at query time.", "estimatedHours": 6 },
+      { "order": 3, "title": "Hybrid retrieval and reranking", "description": "Vector plus keyword, reranking, top-k tuning against a test set.", "estimatedHours": 6 },
+      { "order": 4, "title": "Grounded generation", "description": "Citation enforcement and refusal behaviour.", "estimatedHours": 5 },
+      { "order": 5, "title": "Observability", "description": "Structured query logs, dashboards, alerts on cost and latency.", "estimatedHours": 5 },
+      { "order": 6, "title": "Evaluation harness", "description": "Fixed question set with groundedness and relevance scoring.", "estimatedHours": 5 }
+    ]
+  },
+  {
+    "order": 10,
+    "title": "Capstone: AI Solutions Architect Final Project",
+    "slug": "capstone-ai-solutions-architect",
+    "summary": "A full enterprise engagement: requirements, architecture, technology selection, cost model, security design, proof of concept, deployment and a presented design.",
+    "briefMarkdown": "## The engagement\n\nA mid-size insurance company processes 40,000 claims documents a month across three business units. Adjusters spend roughly 90 minutes per claim locating policy clauses and prior correspondence. Leadership wants that cut in half without moving data outside their Azure tenant.\n\nYou are the architect. Produce what an architect actually delivers.\n\n## Deliverables\n\n1. **Requirements** — functional, non-functional, compliance and explicit out-of-scope. Name the assumptions you are making.\n2. **Architecture** — context, container and component views. Show the data flow and the trust boundaries.\n3. **Technology selection** — with the alternatives you rejected and why.\n4. **Cost model** — monthly run cost at 40,000 documents, broken down by service, with the token maths shown and a sensitivity analysis at 2x volume.\n5. **Security design** — identity, network, secrets, data residency, PII handling, prompt-injection defences, audit.\n6. **API design** — OpenAPI specification for the services you propose.\n7. **Proof of concept** — working code for the riskiest part of the design, not the easiest.\n8. **Deployment** — IaC and a deployed environment.\n9. **Architecture documentation** — an ADR set recording each significant decision.\n10. **Presentation** — a 20-minute deck for a mixed technical and executive audience.\n\n## How this is assessed\n\nThe proof of concept is worth less than the reasoning. Explicit assumptions, rejected alternatives, and a cost model that survives scrutiny are what separate an architect from a senior engineer.",
+    "techStack": "Angular, .NET 8, Azure OpenAI, Azure AI Search, Entra ID, Bicep or Terraform, Azure Container Apps",
+    "difficulty": "Expert",
+    "estimatedHours": 40,
+    "architectureMermaid": "flowchart TD\n  subgraph Client\n    A[Angular Adjuster Workspace]\n  end\n  subgraph Platform\n    GW[API Gateway / AI Gateway]\n    ORCH[AI Orchestrator]\n    RET[Retrieval Service]\n    POL[Policy & Guardrails]\n  end\n  subgraph Data\n    IDX[(Azure AI Search)]\n    BLOB[(Claims Documents)]\n    SQL[(Claims Metadata)]\n  end\n  subgraph AI\n    AOAI[Azure OpenAI]\n    FALL[Secondary Provider]\n  end\n  A --> GW --> POL --> ORCH\n  ORCH --> RET --> IDX\n  RET --> BLOB\n  ORCH --> SQL\n  ORCH --> AOAI\n  ORCH -.failover.-> FALL\n  GW --> OBS[Observability & Cost]",
+    "acceptanceCriteria": [
+      "Requirements document separates functional, non-functional and compliance requirements and states assumptions explicitly.",
+      "Architecture is presented at context, container and component level with trust boundaries marked.",
+      "At least three significant technology decisions are recorded as ADRs with rejected alternatives.",
+      "The cost model shows token maths and a sensitivity analysis at double the stated volume.",
+      "The security design covers identity, network, secrets, PII, residency, prompt injection and audit.",
+      "An OpenAPI specification exists for every proposed service.",
+      "The proof of concept addresses the highest-risk component of the design.",
+      "The solution is deployed from infrastructure as code, not by hand.",
+      "A 20-minute presentation is prepared for a mixed technical and executive audience."
+    ],
+    "resumeBullets": [
+      "Produced an end-to-end enterprise AI architecture for insurance claims processing: requirements, C4 architecture, ADRs, cost model at 40,000 documents/month, security design and a deployed proof of concept"
+    ],
+    "skillSlugs": ["architecture", "system-design", "azure", "rag", "ai-security", "cost-optimisation", "terraform", "communication"],
+    "milestones": [
+      { "order": 1, "title": "Requirements and assumptions", "description": "Functional, non-functional, compliance, out-of-scope, stated assumptions.", "estimatedHours": 4 },
+      { "order": 2, "title": "Architecture views", "description": "Context, container and component diagrams with trust boundaries.", "estimatedHours": 6 },
+      { "order": 3, "title": "Technology selection and ADRs", "description": "Decisions recorded with rejected alternatives and consequences.", "estimatedHours": 4 },
+      { "order": 4, "title": "Cost model", "description": "Service-by-service monthly cost, token maths, 2x sensitivity analysis.", "estimatedHours": 4 },
+      { "order": 5, "title": "Security design", "description": "Identity, network, secrets, PII, residency, injection defences, audit.", "estimatedHours": 5 },
+      { "order": 6, "title": "API design", "description": "OpenAPI specifications for the proposed services.", "estimatedHours": 3 },
+      { "order": 7, "title": "Proof of concept", "description": "Working code for the riskiest component of the design.", "estimatedHours": 8 },
+      { "order": 8, "title": "Deployment from IaC", "description": "Bicep or Terraform deployment to a live environment.", "estimatedHours": 4 },
+      { "order": 9, "title": "Presentation", "description": "20-minute deck for a mixed technical and executive audience.", "estimatedHours": 2 }
+    ]
+  }
+]

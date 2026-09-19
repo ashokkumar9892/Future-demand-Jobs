@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <!-- Dev machines here carry the .NET 10 runtime alongside 8; roll forward so
+         `dotnet run` works without pinning an SDK. -->
+    <RollForward>LatestMajor</RollForward>
+  </PropertyGroup>
+</Project>

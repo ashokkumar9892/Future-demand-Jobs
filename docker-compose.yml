@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: futuretech
+      POSTGRES_USER: futuretech
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-futuretech-dev-password}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U futuretech -d futuretech']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  api:
+    build:
+      context: ./src/backend
+      dockerfile: FutureTech.Api/Dockerfile
+    environment:
+      Database__Provider: Postgres
+      ConnectionStrings__Postgres: >-
+        Host=postgres;Port=5432;Database=futuretech;Username=futuretech;Password=${POSTGRES_PASSWORD:-futuretech-dev-password}
+      # Override in any real deployment. The API refuses nothing on a weak key,
+      # so treat this as a development default only.
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:-dev-only-signing-key-change-me-in-production-0123456789}
+      Cors__Origins__0: http://localhost:8080
+      Seed__CreateDemoUser: 'true'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - '5080:8080'
+
+  web:
+    build:
+      context: ./src/frontend
+    depends_on:
+      - api
+    ports:
+      - '8080:80'
+
+volumes:
+  postgres-data:
