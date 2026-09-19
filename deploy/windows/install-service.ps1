@@ -21,11 +21,39 @@ if (-not $isAdmin) {
     throw 'This script must run as Administrator (service registration and firewall changes need it).'
 }
 
+# publish.ps1 copies these scripts into out\ alongside the binaries, so after
+# copying the whole deploy\windows folder to a server there are two copies of
+# this script: one beside the executable and one a level above it. Running the
+# outer one should work rather than reporting a missing executable.
+function Resolve-ApiPackageRoot([string] $StartPath) {
+    foreach ($candidate in @($StartPath, (Join-Path $StartPath 'out'))) {
+        if (Test-Path (Join-Path $candidate 'FutureTech.Api.exe')) {
+            return (Resolve-Path $candidate).Path
+        }
+    }
+    throw @"
+Could not find FutureTech.Api.exe in:
+  $StartPath
+  $(Join-Path $StartPath 'out')
+
+If you copied the deploy\windows folder, the binaries are in its 'out'
+subfolder - run this script from there instead:
+    cd $StartPath\out
+
+If 'out' is missing or holds no .exe, the package was never built. On the
+machine with the source, run:
+    powershell -ExecutionPolicy Bypass -File deploy\windows\publish.ps1
+"@
+}
+
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
+$root = Resolve-ApiPackageRoot $here
 
 # Copy the published output into a stable location, unless we are already there.
-if ((Resolve-Path $here).Path -ne (Join-Path $InstallPath '').TrimEnd('\')) {
-    Write-Host "Installing to $InstallPath"
+$installed = if (Test-Path $InstallPath) { (Resolve-Path $InstallPath).Path } else { $null }
+
+if ($root -ne $installed) {
+    Write-Host "Installing from $root to $InstallPath"
     New-Item -ItemType Directory -Force -Path $InstallPath | Out-Null
 
     $existing = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
@@ -36,7 +64,9 @@ if ((Resolve-Path $here).Path -ne (Join-Path $InstallPath '').TrimEnd('\')) {
     }
 
     # Keep the database: it holds every account and all learner progress.
-    Get-ChildItem $here -Exclude 'data' | Copy-Item -Destination $InstallPath -Recurse -Force
+    Get-ChildItem $root -Exclude 'data' | Copy-Item -Destination $InstallPath -Recurse -Force
+} else {
+    Write-Host "Already installed at $InstallPath"
 }
 
 New-Item -ItemType Directory -Force -Path (Join-Path $InstallPath 'data') | Out-Null

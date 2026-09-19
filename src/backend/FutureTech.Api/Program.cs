@@ -10,11 +10,29 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-var builder = WebApplication.CreateBuilder(args);
+// The content root defaults to the working directory, which is not necessarily
+// where the application was installed: the Windows Service Control Manager
+// starts services in C:\Windows\System32, and an operator can launch the
+// executable from any folder. Both cases used to start "successfully" and then
+// serve an empty platform, because appsettings.json and the SeedData content
+// pack were looked for somewhere they do not exist. A published app carries
+// them next to its binary, so anchor there when the working directory does not
+// have them. `dotnet run` during development is unaffected: the project folder
+// holds appsettings.json, so the condition is false.
+var options = new WebApplicationOptions
+{
+    Args = args,
+    ContentRootPath = File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"))
+        ? null
+        : AppContext.BaseDirectory
+};
+
+var builder = WebApplication.CreateBuilder(options);
 
 // Lets the same binary be registered with the Windows Service Control Manager
-// (see deploy/windows). It is a no-op when the process is not started as a
-// service, so console runs, Docker and Linux are unaffected.
+// (see deploy/windows). It also sets the content root to the binary's folder,
+// which is the same anchor chosen above. A no-op when the process is not
+// started as a service, so console runs, Docker and Linux are unaffected.
 builder.Host.UseWindowsService();
 
 builder.Services.AddControllers()
