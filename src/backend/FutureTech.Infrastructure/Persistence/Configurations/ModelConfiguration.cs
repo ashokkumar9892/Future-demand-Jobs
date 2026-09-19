@@ -333,3 +333,111 @@ public class FeedbackConfiguration : IEntityTypeConfiguration<Feedback>
         b.HasOne(f => f.User).WithMany().HasForeignKey(f => f.UserId).OnDelete(DeleteBehavior.Cascade);
     }
 }
+
+public class CourseEnrollmentConfiguration : IEntityTypeConfiguration<CourseEnrollment>
+{
+    public void Configure(EntityTypeBuilder<CourseEnrollment> b)
+    {
+        // One enrolment per learner per course; re-enrolling reactivates the row.
+        b.HasIndex(e => new { e.UserId, e.CourseId }).IsUnique();
+        b.Property(e => e.Goal).HasMaxLength(500);
+        b.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Cascade);
+        b.HasOne(e => e.Course).WithMany().HasForeignKey(e => e.CourseId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public class LearnerPreferencesConfiguration : IEntityTypeConfiguration<LearnerPreferences>
+{
+    public void Configure(EntityTypeBuilder<LearnerPreferences> b)
+    {
+        b.HasIndex(p => p.UserId).IsUnique();
+        b.Property(p => p.Theme).HasMaxLength(16).IsRequired();
+        b.Property(p => p.CertificateName).HasMaxLength(128);
+    }
+}
+
+public class CourseCertificateConfiguration : IEntityTypeConfiguration<CourseCertificate>
+{
+    public void Configure(EntityTypeBuilder<CourseCertificate> b)
+    {
+        b.HasIndex(c => c.CertificateNumber).IsUnique();
+        // A course is certified once per learner.
+        b.HasIndex(c => new { c.UserId, c.CourseId }).IsUnique();
+        b.Property(c => c.CertificateNumber).HasMaxLength(32).IsRequired();
+        b.Property(c => c.LearnerName).HasMaxLength(128).IsRequired();
+        b.Property(c => c.CourseTitle).HasMaxLength(200).IsRequired();
+        b.Property(c => c.CareerTitle).HasMaxLength(200);
+        b.HasOne(c => c.User).WithMany().HasForeignKey(c => c.UserId).OnDelete(DeleteBehavior.Cascade);
+        b.HasOne(c => c.Course).WithMany().HasForeignKey(c => c.CourseId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public class CountryConfiguration : IEntityTypeConfiguration<Country>
+{
+    public void Configure(EntityTypeBuilder<Country> b)
+    {
+        b.HasIndex(c => c.Code).IsUnique();
+        b.Property(c => c.Code).HasMaxLength(2).IsRequired();
+        b.Property(c => c.Name).HasMaxLength(100).IsRequired();
+        b.Property(c => c.CurrencyCode).HasMaxLength(3).IsRequired();
+        b.Property(c => c.CurrencySymbol).HasMaxLength(8).IsRequired();
+        b.Property(c => c.ShortUnit).HasMaxLength(8);
+    }
+}
+
+public class CareerSalaryBandConfiguration : IEntityTypeConfiguration<CareerSalaryBand>
+{
+    public void Configure(EntityTypeBuilder<CareerSalaryBand> b)
+    {
+        b.HasIndex(x => new { x.CareerPathId, x.CountryCode }).IsUnique();
+        b.Property(x => x.CountryCode).HasMaxLength(2).IsRequired();
+        b.Property(x => x.CurrencyCode).HasMaxLength(3).IsRequired();
+        b.Property(x => x.Source).HasMaxLength(300);
+        b.Property(x => x.Notes).HasMaxLength(500);
+        b.HasOne(x => x.CareerPath).WithMany().HasForeignKey(x => x.CareerPathId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public class CoursePriceConfiguration : IEntityTypeConfiguration<CoursePrice>
+{
+    public void Configure(EntityTypeBuilder<CoursePrice> b)
+    {
+        b.HasIndex(p => new { p.CourseId, p.CountryCode }).IsUnique();
+        b.Property(p => p.CountryCode).HasMaxLength(2).IsRequired();
+        b.Property(p => p.CurrencyCode).HasMaxLength(3).IsRequired();
+        b.HasOne(p => p.Course).WithMany().HasForeignKey(p => p.CourseId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public class PaymentMethodOptionConfiguration : IEntityTypeConfiguration<PaymentMethodOption>
+{
+    public void Configure(EntityTypeBuilder<PaymentMethodOption> b)
+    {
+        b.HasIndex(m => new { m.CountryCode, m.SortOrder });
+        b.Property(m => m.CountryCode).HasMaxLength(2).IsRequired();
+        b.Property(m => m.Label).HasMaxLength(120).IsRequired();
+        b.Property(m => m.Instructions).HasMaxLength(2000);
+        b.Property(m => m.QrPayload).HasMaxLength(1000);
+        b.Property(m => m.QrImageUrl).HasMaxLength(500);
+        b.Property(m => m.PayeeEmail).HasMaxLength(256);
+        b.Property(m => m.Reference).HasMaxLength(200);
+    }
+}
+
+public class PaymentRequestConfiguration : IEntityTypeConfiguration<PaymentRequest>
+{
+    public void Configure(EntityTypeBuilder<PaymentRequest> b)
+    {
+        b.HasIndex(p => p.Reference).IsUnique();
+        b.HasIndex(p => p.Status);
+        b.HasIndex(p => new { p.UserId, p.CourseId });
+        b.Property(p => p.Reference).HasMaxLength(32).IsRequired();
+        b.Property(p => p.CountryCode).HasMaxLength(2).IsRequired();
+        b.Property(p => p.CurrencyCode).HasMaxLength(3).IsRequired();
+        b.Property(p => p.LearnerNote).HasMaxLength(1000);
+        b.Property(p => p.AdminNote).HasMaxLength(1000);
+        b.Property(p => p.ConfirmedByName).HasMaxLength(128);
+        b.HasOne(p => p.User).WithMany().HasForeignKey(p => p.UserId).OnDelete(DeleteBehavior.Cascade);
+        b.HasOne(p => p.Course).WithMany().HasForeignKey(p => p.CourseId).OnDelete(DeleteBehavior.Cascade);
+    }
+}

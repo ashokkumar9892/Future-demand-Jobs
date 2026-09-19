@@ -32,6 +32,10 @@ Open <http://localhost:5173> and sign in:
 | `demo@futuretech.local` | `Demo#2026` | A learner with ~14 weeks of seeded progress — every screen populated |
 | `admin@futuretech.local` | `Admin#2026` | The same platform plus the Admin console |
 
+**Local development only.** These are published here, so treat them as public.
+They are not shown anywhere in the UI, and a deployment must override
+`Seed:AdminPassword` — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md#5-administrator-account).
+
 A brand-new account goes through the setup wizard first.
 
 ### With PostgreSQL and Docker
@@ -40,8 +44,13 @@ A brand-new account goes through the setup wizard first.
 docker compose up --build       # SPA on :8080, API on :5080, Postgres on :5432
 ```
 
-The same EF model runs on both providers; `Database:Provider` selects between
-`Sqlite` and `Postgres`.
+The same EF model runs on all three providers; `Database:Provider` selects
+between `Sqlite`, `SqlServer` and `Postgres`. SQL Server needs the database to
+exist already — the API creates tables, not the database — and usually
+`TrustServerCertificate=True` in the connection string.
+
+Full deployment instructions, including the administrator account and the
+security checklist, are in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ---
 

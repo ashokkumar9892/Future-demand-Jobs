@@ -37,12 +37,14 @@ public class CareersController(ICareerService careers) : ControllerBase
     [HttpGet]
     [AllowAnonymous]
     public Task<IReadOnlyList<CareerSummaryDto>> List(
-        [FromQuery] string? search, [FromQuery] string? sort, CancellationToken ct) =>
-        careers.ListAsync(search, sort, ct);
+        [FromQuery] string? search, [FromQuery] string? sort, [FromQuery] string? country,
+        CancellationToken ct) =>
+        careers.ListAsync(search, sort, country, ct);
 
     [HttpGet("{slug}")]
     [AllowAnonymous]
-    public Task<CareerDetailDto> Get(string slug, CancellationToken ct) => careers.GetAsync(slug, ct);
+    public Task<CareerDetailDto> Get(string slug, [FromQuery] string? country, CancellationToken ct) =>
+        careers.GetAsync(slug, country, ct);
 
     [HttpGet("{slug}/ladder")]
     [AllowAnonymous]
@@ -72,8 +74,9 @@ public class CoursesController(ICourseService courses) : ControllerBase
     [HttpGet]
     [AllowAnonymous]
     public Task<IReadOnlyList<CourseListItemDto>> List(
-        [FromQuery] Guid? careerPathId, [FromQuery] string? track, [FromQuery] string? search, CancellationToken ct) =>
-        courses.ListAsync(careerPathId, track, search, ct);
+        [FromQuery] Guid? careerPathId, [FromQuery] string? track, [FromQuery] string? search,
+        [FromQuery] string? country, CancellationToken ct) =>
+        courses.ListAsync(careerPathId, track, search, country, ct);
 
     [HttpGet("{slug}")]
     [AllowAnonymous]

@@ -3,7 +3,9 @@ namespace FutureTech.Application.Contracts;
 public record CourseListItemDto(
     Guid Id, int PhaseNumber, int Order, string Title, string Slug, string Summary,
     int EstimatedHours, string Level, string MinimumTrack, string CareerTitle,
-    int ModuleCount, int LessonCount, int CompletedLessons, int ProgressPercent);
+    int ModuleCount, int LessonCount, int CompletedLessons, int ProgressPercent,
+    // Free or advanced, and whether this learner may open the lessons.
+    CourseAccessDto? Access = null);
 
 public record LessonListItemDto(
     Guid Id, int Order, string Title, string Slug, string Type, int EstimatedMinutes,

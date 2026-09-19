@@ -16,6 +16,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  MessageSquarePlus,
   MessagesSquare,
   Moon,
   Network,
@@ -27,6 +28,7 @@ import {
   Shield,
   Sun,
   Target,
+  Users,
   X,
 } from 'lucide-react';
 import { useAuth, useTheme } from '@/app/providers';
@@ -84,8 +86,10 @@ const NAV_GROUPS: { heading: string; items: NavItem[] }[] = [
       { to: '/calendar', label: 'Calendar', icon: <Calendar size={16} /> },
       { to: '/bookmarks', label: 'Bookmarks', icon: <Bookmark size={16} /> },
       { to: '/notes', label: 'Notes', icon: <NotebookPen size={16} /> },
+      { to: '/feedback', label: 'Feedback', icon: <MessageSquarePlus size={16} /> },
       { to: '/settings', label: 'Settings', icon: <Settings size={16} /> },
       { to: '/admin', label: 'Admin', icon: <Shield size={16} />, adminOnly: true },
+      { to: '/admin/learners', label: 'Learners & Feedback', icon: <Users size={16} />, adminOnly: true },
     ],
   },
 ];

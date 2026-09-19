@@ -21,6 +21,8 @@ public interface IAppDbContext
     DbSet<LadderStage> LadderStages { get; }
     DbSet<ReadinessDimension> ReadinessDimensions { get; }
     DbSet<SalaryRevision> SalaryRevisions { get; }
+    DbSet<Country> Countries { get; }
+    DbSet<CareerSalaryBand> CareerSalaryBands { get; }
 
     DbSet<Course> Courses { get; }
     DbSet<Module> Modules { get; }
@@ -61,6 +63,13 @@ public interface IAppDbContext
     DbSet<ReadinessSnapshot> ReadinessSnapshots { get; }
     DbSet<ResumeProfile> ResumeProfiles { get; }
     DbSet<ResumeItem> ResumeItems { get; }
+
+    DbSet<CourseEnrollment> CourseEnrollments { get; }
+    DbSet<CoursePrice> CoursePrices { get; }
+    DbSet<PaymentMethodOption> PaymentMethodOptions { get; }
+    DbSet<PaymentRequest> PaymentRequests { get; }
+    DbSet<LearnerPreferences> LearnerPreferences { get; }
+    DbSet<CourseCertificate> CourseCertificates { get; }
 
     DbSet<LoginEvent> LoginEvents { get; }
     DbSet<IpLocation> IpLocations { get; }

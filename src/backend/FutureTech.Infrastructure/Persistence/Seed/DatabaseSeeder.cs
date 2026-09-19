@@ -46,6 +46,104 @@ public class DatabaseSeeder(
 
         if (options.CreateDemoUser && !await db.Users.AnyAsync(ct))
             await SeedDemoUsersAsync(ct);
+
+        await ReconcileGeographyAsync(ct);
+        await ReconcileAdminAsync(ct);
+    }
+
+    /// <summary>
+    /// Ensures the supported markets exist, and that every career has a salary
+    /// band for the default market.
+    /// <para>
+    /// This runs on every start, not only on an empty database: the countries
+    /// and bands were added after the content pack, so an installation seeded
+    /// earlier has careers but no bands and would show "no figures" for a market
+    /// whose numbers it already holds.
+    /// </para>
+    /// <para>
+    /// Only the default market is backfilled. The seeded figures are USA
+    /// figures with a USA source; copying them into another country — converted
+    /// or not — would attach a source to numbers it never supported. Other
+    /// markets stay empty until someone enters sourced figures in Admin.
+    /// </para>
+    /// </summary>
+    private async Task ReconcileGeographyAsync(CancellationToken ct)
+    {
+        var supported = new[]
+        {
+            new Country { Code = "US", Name = "United States", CurrencyCode = "USD", CurrencySymbol = "$",  ShortUnit = "K", ShortUnitDivisor = 1_000,   SortOrder = 1 },
+            new Country { Code = "GB", Name = "United Kingdom", CurrencyCode = "GBP", CurrencySymbol = "£", ShortUnit = "K", ShortUnitDivisor = 1_000,   SortOrder = 2 },
+            // India quotes salaries in lakh, so its short unit is not thousands.
+            new Country { Code = "IN", Name = "India",          CurrencyCode = "INR", CurrencySymbol = "₹", ShortUnit = "L", ShortUnitDivisor = 100_000, SortOrder = 3 }
+        };
+
+        var existingCodes = await db.Countries.Select(c => c.Code).ToListAsync(ct);
+        var added = supported.Where(c => !existingCodes.Contains(c.Code)).ToList();
+        if (added.Count > 0)
+        {
+            db.Countries.AddRange(added);
+            await db.SaveChangesAsync(ct);
+            logger.LogInformation("Added {Count} market(s): {Codes}", added.Count, string.Join(", ", added.Select(c => c.Code)));
+        }
+
+        var careers = await db.CareerPaths.AsNoTracking()
+            .Select(c => new { c.Id, c.SalaryMinUsd, c.SalaryMaxUsd, c.SeniorSalaryMinUsd, c.SeniorSalaryMaxUsd, c.SalarySource, c.SalaryAsOf })
+            .ToListAsync(ct);
+        if (careers.Count == 0) return;
+
+        var haveBand = await db.CareerSalaryBands
+            .Where(b => b.CountryCode == "US")
+            .Select(b => b.CareerPathId)
+            .ToListAsync(ct);
+
+        var missing = careers.Where(c => !haveBand.Contains(c.Id) && c.SalaryMaxUsd > 0).ToList();
+        if (missing.Count == 0) return;
+
+        db.CareerSalaryBands.AddRange(missing.Select(c => new CareerSalaryBand
+        {
+            CareerPathId = c.Id,
+            CountryCode = "US",
+            CurrencyCode = "USD",
+            SalaryMin = c.SalaryMinUsd,
+            SalaryMax = c.SalaryMaxUsd,
+            SeniorSalaryMin = c.SeniorSalaryMinUsd,
+            SeniorSalaryMax = c.SeniorSalaryMaxUsd,
+            Source = c.SalarySource,
+            AsOf = c.SalaryAsOf
+        }));
+
+        await db.SaveChangesAsync(ct);
+        logger.LogInformation("Backfilled {Count} USA salary band(s) from the career content.", missing.Count);
+    }
+
+    /// <summary>
+    /// Applies the configured administrator password to an existing database.
+    /// Without this, an operator who deployed with the published default could
+    /// never change it: the seeder only creates users on an empty database, and
+    /// there is no change-password endpoint.
+    /// </summary>
+    private async Task ReconcileAdminAsync(CancellationToken ct)
+    {
+        if (options.UsesDefaultAdminPassword)
+        {
+            logger.LogWarning(
+                "Administrator {Email} is using the default password published in the " +
+                "documentation. Set Seed:AdminPassword (env Seed__AdminPassword) and restart " +
+                "before exposing this API.", options.AdminEmail);
+            return;
+        }
+
+        var admin = await db.Users.FirstOrDefaultAsync(u => u.Role == UserRole.Admin, ct);
+        if (admin is null) return;
+
+        var emailChanged = !string.Equals(admin.Email, options.AdminEmail, StringComparison.OrdinalIgnoreCase);
+        var passwordChanged = !hasher.Verify(options.AdminPassword, admin.PasswordHash);
+        if (!emailChanged && !passwordChanged) return;
+
+        admin.Email = options.AdminEmail;
+        admin.PasswordHash = hasher.Hash(options.AdminPassword);
+        await db.SaveChangesAsync(ct);
+        logger.LogInformation("Administrator credentials updated from configuration.");
     }
 
     // ----- content -------------------------------------------------------
@@ -389,8 +487,8 @@ public class DatabaseSeeder(
     {
         var admin = new AppUser
         {
-            Email = "admin@futuretech.local",
-            PasswordHash = hasher.Hash("Admin#2026"),
+            Email = options.AdminEmail,
+            PasswordHash = hasher.Hash(options.AdminPassword),
             DisplayName = "Platform Admin",
             Role = UserRole.Admin,
             YearsExperience = 20
@@ -671,4 +769,21 @@ public class SeedOptions
 {
     public string SeedDataPath { get; set; } = "SeedData";
     public bool CreateDemoUser { get; set; } = true;
+
+    /// <summary>Administrator sign-in, overridable per deployment.</summary>
+    public string AdminEmail { get; set; } = DefaultAdminEmail;
+
+    /// <summary>
+    /// Applied at every startup when set, so an operator can change the
+    /// administrator password on an existing installation by changing
+    /// configuration and restarting. There is no change-password endpoint yet.
+    /// </summary>
+    public string AdminPassword { get; set; } = DefaultAdminPassword;
+
+    /// <summary>Published in the documentation, so unsafe outside a local run.</summary>
+    public const string DefaultAdminEmail = "admin@futuretech.local";
+    public const string DefaultAdminPassword = "Admin#2026";
+
+    public bool UsesDefaultAdminPassword =>
+        string.Equals(AdminPassword, DefaultAdminPassword, StringComparison.Ordinal);
 }

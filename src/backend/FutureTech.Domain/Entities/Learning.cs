@@ -20,6 +20,21 @@ public class Course : Entity
     /// <summary>CSV of skill slugs this course advances. Feeds the readiness dimensions.</summary>
     public string SkillSlugs { get; set; } = string.Empty;
 
+    /// <summary>
+    /// CSV of country codes this course is offered in. Empty — the default —
+    /// means every country, which is right for most of the curriculum: cloud
+    /// and AI architecture does not change at a border. Set it only for content
+    /// that genuinely is market-specific.
+    /// </summary>
+    public string Countries { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Free courses open to any signed-in learner. Advanced courses need a
+    /// confirmed payment before their lessons unlock. Everything seeded is
+    /// Free; an operator marks a course Advanced and prices it in Admin.
+    /// </summary>
+    public CourseAccessTier AccessTier { get; set; } = CourseAccessTier.Free;
+
     public ICollection<Module> Modules { get; set; } = new List<Module>();
 }
 

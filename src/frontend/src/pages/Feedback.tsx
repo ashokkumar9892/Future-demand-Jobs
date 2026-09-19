@@ -18,7 +18,8 @@ import {
   Textarea,
 } from '@/components/ui';
 import { cn, formatDate } from '@/lib/format';
-import type { Feedback, FeedbackCategory, FeedbackStatus } from '@/types/api';
+import { RatingStars, STATUS_LABEL, STATUS_TONE } from '@/components/feedback';
+import type { Feedback, FeedbackCategory } from '@/types/api';
 
 const CATEGORIES: { value: FeedbackCategory; label: string }[] = [
   { value: 'Course', label: 'A course' },
@@ -31,25 +32,6 @@ const CATEGORIES: { value: FeedbackCategory; label: string }[] = [
   { value: 'FeatureRequest', label: 'A feature request' },
   { value: 'General', label: 'General' },
 ];
-
-/** Shared with the admin console so one status never reads two ways. */
-export const STATUS_TONE: Record<FeedbackStatus, 'neutral' | 'brand' | 'success' | 'warning' | 'info'> = {
-  New: 'info',
-  UnderReview: 'warning',
-  Planned: 'brand',
-  InProgress: 'brand',
-  Implemented: 'success',
-  Declined: 'neutral',
-};
-
-export const STATUS_LABEL: Record<FeedbackStatus, string> = {
-  New: 'New',
-  UnderReview: 'Under review',
-  Planned: 'Planned',
-  InProgress: 'In progress',
-  Implemented: 'Implemented',
-  Declined: 'Not planned',
-};
 
 export default function FeedbackPage() {
   const queryClient = useQueryClient();
@@ -280,19 +262,5 @@ function RatingPicker({ value, onChange }: { value: number; onChange: (next: num
       ))}
       {value > 0 && <span className="ml-1 text-xs text-ink-faint">{value} / 5</span>}
     </div>
-  );
-}
-
-export function RatingStars({ value }: { value: number }) {
-  return (
-    <span className="inline-flex items-center gap-0.5" title={`${value} out of 5`}>
-      {[1, 2, 3, 4, 5].map((score) => (
-        <Star
-          key={score}
-          size={12}
-          className={score <= value ? 'fill-amber-400 text-amber-400' : 'text-ink-faint/40'}
-        />
-      ))}
-    </span>
   );
 }

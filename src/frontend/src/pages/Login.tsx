@@ -17,8 +17,12 @@ export default function Login({ mode = 'login' }: { mode?: 'login' | 'register' 
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [email, setEmail] = useState(mode === 'login' ? 'demo@futuretech.local' : '');
-  const [password, setPassword] = useState(mode === 'login' ? 'Demo#2026' : '');
+  // Prefilled only for the browser-only demo, where the accounts are local to
+  // this browser and there is no server to reach. A real deployment starts
+  // blank: credentials never ship in the UI.
+  const demoLogin = DEMO_MODE && mode === 'login';
+  const [email, setEmail] = useState(demoLogin ? 'demo@futuretech.local' : '');
+  const [password, setPassword] = useState(demoLogin ? 'Demo#2026' : '');
   const [displayName, setDisplayName] = useState('');
   const [years, setYears] = useState(20);
   const [error, setError] = useState<string | null>(null);
@@ -153,7 +157,8 @@ export default function Login({ mode = 'login' }: { mode?: 'login' | 'register' 
           {DEMO_MODE && (
             <p className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] leading-relaxed text-amber-200">
               This is a browser-only demo: the full platform runs locally with no API behind it.
-              Sign in with either account below — progress is saved to this browser.
+              A demo learner is already filled in — select Sign in. Progress is saved to this
+              browser only.
             </p>
           )}
 
@@ -176,25 +181,6 @@ export default function Login({ mode = 'login' }: { mode?: 'login' | 'register' 
               </>
             )}
           </p>
-
-          {mode === 'login' && (
-            <div className="mt-8 rounded-xl border border-line bg-surface-raised p-4">
-              <p className="label">Demo accounts</p>
-              <dl className="mt-2 space-y-1 font-mono text-[11px] text-ink-muted">
-                <div className="flex justify-between gap-3">
-                  <dt>demo@futuretech.local</dt>
-                  <dd>Demo#2026</dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt>admin@futuretech.local</dt>
-                  <dd>Admin#2026</dd>
-                </div>
-              </dl>
-              <p className="mt-2 text-[11px] text-ink-faint">
-                The demo learner is seeded with ~14 weeks of progress so every screen has data.
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>

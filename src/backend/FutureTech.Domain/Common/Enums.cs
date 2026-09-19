@@ -92,3 +92,36 @@ public enum FeedbackStatus
 {
     New = 0, UnderReview = 1, Planned = 2, InProgress = 3, Implemented = 4, Declined = 5
 }
+
+public enum EnrollmentStatus { Active = 0, Completed = 1, Withdrawn = 2 }
+
+/// <summary>Whether a course is open to everyone or needs to be paid for.</summary>
+public enum CourseAccessTier { Free = 0, Advanced = 1 }
+
+public enum PaymentMethodKind
+{
+    /// <summary>A QR the learner scans in their own banking or wallet app.</summary>
+    QrCode = 0,
+    /// <summary>The learner emails for an invoice or payment link.</summary>
+    Email = 1,
+    BankTransfer = 2
+}
+
+/// <summary>
+/// Where a payment has got to. The platform integrates no payment gateway:
+/// money moves outside it and an administrator confirms receipt, so these
+/// states describe a manual reconciliation, not an automated capture.
+/// </summary>
+public enum PaymentStatus
+{
+    /// <summary>Created, instructions shown, learner has not said they paid.</summary>
+    Pending = 0,
+    /// <summary>Learner says they have paid; an administrator needs to check.</summary>
+    AwaitingConfirmation = 1,
+    /// <summary>Confirmed received. Access is granted.</summary>
+    Paid = 2,
+    /// <summary>Checked and not found. Access stays closed.</summary>
+    Rejected = 3,
+    Cancelled = 4,
+    Refunded = 5
+}

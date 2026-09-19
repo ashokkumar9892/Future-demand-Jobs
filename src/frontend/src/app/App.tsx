@@ -33,6 +33,8 @@ const Notes = lazy(() => import('@/pages/Notes'));
 const Skills = lazy(() => import('@/pages/Skills'));
 const SettingsPage = lazy(() => import('@/pages/Settings'));
 const Admin = lazy(() => import('@/pages/admin/Admin'));
+const AdminInsights = lazy(() => import('@/pages/admin/Insights'));
+const FeedbackPage = lazy(() => import('@/pages/Feedback'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
 function Protected({ children }: { children: ReactNode }) {
@@ -108,6 +110,7 @@ export default function App() {
           <Route path="/bookmarks" element={<Protected><Bookmarks /></Protected>} />
           <Route path="/notes" element={<Protected><Notes /></Protected>} />
           <Route path="/skills" element={<Protected><Skills /></Protected>} />
+          <Route path="/feedback" element={<Protected><FeedbackPage /></Protected>} />
           <Route path="/settings" element={<Protected><SettingsPage /></Protected>} />
           <Route
             path="/admin"
@@ -115,6 +118,16 @@ export default function App() {
               <Protected>
                 <AdminOnly>
                   <Admin />
+                </AdminOnly>
+              </Protected>
+            }
+          />
+          <Route
+            path="/admin/learners"
+            element={
+              <Protected>
+                <AdminOnly>
+                  <AdminInsights />
                 </AdminOnly>
               </Protected>
             }

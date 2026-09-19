@@ -9,18 +9,23 @@ namespace FutureTech.Application.Services;
 
 public interface ICareerService
 {
-    Task<IReadOnlyList<CareerSummaryDto>> ListAsync(string? search, string? sort, CancellationToken ct = default);
-    Task<CareerDetailDto> GetAsync(string slug, CancellationToken ct = default);
+    Task<IReadOnlyList<CareerSummaryDto>> ListAsync(string? search, string? sort, string? country, CancellationToken ct = default);
+    Task<CareerDetailDto> GetAsync(string slug, string? country, CancellationToken ct = default);
     Task<IReadOnlyList<LadderStageDto>> GetLadderAsync(string slug, CancellationToken ct = default);
     Task<IReadOnlyList<SkillGapEntryDto>> GetSkillGapAsync(string slug, CancellationToken ct = default);
     Task<CareerSummaryDto> UpdateSalaryAsync(Guid id, SalaryUpdateRequest request, CancellationToken ct = default);
 }
 
-public class CareerService(IAppDbContext db, ICurrentUser currentUser, IDateTimeProvider clock) : ICareerService
+public class CareerService(
+    IAppDbContext db,
+    ICurrentUser currentUser,
+    IDateTimeProvider clock,
+    ILocationService locations) : ICareerService
 {
     private const double DefaultWeeklyHours = 12;
 
-    public async Task<IReadOnlyList<CareerSummaryDto>> ListAsync(string? search, string? sort, CancellationToken ct = default)
+    public async Task<IReadOnlyList<CareerSummaryDto>> ListAsync(
+        string? search, string? sort, string? country, CancellationToken ct = default)
     {
         var query = db.CareerPaths.AsNoTracking().Include(c => c.CareerSkills).AsQueryable();
 
@@ -42,10 +47,14 @@ public class CareerService(IAppDbContext db, ICurrentUser currentUser, IDateTime
 
         var careers = await query.ToListAsync(ct);
         var userLevels = await CurrentUserLevelsAsync(ct);
-        return careers.Select(c => ToSummary(c, userLevels)).ToList();
+
+        var market = await locations.ResolveAsync(country, ct);
+        var bands = await locations.BandsForAsync(careers.Select(c => c.Id).ToList(), market.Code, ct);
+
+        return careers.Select(c => ToSummary(c, userLevels, market, Band(bands, c.Id))).ToList();
     }
 
-    public async Task<CareerDetailDto> GetAsync(string slug, CancellationToken ct = default)
+    public async Task<CareerDetailDto> GetAsync(string slug, string? country, CancellationToken ct = default)
     {
         var career = await db.CareerPaths.AsNoTracking()
             .Include(c => c.CareerSkills).ThenInclude(cs => cs.Skill)
@@ -57,6 +66,9 @@ public class CareerService(IAppDbContext db, ICurrentUser currentUser, IDateTime
 
         var userLevels = await CurrentUserLevelsAsync(ct);
         var gap = BuildGap(career, userLevels);
+
+        var market = await locations.ResolveAsync(country, ct);
+        var bands = await locations.BandsForAsync([career.Id], market.Code, ct);
 
         var courses = await db.Courses.AsNoTracking()
             .Where(c => c.CareerPathId == career.Id)
@@ -83,7 +95,7 @@ public class CareerService(IAppDbContext db, ICurrentUser currentUser, IDateTime
         var hours = StudyMath.HoursForTrack(career.EstimatedHours, trackMode);
 
         return new CareerDetailDto(
-            ToSummary(career, userLevels),
+            ToSummary(career, userLevels, market, Band(bands, career.Id)),
             Text.Lines(career.ResumeKeywords),
             Text.Lines(career.Responsibilities),
             Text.Lines(career.InterviewFocus),
@@ -137,30 +149,62 @@ public class CareerService(IAppDbContext db, ICurrentUser currentUser, IDateTime
 
         if (request.SalaryMinUsd <= 0 || request.SalaryMaxUsd < request.SalaryMinUsd)
             throw new AppException("Salary range is invalid.");
+        if (string.IsNullOrWhiteSpace(request.Source))
+            throw new AppException("A source is required so the figures can be traced.");
+
+        // The country these figures describe. The request field is named in USD
+        // for backwards compatibility; the values are in the country's currency.
+        var target = await locations.ResolveAsync(request.CountryCode ?? LocationService.DefaultCode, ct);
+        var isBase = target.Code == LocationService.DefaultCode;
+
+        var band = await db.CareerSalaryBands
+            .FirstOrDefaultAsync(b => b.CareerPathId == career.Id && b.CountryCode == target.Code, ct);
+
+        if (band is null)
+        {
+            band = new CareerSalaryBand { CareerPathId = career.Id, CountryCode = target.Code };
+            db.CareerSalaryBands.Add(band);
+        }
 
         db.SalaryRevisions.Add(new SalaryRevision
         {
             CareerPathId = career.Id,
-            OldMinUsd = career.SalaryMinUsd,
-            OldMaxUsd = career.SalaryMaxUsd,
+            OldMinUsd = band.SalaryMin,
+            OldMaxUsd = band.SalaryMax,
             NewMinUsd = request.SalaryMinUsd,
             NewMaxUsd = request.SalaryMaxUsd,
-            Source = request.Source,
+            Source = $"[{target.Code}] {request.Source}",
             ChangedByUserId = currentUser.UserId
         });
 
-        career.SalaryMinUsd = request.SalaryMinUsd;
-        career.SalaryMaxUsd = request.SalaryMaxUsd;
-        career.SeniorSalaryMinUsd = request.SeniorSalaryMinUsd;
-        career.SeniorSalaryMaxUsd = request.SeniorSalaryMaxUsd;
-        career.SalarySource = request.Source;
-        career.SalaryAsOf = clock.Today;
+        band.CurrencyCode = target.CurrencyCode;
+        band.SalaryMin = request.SalaryMinUsd;
+        band.SalaryMax = request.SalaryMaxUsd;
+        band.SeniorSalaryMin = request.SeniorSalaryMinUsd;
+        band.SeniorSalaryMax = request.SeniorSalaryMaxUsd;
+        band.Source = request.Source;
+        band.AsOf = clock.Today;
+        band.UpdatedAt = clock.Now;
+
+        // The career's own USD columns are the platform's base figures, so they
+        // track the default market and are left alone when editing another one.
+        if (isBase)
+        {
+            career.SalaryMinUsd = request.SalaryMinUsd;
+            career.SalaryMaxUsd = request.SalaryMaxUsd;
+            career.SeniorSalaryMinUsd = request.SeniorSalaryMinUsd;
+            career.SeniorSalaryMaxUsd = request.SeniorSalaryMaxUsd;
+            career.SalarySource = request.Source;
+            career.SalaryAsOf = clock.Today;
+        }
+
         if (!string.IsNullOrWhiteSpace(request.TwoHundredKPotential))
             career.TwoHundredKPotential = request.TwoHundredKPotential;
         career.UpdatedAt = clock.Now;
 
         await db.SaveChangesAsync(ct);
-        return ToSummary(career, await CurrentUserLevelsAsync(ct));
+        var refreshed = await locations.BandsForAsync([career.Id], target.Code, ct);
+        return ToSummary(career, await CurrentUserLevelsAsync(ct), target, Band(refreshed, career.Id));
     }
 
     // ----- helpers -------------------------------------------------------
@@ -216,7 +260,11 @@ public class CareerService(IAppDbContext db, ICurrentUser currentUser, IDateTime
         s.StageOrder, s.Title, s.RoleTitle, s.Description, s.SalaryMinUsd, s.SalaryMaxUsd,
         s.DurationMonths, Text.Lines(s.Milestones), s.IsCurrentPosition);
 
-    private static CareerSummaryDto ToSummary(CareerPath c, IReadOnlyDictionary<Guid, int> levels)
+    private static CareerSalaryBand? Band(IReadOnlyDictionary<string, CareerSalaryBand> bands, Guid careerId) =>
+        bands.TryGetValue(careerId.ToString(), out var band) ? band : null;
+
+    private CareerSummaryDto ToSummary(
+        CareerPath c, IReadOnlyDictionary<Guid, int> levels, Country market, CareerSalaryBand? band)
     {
         var have = 0;
         var need = 0;
@@ -237,6 +285,7 @@ public class CareerService(IAppDbContext db, ICurrentUser currentUser, IDateTime
             StudyMath.Weeks(c.EstimatedHours, DefaultWeeklyHours),
             c.IsPrimaryRecommended,
             have, need,
-            StudyMath.DateLabel(c.SalaryAsOf), c.SalarySource);
+            StudyMath.DateLabel(c.SalaryAsOf), c.SalarySource,
+            locations.ToBandDto(market, band));
     }
 }

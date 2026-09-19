@@ -41,6 +41,10 @@ public class AdminService(AppDbContext db) : IAdminService
         ["projects"] = ("Projects", typeof(Project)),
         ["project-milestones"] = ("Project milestones", typeof(ProjectMilestone)),
         ["certifications"] = ("Certifications", typeof(Certification)),
+        ["countries"] = ("Markets & currencies", typeof(Country)),
+        ["course-prices"] = ("Course prices by country", typeof(CoursePrice)),
+        ["payment-methods"] = ("Payment methods", typeof(PaymentMethodOption)),
+        ["salary-bands"] = ("Career salary by country", typeof(CareerSalaryBand)),
         ["skills"] = ("Technologies & skills", typeof(Skill)),
         ["badges"] = ("Badges", typeof(Badge))
     };

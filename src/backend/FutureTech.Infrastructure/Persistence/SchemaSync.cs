@@ -111,9 +111,15 @@ public static class SchemaSync
 
     private static async Task<HashSet<string>> ExistingTablesAsync(AppDbContext db, CancellationToken ct)
     {
-        var sql = db.Database.IsSqlite()
-            ? "SELECT name FROM sqlite_master WHERE type = 'table'"
-            : "SELECT table_name FROM information_schema.tables WHERE table_schema = current_schema()";
+        // current_schema() is PostgreSQL/SQLite syntax; SQL Server spells it
+        // SCHEMA_NAME(). Getting this wrong takes the whole API down at startup,
+        // because this runs before anything is served.
+        var sql =
+            db.Database.IsSqlite()
+                ? "SELECT name FROM sqlite_master WHERE type = 'table'"
+                : db.Database.IsSqlServer()
+                    ? "SELECT table_name FROM information_schema.tables WHERE table_schema = SCHEMA_NAME()"
+                    : "SELECT table_name FROM information_schema.tables WHERE table_schema = current_schema()";
 
         var connection = db.Database.GetDbConnection();
         var opened = connection.State != System.Data.ConnectionState.Open;

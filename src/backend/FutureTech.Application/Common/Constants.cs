@@ -22,6 +22,20 @@ public static class Disclaimers
         "Static rubric check against required constructs. Code is not executed in this build.";
 }
 
+/// <summary>Rules for course completion certificates.</summary>
+public static class Certificates
+{
+    /// <summary>
+    /// Completion needed before a certificate can be issued. Not 100%: a course
+    /// carries optional depth a Fast-Track learner is not expected to sit.
+    /// </summary>
+    public const int MinimumPercent = 80;
+
+    public const string Statement =
+        "This certificate records lesson completion on the FutureTech Career Academy platform. " +
+        "It is not an accredited qualification and does not certify professional competence.";
+}
+
 public static class Xp
 {
     public const int LessonCompleted = 50;

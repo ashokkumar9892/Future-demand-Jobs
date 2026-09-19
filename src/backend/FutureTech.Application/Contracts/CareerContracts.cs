@@ -22,7 +22,10 @@ public record CareerSummaryDto(
     int SkillsYouHave,
     int SkillsToLearn,
     string SalaryAsOf,
-    string SalarySource);
+    string SalarySource,
+    // Pay for the selected country, in that country's currency. The USD fields
+    // above stay the platform's base figures so existing callers keep working.
+    SalaryBandDto Salary);
 
 public record SkillGapEntryDto(
     Guid SkillId,
@@ -84,4 +87,7 @@ public record TrainingEstimateDto(
 public record SalaryUpdateRequest(
     int SalaryMinUsd, int SalaryMaxUsd,
     int SeniorSalaryMinUsd, int SeniorSalaryMaxUsd,
-    string Source, string? TwoHundredKPotential);
+    string Source, string? TwoHundredKPotential,
+    // Which market the figures describe. Null or "US" also updates the career's
+    // base USD columns; any other country writes only that country's band.
+    string? CountryCode = null);

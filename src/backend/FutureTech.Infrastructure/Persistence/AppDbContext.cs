@@ -19,6 +19,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<LadderStage> LadderStages => Set<LadderStage>();
     public DbSet<ReadinessDimension> ReadinessDimensions => Set<ReadinessDimension>();
     public DbSet<SalaryRevision> SalaryRevisions => Set<SalaryRevision>();
+    public DbSet<Country> Countries => Set<Country>();
+    public DbSet<CareerSalaryBand> CareerSalaryBands => Set<CareerSalaryBand>();
 
     public DbSet<Course> Courses => Set<Course>();
     public DbSet<Module> Modules => Set<Module>();
@@ -59,6 +61,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ReadinessSnapshot> ReadinessSnapshots => Set<ReadinessSnapshot>();
     public DbSet<ResumeProfile> ResumeProfiles => Set<ResumeProfile>();
     public DbSet<ResumeItem> ResumeItems => Set<ResumeItem>();
+
+    public DbSet<CourseEnrollment> CourseEnrollments => Set<CourseEnrollment>();
+    public DbSet<CoursePrice> CoursePrices => Set<CoursePrice>();
+    public DbSet<PaymentMethodOption> PaymentMethodOptions => Set<PaymentMethodOption>();
+    public DbSet<PaymentRequest> PaymentRequests => Set<PaymentRequest>();
+    public DbSet<LearnerPreferences> LearnerPreferences => Set<LearnerPreferences>();
+    public DbSet<CourseCertificate> CourseCertificates => Set<CourseCertificate>();
 
     public DbSet<LoginEvent> LoginEvents => Set<LoginEvent>();
     public DbSet<IpLocation> IpLocations => Set<IpLocation>();

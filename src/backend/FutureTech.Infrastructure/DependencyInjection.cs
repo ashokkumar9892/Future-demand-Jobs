@@ -26,6 +26,20 @@ public static class DependencyInjection
                     configuration.GetConnectionString("Postgres")
                     ?? "Host=localhost;Port=5432;Database=futuretech;Username=postgres;Password=postgres");
             }
+            else if (provider.Equals("SqlServer", StringComparison.OrdinalIgnoreCase))
+            {
+                // For estates that already run SQL Server. Microsoft.Data.SqlClient 5
+                // encrypts by default, so a server without a certificate the client
+                // trusts needs TrustServerCertificate=True in the connection string.
+                options.UseSqlServer(
+                    configuration.GetConnectionString("SqlServer")
+                    ?? throw new InvalidOperationException(
+                        "Database:Provider is SqlServer but ConnectionStrings:SqlServer is not set."),
+                    sql => sql.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(10),
+                        errorNumbersToAdd: null));
+            }
             else
             {
                 // SQLite keeps `dotnet run` working on a machine with no database
@@ -82,7 +96,13 @@ public static class DependencyInjection
         services.AddSingleton(new SeedOptions
         {
             SeedDataPath = Path.Combine(contentRootPath, configuration["Seed:Path"] ?? "SeedData"),
-            CreateDemoUser = !bool.TryParse(configuration["Seed:CreateDemoUser"], out var create) || create
+            CreateDemoUser = !bool.TryParse(configuration["Seed:CreateDemoUser"], out var create) || create,
+            AdminEmail = configuration["Seed:AdminEmail"] is { Length: > 0 } email
+                ? email
+                : SeedOptions.DefaultAdminEmail,
+            AdminPassword = configuration["Seed:AdminPassword"] is { Length: > 0 } password
+                ? password
+                : SeedOptions.DefaultAdminPassword
         });
         services.AddScoped<IDatabaseSeeder, DatabaseSeeder>();
 

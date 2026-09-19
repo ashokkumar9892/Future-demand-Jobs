@@ -9,7 +9,8 @@ namespace FutureTech.Application.Services;
 
 public interface ICourseService
 {
-    Task<IReadOnlyList<CourseListItemDto>> ListAsync(Guid? careerPathId, string? track, string? search, CancellationToken ct = default);
+    Task<IReadOnlyList<CourseListItemDto>> ListAsync(
+        Guid? careerPathId, string? track, string? search, string? country, CancellationToken ct = default);
     Task<CourseDetailDto> GetAsync(string slug, CancellationToken ct = default);
     Task<LessonDetailDto> GetLessonAsync(string slug, CancellationToken ct = default);
     Task<LessonDetailDto> SaveProgressAsync(Guid lessonId, LessonProgressRequest request, CancellationToken ct = default);
@@ -21,11 +22,15 @@ public class CourseService(
     IAppDbContext db,
     ICurrentUser currentUser,
     IDateTimeProvider clock,
-    IGamificationService gamification) : ICourseService
+    IGamificationService gamification,
+    IEnrollmentService enrollments,
+    ILocationService locations,
+    IPaymentService payments) : ICourseService
 {
     public async Task<IReadOnlyList<CourseListItemDto>> ListAsync(
-        Guid? careerPathId, string? track, string? search, CancellationToken ct = default)
+        Guid? careerPathId, string? track, string? search, string? country, CancellationToken ct = default)
     {
+        var market = await locations.ResolveAsync(country, ct);
         var query = db.Courses.AsNoTracking().Include(c => c.CareerPath).AsQueryable();
         if (careerPathId is { } id) query = query.Where(c => c.CareerPathId == id);
 
@@ -46,13 +51,21 @@ public class CourseService(
             .Select(c => new
             {
                 c.Id, c.PhaseNumber, c.Order, c.Title, c.Slug, c.Summary, c.EstimatedHours,
-                c.Level, c.MinimumTrack, CareerTitle = c.CareerPath!.Title,
+                c.Level, c.MinimumTrack, c.Countries, CareerTitle = c.CareerPath!.Title,
                 ModuleCount = c.Modules.Count,
                 LessonIds = c.Modules.SelectMany(m => m.Lessons).Select(l => l.Id).ToList()
             })
             .ToListAsync(ct);
 
+        // An empty Countries column means the course is offered everywhere,
+        // which is true of the whole seeded curriculum. Filtering is applied in
+        // memory because the column is a CSV, not a relation.
+        courses = courses
+            .Where(c => IsOfferedIn(c.Countries, market.Code))
+            .ToList();
+
         var completed = await CompletedLessonIdsAsync(ct);
+        var access = await payments.AccessForAsync(courses.Select(c => c.Id).ToList(), market.Code, ct);
 
         return courses.Select(c =>
         {
@@ -61,9 +74,15 @@ public class CourseService(
                 c.Id, c.PhaseNumber, c.Order, c.Title, c.Slug, c.Summary, c.EstimatedHours,
                 Text.Humanize(c.Level), c.MinimumTrack.ToString(), c.CareerTitle,
                 c.ModuleCount, c.LessonIds.Count, done,
-                c.LessonIds.Count == 0 ? 0 : (int)Math.Round(done * 100.0 / c.LessonIds.Count));
+                c.LessonIds.Count == 0 ? 0 : (int)Math.Round(done * 100.0 / c.LessonIds.Count),
+                access.GetValueOrDefault(c.Id));
         }).ToList();
     }
+
+    /// <summary>True when the course has no country restriction, or lists this one.</summary>
+    internal static bool IsOfferedIn(string? countries, string countryCode) =>
+        Text.Csv(countries).Count == 0 ||
+        Text.Csv(countries).Any(code => code.Equals(countryCode, StringComparison.OrdinalIgnoreCase));
 
     public async Task<CourseDetailDto> GetAsync(string slug, CancellationToken ct = default)
     {
@@ -91,7 +110,9 @@ public class CourseService(
             course.Id, course.PhaseNumber, course.Order, course.Title, course.Slug, course.Summary,
             course.EstimatedHours, Text.Humanize(course.Level), course.MinimumTrack.ToString(),
             course.CareerPath?.Title ?? string.Empty, modules.Count, allLessons.Count, completedCount,
-            allLessons.Count == 0 ? 0 : (int)Math.Round(completedCount * 100.0 / allLessons.Count));
+            allLessons.Count == 0 ? 0 : (int)Math.Round(completedCount * 100.0 / allLessons.Count),
+            // The outline of a paid course stays visible — the lessons do not.
+            await payments.AccessForAsync(course.Id, null, ct));
 
         return new CourseDetailDto(header, Text.Lines(course.Outcomes), modules);
     }
@@ -106,6 +127,10 @@ public class CourseService(
             .FirstOrDefaultAsync(l => l.Slug == slug, ct)
             ?? throw AppException.NotFound("Lesson");
 
+        // The paywall has to hold here or it is decoration: the course page
+        // lists lesson titles, but the content only loads through this method.
+        if (lesson.Module?.CourseId is { } courseId) await payments.EnsureAccessAsync(courseId, ct);
+
         return await BuildLessonDetailAsync(lesson, ct);
     }
 
@@ -114,6 +139,10 @@ public class CourseService(
         var userId = currentUser.RequireUserId();
         var lesson = await db.Lessons.AsNoTracking().FirstOrDefaultAsync(l => l.Id == lessonId, ct)
                      ?? throw AppException.NotFound("Lesson");
+
+        var lessonCourseId = await db.Modules.AsNoTracking()
+            .Where(m => m.Id == lesson.ModuleId).Select(m => m.CourseId).FirstOrDefaultAsync(ct);
+        if (lessonCourseId != Guid.Empty) await payments.EnsureAccessAsync(lessonCourseId, ct);
 
         var record = await db.LessonProgress.FirstOrDefaultAsync(p => p.UserId == userId && p.LessonId == lessonId, ct);
         if (record is null)
@@ -139,6 +168,10 @@ public class CourseService(
         await db.SaveChangesAsync(ct);
         await gamification.EvaluateBadgesAsync(userId, ct);
         await db.SaveChangesAsync(ct);
+
+        // Studying a lesson enrols the learner in its course if they arrived
+        // without enrolling, and stamps the course as recently accessed.
+        if (lessonCourseId != Guid.Empty) await enrollments.EnsureEnrolledAsync(lessonCourseId, ct);
 
         return await GetLessonAsync(lesson.Slug, ct);
     }
