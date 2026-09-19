@@ -1,5 +1,15 @@
 const TOKEN_KEY = 'futuretech.token';
 
+/**
+ * Where the API lives.
+ *
+ * Default `/api` is same-origin: the Vite dev proxy handles it locally, nginx
+ * handles it in Docker, and a Netlify `_redirects` proxy handles it in a static
+ * deployment. Set VITE_API_BASE_URL to an absolute URL to call a deployed API
+ * directly instead — that origin then has to allow this one in Cors:Origins.
+ */
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '/api').replace(/\/+$/, '');
+
 export class ApiError extends Error {
   readonly status: number;
 
@@ -18,18 +28,45 @@ export const tokenStore = {
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
   const token = tokenStore.get();
 
-  const response = await fetch(`/api${path}`, {
-    method,
-    headers: {
-      ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}${path}`, {
+      method,
+      headers: {
+        ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    // fetch only rejects on a network-level failure. On a static host with no
+    // API behind it that is the first thing every user hits, so say what is
+    // actually wrong rather than surfacing "Failed to fetch".
+    throw new ApiError(
+      0,
+      `Could not reach the API at ${API_BASE}. If this is a static deployment, the ` +
+        `.NET API has to be deployed separately and API_PROXY_TARGET (or ` +
+        `VITE_API_BASE_URL) pointed at it.`,
+    );
+  }
 
   if (response.status === 204) return undefined as T;
 
+  const contentType = response.headers.get('content-type') ?? '';
   const text = await response.text();
+
+  // A static host with no API proxy answers /api/* with the SPA shell — HTML,
+  // and a 200. Without this check the caller would parse markup as data and
+  // fail somewhere far from the cause.
+  if (text && !contentType.includes('json')) {
+    throw new ApiError(
+      response.status,
+      `The API did not respond at ${API_BASE}${path} — the request was answered by the ` +
+        `static host instead. Deploy the .NET API and set API_PROXY_TARGET (or ` +
+        `VITE_API_BASE_URL) to point at it.`,
+    );
+  }
+
   const payload = text ? safeParse(text) : null;
 
   if (!response.ok) {
@@ -39,6 +76,7 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
       tokenStore.clear();
       if (!location.pathname.startsWith('/login')) location.assign('/login');
     }
+
     const message =
       (payload as { message?: string } | null)?.message ?? `Request failed (${response.status})`;
     throw new ApiError(response.status, message);

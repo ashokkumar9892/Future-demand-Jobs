@@ -1,0 +1,32 @@
+# Netlify builds the SPA only. The .NET API is a separate deployment — see the
+# "Deploying" section of README.md. Routing lives in the generated _redirects
+# file (src/frontend/scripts/generate-redirects.mjs) rather than here, because
+# the API proxy target has to come from an environment variable and netlify.toml
+# cannot interpolate those.
+
+[build]
+  base    = "src/frontend"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Vite 8 and TypeScript 6 need a current Node.
+  NODE_VERSION = "22"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options        = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy        = "strict-origin-when-cross-origin"
+
+# Hashed asset filenames are immutable; the entry document never is.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"

@@ -45,6 +45,58 @@ The same EF model runs on both providers; `Database:Provider` selects between
 
 ---
 
+## Deploying
+
+**This app is two deployments, not one.** A static host — Netlify, Cloudflare
+Pages, S3 behind a CDN — can serve the SPA but cannot run the .NET API. The API
+needs somewhere that runs containers: Azure Container Apps, Render, Fly.io,
+Railway, or a VM.
+
+### The SPA on Netlify
+
+`netlify.toml` at the repo root already sets the build:
+
+```toml
+base    = "src/frontend"     # the app is not at the repo root
+command = "npm run build"
+publish = "dist"
+```
+
+Without it Netlify publishes the repository root, which has no `index.html`, and
+every URL returns "Page not found".
+
+Routing is written to `dist/_redirects` by `scripts/generate-redirects.mjs`
+during the build — a `/*  /index.html  200` fallback so client-side routes like
+`/careers/ai-solutions-architect` resolve, plus an optional API proxy.
+
+### Pointing the SPA at the API
+
+Set **one** of these as a build environment variable on the host:
+
+| Variable | Effect | Trade-off |
+|---|---|---|
+| `API_PROXY_TARGET=https://your-api.example.com` | Netlify proxies `/api/*` to the API | Preferred — one origin, so no CORS to configure |
+| `VITE_API_BASE_URL=https://your-api.example.com/api` | The browser calls the API directly | The API must allow this origin, e.g. `Cors__Origins__0=https://your-site.netlify.app` |
+
+On the API side, set at minimum:
+
+```
+Database__Provider=Postgres
+ConnectionStrings__Postgres=<your connection string>
+Jwt__SigningKey=<a long random value — not the development default>
+```
+
+### If neither is set
+
+The site builds and every page renders, but nothing loads data: a static host
+answers `/api/*` with the SPA shell and a `200`, so the client would otherwise
+parse HTML as JSON. The API client detects that and sign-in reports *"The API
+did not respond … the request was answered by the static host instead"* rather
+than failing obscurely. Both states were verified against a simulated static
+host before release.
+
+---
+
 ## What is in here
 
 | Area | Detail |
@@ -154,6 +206,9 @@ tested.
   loads on screens that render a diagram, but it dominates that chunk.
 - **Salary figures are aggregated public estimates**, not a licensed data feed.
   They are dated, sourced, and updatable through the API for exactly that reason.
+- **A static-only deployment is a shell.** Netlify hosts the SPA; without an API
+  deployed alongside it the site loads and then tells you the API is missing.
+  See [Deploying](#deploying).
 
 ---
 
