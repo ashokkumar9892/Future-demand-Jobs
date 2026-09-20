@@ -80,8 +80,8 @@ export default function Insights() {
   return (
     <>
       <PageHeader
-        title="Learners & feedback"
-        description="Who has an account, which course each of them is working through, where they signed in from, and the feedback queue."
+        title="Usage & learners"
+        description="How long people spend in the application, how many sign in, which course each learner is working through, where they signed in from, and the feedback queue."
       />
 
       <div className="mb-5">

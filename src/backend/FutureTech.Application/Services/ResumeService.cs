@@ -187,7 +187,10 @@ public class ResumeService(
             profile.Headline,
             ".NET / Angular / SQL Server Full Stack Developer",
             profile.Summary,
-            profile.GeneratedAt.ToString("yyyy-MM-dd"),
+            // Round-trip ISO, not a bare date: regenerating twice in one day
+            // produced an identical string, so the only on-screen sign that
+            // the button had done anything never changed.
+            profile.GeneratedAt.ToString("O"),
             profile.Items.OrderBy(i => i.Section).ThenBy(i => i.Order)
                 .Select(i => new ResumeItemDto(i.Id, i.Section, i.Text, i.EvidenceKind.ToString(), i.SkillSlug, i.Order))
                 .ToList(),

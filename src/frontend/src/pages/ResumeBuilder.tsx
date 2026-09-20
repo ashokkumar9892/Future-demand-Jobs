@@ -4,7 +4,7 @@ import { ArrowRight, Copy, FileText, RefreshCw, ShieldAlert } from 'lucide-react
 import { api } from '@/lib/api';
 import { PageHeader } from '@/components/layout/AppShell';
 import { Badge, Button, Card, CardHeader, Disclaimer, ErrorPanel, LoadingPanel, Stat } from '@/components/ui';
-import { cn } from '@/lib/format';
+import { cn, formatDateTime } from '@/lib/format';
 import type { EvidenceKind, Resume } from '@/types/api';
 
 const EVIDENCE_TONE: Record<EvidenceKind, 'success' | 'info' | 'warning' | 'brand'> = {
@@ -31,7 +31,11 @@ export default function ResumeBuilder() {
 
   const regenerate = useMutation({
     mutationFn: () => api.post<Resume>('/resume/generate'),
-    onSuccess: (payload) => queryClient.setQueryData(['resume'], payload),
+    onSuccess: (payload) => {
+      queryClient.setQueryData(['resume'], payload);
+      // Readiness feeds the headline, so a rebuild can change it.
+      queryClient.invalidateQueries({ queryKey: ['readiness'] });
+    },
   });
 
   const sections = useMemo(() => {
@@ -87,9 +91,16 @@ export default function ResumeBuilder() {
             >
               Regenerate
             </Button>
+            {regenerate.isSuccess && <Badge tone="success">Rebuilt</Badge>}
           </>
         }
       />
+
+      {regenerate.isError && (
+        <div className="mb-5">
+          <ErrorPanel message={(regenerate.error as Error).message} />
+        </div>
+      )}
 
       <div className="mb-5 grid gap-4 sm:grid-cols-3">
         <Card className="card-pad">
@@ -99,7 +110,7 @@ export default function ResumeBuilder() {
           <Stat label="Evidence lines" value={data.items.length} detail={`${sections.length} sections`} />
         </Card>
         <Card className="card-pad">
-          <Stat label="Generated" value={data.generatedAt} />
+          <Stat label="Generated" value={formatDateTime(data.generatedAt)} />
         </Card>
       </div>
 

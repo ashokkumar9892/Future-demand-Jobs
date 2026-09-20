@@ -93,11 +93,26 @@ const NAV_GROUPS: { heading: string; items: NavItem[] }[] = [
       { to: '/notes', label: 'Notes', icon: <NotebookPen size={16} /> , authOnly: true },
       { to: '/feedback', label: 'Feedback', icon: <MessageSquarePlus size={16} /> , authOnly: true },
       { to: '/settings', label: 'Settings', icon: <Settings size={16} /> , authOnly: true },
-      { to: '/admin', label: 'Admin', icon: <Shield size={16} />, adminOnly: true },
-      { to: '/admin/learners', label: 'Learners & Feedback', icon: <Users size={16} />, adminOnly: true },
+    ],
+  },
+  // Its own group, and first for an admin. These used to sit at the foot of
+  // "Personal", below Settings, in a sidebar that scrolls — which is where an
+  // administrator looking for sign-in and usage figures would never find them.
+  {
+    heading: 'Administration',
+    items: [
+      { to: '/admin/learners', label: 'Usage & Learners', icon: <Users size={16} />, adminOnly: true },
+      { to: '/admin', label: 'Content & Settings', icon: <Shield size={16} />, adminOnly: true },
     ],
   },
 ];
+
+/** Administrators get their console first; everyone else keeps the learner order. */
+function orderedGroups(isAdmin: boolean) {
+  if (!isAdmin) return NAV_GROUPS;
+  const admin = NAV_GROUPS.filter((g) => g.heading === 'Administration');
+  return [...admin, ...NAV_GROUPS.filter((g) => g.heading !== 'Administration')];
+}
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
@@ -145,7 +160,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
 
         <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-4">
-          {NAV_GROUPS.map((group) => {
+          {orderedGroups(user?.role === 'Admin').map((group) => {
             const items = group.items.filter(
               (i) => (!i.adminOnly || user?.role === 'Admin') && (!i.authOnly || user),
             );
