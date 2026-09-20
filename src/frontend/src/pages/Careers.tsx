@@ -34,12 +34,18 @@ export default function Careers() {
 
   // The API already orders by categoryOrder then rank, so first-seen order is
   // the intended one and no second sort is needed here.
+  //
+  // The fallback is not defensive padding: the SPA and the API deploy
+  // separately, so between the two there is a window where this build is live
+  // against an API that predates categories and sends no such field. Without
+  // it every card lands under a heading reading "undefined".
   const groups = useMemo(() => {
     const byCategory = new Map<string, CareerSummary[]>();
     for (const career of filtered) {
-      const list = byCategory.get(career.category) ?? [];
+      const category = career.category || 'Other';
+      const list = byCategory.get(category) ?? [];
       list.push(career);
-      byCategory.set(career.category, list);
+      byCategory.set(category, list);
     }
     return Array.from(byCategory.entries());
   }, [filtered]);

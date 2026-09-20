@@ -31,9 +31,13 @@ export interface CareerSummary {
   title: string;
   slug: string;
   summary: string;
-  /** Display grouping, e.g. "Foundations" or "AI Engineering". */
-  category: string;
-  categoryOrder: number;
+  /**
+   * Display grouping, e.g. "Foundations" or "AI Engineering". Optional because
+   * the SPA and the API deploy separately: between the two, this build can be
+   * talking to an API that predates categories and omits both fields.
+   */
+  category?: string;
+  categoryOrder?: number;
   salaryMinUsd: number;
   salaryMaxUsd: number;
   seniorSalaryMinUsd: number;
