@@ -278,4 +278,14 @@ public class AdminUsageController(IUsageService usage) : ControllerBase
     [HttpGet]
     public Task<UsageOverviewDto> Get([FromQuery] int days = 30, CancellationToken ct = default) =>
         usage.OverviewAsync(days, ct);
+
+    /// <summary>Everyone who used the application in the window, account or not.</summary>
+    [HttpGet("visitors")]
+    public Task<PagedDto<VisitorRowDto>> Visitors(
+        [FromQuery] int days = 30,
+        [FromQuery] string? search = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 50,
+        CancellationToken ct = default) =>
+        usage.VisitorsAsync(days, search, page, pageSize, ct);
 }

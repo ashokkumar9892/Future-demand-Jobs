@@ -1,10 +1,21 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Clock, Timer } from 'lucide-react';
+import { Clock, Timer, Users } from 'lucide-react';
 import { api } from '@/lib/api';
-import { Card, CardHeader, EmptyState, LoadingPanel, Select, Stat } from '@/components/ui';
+import {
+  Badge,
+  Button,
+  Card,
+  CardHeader,
+  EmptyState,
+  ErrorPanel,
+  Input,
+  LoadingPanel,
+  Select,
+  Stat,
+} from '@/components/ui';
 import { formatDate, minutesLabel } from '@/lib/format';
-import type { UsageOverview } from '@/types/api';
+import type { Paged, UsageOverview, VisitorRow } from '@/types/api';
 
 /**
  * Time people actually had the application open.
@@ -144,6 +155,144 @@ export function UsagePanel() {
           property of the person or device; clearing site data ends that visitor.
         </p>
       </div>
+    </Card>
+  );
+}
+
+/**
+ * Every person who used the application in the window, signed in or not.
+ *
+ * Guests are listed alongside accounts because "how many people use this" is
+ * not a question about accounts — and since the catalogue opened to anonymous
+ * browsing, most people in this table will never have created one.
+ */
+export function VisitorsTab() {
+  const [days, setDays] = useState(30);
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+
+  const visitors = useQuery({
+    queryKey: ['admin-visitors', days, search, page],
+    queryFn: () =>
+      api.get<Paged<VisitorRow>>(
+        `/admin/usage/visitors?days=${days}&page=${page}&pageSize=50${
+          search ? `&search=${encodeURIComponent(search)}` : ''
+        }`,
+      ),
+  });
+
+  if (visitors.isLoading) return <LoadingPanel label="Loading visitors" />;
+  if (visitors.isError) return <ErrorPanel message={(visitors.error as Error).message} />;
+
+  const data = visitors.data;
+  if (!data) return null;
+
+  const guests = data.items.filter((v) => !v.signedIn).length;
+  const pages = Math.max(1, Math.ceil(data.total / data.pageSize));
+
+  return (
+    <Card>
+      <CardHeader
+        title="Everyone who visited"
+        subtitle={`${data.total} people in the last ${days} days · ${guests} of the ${data.items.length} shown have no account`}
+        icon={<Users size={15} />}
+        action={
+          <div className="flex items-center gap-2">
+            <Input
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              placeholder="Name, email or place"
+              className="w-48"
+            />
+            <Select
+              value={days}
+              onChange={(e) => {
+                setDays(Number(e.target.value));
+                setPage(1);
+              }}
+              className="w-32"
+            >
+              <option value={7}>7 days</option>
+              <option value={30}>30 days</option>
+              <option value={90}>90 days</option>
+            </Select>
+          </div>
+        }
+      />
+
+      {data.items.length === 0 ? (
+        <EmptyState
+          title="Nobody yet"
+          description="Visitors appear here as soon as someone opens the deployed application."
+        />
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-[13px]">
+            <thead>
+              <tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-ink-faint">
+                <th className="px-4 py-2 font-medium">Who</th>
+                <th className="px-4 py-2 font-medium">Time spent</th>
+                <th className="px-4 py-2 font-medium">Days</th>
+                <th className="px-4 py-2 font-medium">First seen</th>
+                <th className="px-4 py-2 font-medium">Last seen</th>
+                <th className="px-4 py-2 font-medium">Where / device</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.items.map((visitor) => (
+                <tr key={visitor.key} className="border-b border-line/50 hover:bg-surface-overlay">
+                  <td className="px-4 py-2.5">
+                    <div className="flex items-center gap-2">
+                      <Badge tone={visitor.signedIn ? 'brand' : 'warning'}>
+                        {visitor.signedIn ? 'Account' : 'Guest'}
+                      </Badge>
+                      <div className="min-w-0">
+                        <p className="truncate text-ink">{visitor.label}</p>
+                        {visitor.email && (
+                          <p className="truncate text-[11px] text-ink-faint">{visitor.email}</p>
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-2.5 tabular-nums text-ink">{minutesLabel(visitor.minutes)}</td>
+                  <td className="px-4 py-2.5 tabular-nums text-ink-muted">{visitor.activeDays}</td>
+                  <td className="px-4 py-2.5 text-ink-muted">{formatDate(visitor.firstSeenAt)}</td>
+                  <td className="px-4 py-2.5 text-ink-muted">{formatDate(visitor.lastSeenAt)}</td>
+                  <td className="px-4 py-2.5">
+                    <p className="text-ink-muted">{visitor.location ?? '—'}</p>
+                    <p className="text-[11px] text-ink-faint">{visitor.device ?? '—'}</p>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {pages > 1 && (
+        <div className="flex items-center justify-between gap-3 border-t border-line px-4 py-3">
+          <p className="text-xs text-ink-faint">
+            Page {data.page} of {pages}
+          </p>
+          <div className="flex gap-2">
+            <Button size="sm" variant="secondary" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+              Previous
+            </Button>
+            <Button size="sm" variant="secondary" disabled={page >= pages} onClick={() => setPage((p) => p + 1)}>
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <p className="card-pad text-xs text-ink-faint">
+        A guest is one browser that kept its storage — two devices are two rows, and clearing site
+        data starts a new one. Place is filled in only where that address has already been resolved
+        by a sign-in; behind a proxy it reflects the proxy, not the visitor.
+      </p>
     </Card>
   );
 }

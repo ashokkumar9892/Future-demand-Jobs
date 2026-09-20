@@ -1,4 +1,5 @@
 using FutureTech.Application.Abstractions;
+using FutureTech.Application.Common;
 using FutureTech.Application.Contracts;
 using FutureTech.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,10 @@ public interface IUsageService
 {
     Task RecordAsync(UsageHeartbeatRequest request, CancellationToken ct = default);
     Task<UsageOverviewDto> OverviewAsync(int days, CancellationToken ct = default);
+
+    /// <summary>Everyone who used the application, account or not, longest first.</summary>
+    Task<PagedDto<VisitorRowDto>> VisitorsAsync(
+        int days, string? search, int page, int pageSize, CancellationToken ct = default);
 }
 
 /// <summary>
@@ -21,7 +26,9 @@ public interface IUsageService
 /// no requests at all yet would look identical to one being read.
 /// </para>
 /// </summary>
-public class UsageService(IAppDbContext db, ICurrentUser currentUser, IDateTimeProvider clock) : IUsageService
+public class UsageService(
+    IAppDbContext db, ICurrentUser currentUser, IRequestContext http, IDateTimeProvider clock)
+    : IUsageService
 {
     /// <summary>
     /// Most a single heartbeat may add. The client sends every 60s; this allows
@@ -54,13 +61,29 @@ public class UsageService(IAppDbContext db, ICurrentUser currentUser, IDateTimeP
 
         if (row is null)
         {
-            row = new AppUsageDay { UserId = userId, VisitorId = visitorId, OnDate = today };
+            row = new AppUsageDay
+            {
+                UserId = userId,
+                VisitorId = visitorId,
+                OnDate = today,
+                FirstSeenAt = clock.Now
+            };
             db.AppUsageDays.Add(row);
         }
 
         row.Seconds = Math.Min(row.Seconds + seconds, MaxSecondsPerDay);
         row.LastSeenAt = clock.Now;
         row.UpdatedAt = clock.Now;
+
+        // Kept for the visitor list. The address is stored raw and turned into
+        // a place only when a report is read, so no heartbeat waits on a geo
+        // lookup and no outbound call happens once a minute per reader.
+        var ip = http.IpAddress;
+        if (!string.IsNullOrWhiteSpace(ip)) row.LastIpAddress = ip;
+
+        var agent = http.UserAgent;
+        if (!string.IsNullOrWhiteSpace(agent))
+            row.LastUserAgent = agent.Length > 400 ? agent[..400] : agent;
 
         await db.SaveChangesAsync(ct);
     }
@@ -123,6 +146,102 @@ public class UsageService(IAppDbContext db, ICurrentUser currentUser, IDateTimeP
             Minutes(rows.Where(r => r.OnDate == today).Sum(r => r.Seconds)),
             daily,
             topLearners);
+    }
+
+    public async Task<PagedDto<VisitorRowDto>> VisitorsAsync(
+        int days, string? search, int page, int pageSize, CancellationToken ct = default)
+    {
+        days = Math.Clamp(days, 1, 365);
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 200);
+        var from = clock.Today.AddDays(-(days - 1));
+
+        var rows = await db.AppUsageDays.AsNoTracking()
+            .Where(u => u.OnDate >= from)
+            .ToListAsync(ct);
+
+        var names = await db.Users.AsNoTracking()
+            .Select(u => new { u.Id, u.DisplayName, u.Email })
+            .ToDictionaryAsync(u => u.Id, ct);
+
+        // Resolved from the cache the login audit already fills. A place is
+        // shown when some earlier sign-in happened to resolve that address, and
+        // left blank otherwise, rather than calling out during a report.
+        var addresses = rows.Select(r => r.LastIpAddress)
+            .Where(ip => !string.IsNullOrWhiteSpace(ip))
+            .Distinct()
+            .ToList();
+
+        var places = await db.IpLocations.AsNoTracking()
+            .Where(l => addresses.Contains(l.IpAddress))
+            .ToDictionaryAsync(l => l.IpAddress, l => l, ct);
+
+        var visitors = rows
+            .GroupBy(r => r.UserId is { } id ? $"user:{id}" : $"guest:{r.VisitorId}")
+            .Select(g =>
+            {
+                var latest = g.OrderByDescending(r => r.LastSeenAt).First();
+                var userId = latest.UserId;
+                names.TryGetValue(userId ?? Guid.Empty, out var account);
+
+                return new VisitorRowDto(
+                    g.Key,
+                    userId is not null,
+                    userId is null
+                        // Enough of the opaque id to tell two guests apart in a
+                        // table, without implying it names anyone.
+                        ? $"Guest {ShortId(latest.VisitorId)}"
+                        : account is null
+                            ? "Deleted account"
+                            : string.IsNullOrWhiteSpace(account.DisplayName) ? account.Email : account.DisplayName,
+                    userId is null ? null : account?.Email,
+                    Minutes(g.Sum(r => r.Seconds)),
+                    g.Select(r => r.OnDate).Distinct().Count(),
+                    g.Min(r => r.FirstSeenAt == default ? r.LastSeenAt : r.FirstSeenAt),
+                    g.Max(r => r.LastSeenAt),
+                    Place(latest.LastIpAddress, places),
+                    Device(latest.LastUserAgent));
+            })
+            .ToList();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim();
+            visitors = visitors.Where(v =>
+                v.Label.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                (v.Email?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (v.Location?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false))
+                .ToList();
+        }
+
+        var total = visitors.Count;
+        var items = visitors
+            .OrderByDescending(v => v.Minutes)
+            .ThenByDescending(v => v.LastSeenAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        return new PagedDto<VisitorRowDto>(total, page, pageSize, items);
+    }
+
+    private static string ShortId(string? visitorId) =>
+        string.IsNullOrWhiteSpace(visitorId) ? "unknown" : visitorId.Replace("-", "")[..Math.Min(6, visitorId.Replace("-", "").Length)];
+
+    private static string? Place(string? ip, IReadOnlyDictionary<string, IpLocation> places)
+    {
+        if (string.IsNullOrWhiteSpace(ip) || !places.TryGetValue(ip, out var place)) return null;
+        var parts = new[] { place.City, place.Region, place.Country }
+            .Where(p => !string.IsNullOrWhiteSpace(p));
+        var label = string.Join(", ", parts);
+        return string.IsNullOrWhiteSpace(label) ? null : label;
+    }
+
+    private static string? Device(string? userAgent)
+    {
+        if (string.IsNullOrWhiteSpace(userAgent)) return null;
+        var agent = UserAgentParser.Parse(userAgent);
+        return $"{agent.Browser} / {agent.OperatingSystem} · {agent.DeviceKind}";
     }
 
     private static int Minutes(int seconds) => (int)Math.Round(seconds / 60.0);

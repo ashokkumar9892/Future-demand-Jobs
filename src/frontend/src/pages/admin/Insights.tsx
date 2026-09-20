@@ -35,7 +35,7 @@ import {
 } from '@/components/ui';
 import { formatDate, minutesLabel } from '@/lib/format';
 import { RatingStars, STATUS_LABEL, STATUS_TONE } from '@/components/feedback';
-import { UsagePanel } from '@/pages/admin/UsagePanel';
+import { UsagePanel, VisitorsTab } from '@/pages/admin/UsagePanel';
 import type {
   AdminFeedback,
   CourseEngagement,
@@ -50,10 +50,11 @@ import type {
   PaymentRequestDto,
 } from '@/types/api';
 
-type Tab = 'overview' | 'learners' | 'logins' | 'courses' | 'feedback' | 'payments';
+type Tab = 'overview' | 'visitors' | 'learners' | 'logins' | 'courses' | 'feedback' | 'payments';
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'overview', label: 'Overview' },
+  { key: 'visitors', label: 'Everyone who visited' },
   { key: 'learners', label: 'Learners' },
   { key: 'logins', label: 'Login activity' },
   { key: 'courses', label: 'Course engagement' },
@@ -89,6 +90,7 @@ export default function Insights() {
       </div>
 
       {tab === 'overview' && <OverviewTab onJump={setTab} />}
+      {tab === 'visitors' && <VisitorsTab />}
       {tab === 'learners' && <LearnersTab />}
       {tab === 'logins' && <LoginsTab />}
       {tab === 'courses' && <CoursesTab />}

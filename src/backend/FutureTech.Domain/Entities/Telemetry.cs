@@ -37,4 +37,14 @@ public class AppUsageDay : Entity
     public int Seconds { get; set; }
 
     public DateTimeOffset LastSeenAt { get; set; }
+    public DateTimeOffset FirstSeenAt { get; set; }
+
+    /// <summary>
+    /// From the most recent heartbeat of the day. Resolved to a place through
+    /// the shared <see cref="IpLocation"/> cache when the report is read, so
+    /// reporting makes no outbound calls and a heartbeat stays cheap.
+    /// </summary>
+    public string? LastIpAddress { get; set; }
+
+    public string? LastUserAgent { get; set; }
 }

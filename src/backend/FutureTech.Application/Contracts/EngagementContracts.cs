@@ -205,3 +205,24 @@ public record UsageOverviewDto(
     int MinutesToday,
     IReadOnlyList<UsageDayDto> Daily,
     IReadOnlyList<UsagePersonDto> TopLearners);
+
+/// <summary>
+/// One person who used the application, whether or not they have an account.
+/// <para>
+/// A guest is identified only by the random id their browser holds, so the
+/// label is deliberately opaque. It identifies a browser that keeps its
+/// storage, not a person — two devices are two rows, and clearing site data
+/// starts a new one.
+/// </para>
+/// </summary>
+public record VisitorRowDto(
+    string Key,
+    bool SignedIn,
+    string Label,
+    string? Email,
+    int Minutes,
+    int ActiveDays,
+    DateTimeOffset FirstSeenAt,
+    DateTimeOffset LastSeenAt,
+    string? Location,
+    string? Device);

@@ -1316,3 +1316,16 @@ export interface UsageOverview {
   daily: UsageDay[];
   topLearners: UsagePerson[];
 }
+
+export interface VisitorRow {
+  key: string;
+  signedIn: boolean;
+  label: string;
+  email?: string | null;
+  minutes: number;
+  activeDays: number;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  location?: string | null;
+  device?: string | null;
+}
