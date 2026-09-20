@@ -2,6 +2,7 @@ using System.Data.Common;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Logging;
 
 namespace FutureTech.Infrastructure.Persistence;
@@ -17,9 +18,16 @@ namespace FutureTech.Infrastructure.Persistence;
 /// feature exists to report on.
 /// </para>
 /// <para>
-/// It only ever adds missing tables and their indexes. It does not alter or
-/// drop anything, so it cannot destroy data. Once real migrations are added,
-/// delete this and call <c>MigrateAsync</c>.
+/// It adds missing tables with their indexes, and missing columns on tables
+/// that already exist. It never alters or drops anything already there, so it
+/// cannot destroy data. Once real migrations are added, delete this and call
+/// <c>MigrateAsync</c>.
+/// </para>
+/// <para>
+/// Columns matter as much as tables: a property added to an existing entity is
+/// invisible to <c>EnsureCreated</c>, and every read of that entity then fails
+/// with "no such column" on installations that predate the change — including
+/// ones upgraded only a day earlier.
 /// </para>
 /// </summary>
 public static class SchemaSync
@@ -46,22 +54,128 @@ public static class SchemaSync
             .Select(name => name!)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        if (missing.Count == 0) return;
-
-        logger.LogInformation("Adding {Count} new table(s) to the existing database: {Tables}",
-            missing.Count, string.Join(", ", missing.Order()));
-
-        var applied = 0;
-        foreach (var statement in Statements(db.Database.GenerateCreateScript()))
+        if (missing.Count > 0)
         {
-            var target = TargetTable(statement);
-            if (target is null || !missing.Contains(target)) continue;
+            logger.LogInformation("Adding {Count} new table(s) to the existing database: {Tables}",
+                missing.Count, string.Join(", ", missing.Order()));
 
-            await db.Database.ExecuteSqlRawAsync(statement, ct);
-            applied++;
+            var applied = 0;
+            foreach (var statement in Statements(db.Database.GenerateCreateScript()))
+            {
+                var target = TargetTable(statement);
+                if (target is null || !missing.Contains(target)) continue;
+
+                await db.Database.ExecuteSqlRawAsync(statement, ct);
+                applied++;
+            }
+
+            logger.LogInformation("Applied {Count} schema statement(s).", applied);
         }
 
-        logger.LogInformation("Applied {Count} schema statement(s).", applied);
+        await EnsureColumnsAsync(db, logger, existing, missing, ct);
+    }
+
+    /// <summary>
+    /// Adds columns the model has gained on tables that already exist.
+    /// <para>
+    /// Every column is added nullable and with an explicit default, even where
+    /// the model forbids null. Rows written before the column existed have no
+    /// value for it, and a non-nullable property read back as NULL would throw
+    /// on every one of them.
+    /// </para>
+    /// </summary>
+    private static async Task EnsureColumnsAsync(
+        AppDbContext db, ILogger logger, HashSet<string> existing, HashSet<string> justCreated,
+        CancellationToken ct)
+    {
+        var added = 0;
+
+        foreach (var entity in db.Model.GetEntityTypes())
+        {
+            var table = entity.GetTableName();
+            if (string.IsNullOrEmpty(table)) continue;
+
+            // A table created moments ago already matches the model.
+            if (!existing.Contains(table) || justCreated.Contains(table)) continue;
+
+            var storeObject = StoreObjectIdentifier.Table(table, entity.GetSchema());
+            var present = await ExistingColumnsAsync(db, table, ct);
+            if (present.Count == 0) continue;
+
+            foreach (var property in entity.GetProperties())
+            {
+                var column = property.GetColumnName(storeObject);
+                if (string.IsNullOrEmpty(column) || present.Contains(column)) continue;
+
+                var type = property.GetColumnType(storeObject);
+                if (string.IsNullOrEmpty(type)) continue;
+
+                var sql = "ALTER TABLE " + Quote(db, table) + " ADD " + Quote(db, column) +
+                          " " + type + " NULL DEFAULT " + DefaultLiteral(property);
+
+                logger.LogInformation("Adding column {Table}.{Column} ({Type})", table, column, type);
+                await db.Database.ExecuteSqlRawAsync(sql, ct);
+                added++;
+            }
+        }
+
+        if (added > 0) logger.LogInformation("Added {Count} missing column(s).", added);
+    }
+
+    private static string Quote(AppDbContext db, string identifier) =>
+        db.Database.IsSqlServer() ? "[" + identifier + "]" : "\"" + identifier + "\"";
+
+    /// <summary>
+    /// A literal valid for the column's stored form. Dates and GUIDs persist
+    /// here as strings, so a blank default would read back as an unparseable
+    /// value rather than as "not set".
+    /// </summary>
+    private static string DefaultLiteral(IProperty property)
+    {
+        var model = Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType;
+        var provider = property.GetTypeMapping().Converter?.ProviderClrType ?? model;
+
+        if (model == typeof(DateTimeOffset) || model == typeof(DateTime))
+            return provider == typeof(string) ? "'0001-01-01T00:00:00.0000000+00:00'" : "'0001-01-01'";
+        if (model == typeof(DateOnly)) return "'0001-01-01'";
+        if (model == typeof(Guid)) return "'00000000-0000-0000-0000-000000000000'";
+        if (model == typeof(bool)) return provider == typeof(string) ? "'False'" : "0";
+        if (model.IsEnum) return "''";
+        return provider == typeof(string) ? "''" : "0";
+    }
+
+    private static async Task<HashSet<string>> ExistingColumnsAsync(
+        AppDbContext db, string table, CancellationToken ct)
+    {
+        var sql = db.Database.IsSqlite()
+            ? "SELECT name FROM pragma_table_info('" + table.Replace("'", "''") + "')"
+            : "SELECT column_name FROM information_schema.columns WHERE table_name = @table";
+
+        var connection = db.Database.GetDbConnection();
+        var opened = connection.State != System.Data.ConnectionState.Open;
+        if (opened) await connection.OpenAsync(ct);
+
+        try
+        {
+            await using var command = connection.CreateCommand();
+            command.CommandText = sql;
+            if (!db.Database.IsSqlite())
+            {
+                var parameter = command.CreateParameter();
+                parameter.ParameterName = "@table";
+                parameter.Value = table;
+                command.Parameters.Add(parameter);
+            }
+
+            var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            await using var reader = await command.ExecuteReaderAsync(ct);
+            while (await reader.ReadAsync(ct)) names.Add(reader.GetString(0));
+            return names;
+        }
+        finally
+        {
+            if (opened) await connection.CloseAsync();
+        }
     }
 
     /// <summary>Splits the generated script on statement terminators at end of line.</summary>
