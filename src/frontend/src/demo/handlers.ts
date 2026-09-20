@@ -394,6 +394,10 @@ export function handleLearning(
       if (career) s.targetCareerSlug = career.slug;
     }
     if (body?.completeOnboarding) state.profile.onboardingCompleted = true;
+    // Onboarding now carries this rather than the sign-up form.
+    if (body?.yearsExperience !== undefined) {
+      state.profile.yearsExperience = Math.max(0, Math.min(60, Number(body.yearsExperience)));
+    }
 
     // Capacity or target changed: the schedule ahead is now stale.
     generatePlan(state, today(), 26);

@@ -2,7 +2,12 @@ namespace FutureTech.Application.Contracts;
 
 // ---------- Auth ----------
 
-public record RegisterRequest(string Email, string Password, string DisplayName, int YearsExperience);
+/// <summary>
+/// Years of experience is optional and defaults to unset: it is asked for
+/// during onboarding, not at the point of creating an account, where it was
+/// only friction between someone and signing up.
+/// </summary>
+public record RegisterRequest(string Email, string Password, string DisplayName, int YearsExperience = 0);
 public record LoginRequest(string Email, string Password);
 public record AuthResponse(string Token, DateTimeOffset ExpiresAt, UserProfileDto User);
 
@@ -24,7 +29,7 @@ public record StudyProfileUpdateRequest(
     double WeekdayHours, double SaturdayHours, double SundayHours,
     IReadOnlyList<string> StudyDays, string? TargetCompletionDate,
     Guid? TargetCareerPathId, int DesiredSalaryUsd, int CurrentSkillLevel,
-    string TrackMode, bool CompleteOnboarding);
+    string TrackMode, bool CompleteOnboarding, int? YearsExperience = null);
 
 public record StudyCalculationRequest(double WeeklyHours, string TrackMode, Guid? CareerPathId);
 

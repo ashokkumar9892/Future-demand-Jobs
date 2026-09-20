@@ -27,7 +27,7 @@ interface AuthContextValue {
   user: UserProfile | null;
   ready: boolean;
   login: (email: string, password: string) => Promise<UserProfile>;
-  register: (email: string, password: string, displayName: string, years: number) => Promise<UserProfile>;
+  register: (email: string, password: string, displayName: string) => Promise<UserProfile>;
   logout: () => void;
   refresh: () => Promise<void>;
 }
@@ -69,14 +69,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ready,
       login: async (email, password) =>
         applyAuth(await api.post<AuthResponse>('/auth/login', { email, password })),
-      register: async (email, password, displayName, yearsExperience) =>
+      // Years of experience is collected during onboarding instead, so the
+      // account form stays to name, email and password.
+      register: async (email, password, displayName) =>
         applyAuth(
-          await api.post<AuthResponse>('/auth/register', {
-            email,
-            password,
-            displayName,
-            yearsExperience,
-          }),
+          await api.post<AuthResponse>('/auth/register', { email, password, displayName }),
         ),
       logout: () => {
         tokenStore.clear();

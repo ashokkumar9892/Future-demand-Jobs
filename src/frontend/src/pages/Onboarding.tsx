@@ -53,6 +53,7 @@ export default function Onboarding() {
   const [careerId, setCareerId] = useState<string>('');
   const [desiredSalary, setDesiredSalary] = useState(200_000);
   const [skillLevel, setSkillLevel] = useState(70);
+  const [years, setYears] = useState(20);
   const [trackMode, setTrackMode] = useState<TrackMode>('Balanced');
   const [targetDate, setTargetDate] = useState('');
 
@@ -95,6 +96,7 @@ export default function Onboarding() {
         targetCareerPathId: selectedCareer?.id,
         desiredSalaryUsd: desiredSalary,
         currentSkillLevel: skillLevel,
+        yearsExperience: years,
         trackMode,
         completeOnboarding: true,
       }),
@@ -293,6 +295,21 @@ export default function Onboarding() {
               title="Target salary and current level"
               hint="Used to frame progress, never to make a claim on your behalf."
             >
+              <div className="mb-4">
+                <Field
+                  label="Years of engineering experience"
+                  hint="Frames the resume summary and the roadmap. Never used to inflate a claim."
+                >
+                  <Input
+                    type="number"
+                    min={0}
+                    max={60}
+                    value={years}
+                    onChange={(e) => setYears(Number(e.target.value))}
+                  />
+                </Field>
+              </div>
+
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Desired salary (USD)">
                   <Input
@@ -432,6 +449,7 @@ export default function Onboarding() {
                   value={estimate.data?.estimatedCompletionMonth ?? '—'}
                 />
                 <Row label="Target salary" value={money(desiredSalary)} />
+                <Row label="Experience" value={`${years} years`} />
                 <Row label="Daily requirement" value={estimate.data ? `${estimate.data.dailyHoursRequired} hrs` : '—'} />
               </dl>
 

@@ -50,6 +50,15 @@ public class StudyPlannerService(
         if (request.CompleteOnboarding && profile.OnboardingCompletedAt is null)
             profile.OnboardingCompletedAt = clock.Now;
 
+        // Lives on the user, not the study profile, because the resume summary
+        // reads it from there. Null means "not supplied by this caller", which
+        // keeps a partial profile save from wiping a figure already set.
+        if (request.YearsExperience is { } years)
+        {
+            var user = await db.Users.FirstOrDefaultAsync(u => u.Id == profile.UserId, ct);
+            if (user is not null) user.YearsExperience = Math.Clamp(years, 0, 60);
+        }
+
         await db.SaveChangesAsync(ct);
 
         // Study capacity or target changed: the schedule ahead is now stale.

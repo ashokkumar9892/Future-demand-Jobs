@@ -24,7 +24,6 @@ export default function Login({ mode = 'login' }: { mode?: 'login' | 'register' 
   const [email, setEmail] = useState(demoLogin ? 'demo@futuretech.local' : '');
   const [password, setPassword] = useState(demoLogin ? 'Demo#2026' : '');
   const [displayName, setDisplayName] = useState('');
-  const [years, setYears] = useState(20);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -37,7 +36,7 @@ export default function Login({ mode = 'login' }: { mode?: 'login' | 'register' 
     try {
       const profile =
         mode === 'register'
-          ? await register(email, password, displayName, years)
+          ? await register(email, password, displayName)
           : await login(email, password);
       navigate(profile.onboardingCompleted ? '/' : '/onboarding', { replace: true });
     } catch (err) {
@@ -106,25 +105,14 @@ export default function Login({ mode = 'login' }: { mode?: 'login' | 'register' 
 
           <form onSubmit={submit} className="mt-6 space-y-4">
             {mode === 'register' && (
-              <>
-                <Field label="Name">
-                  <Input
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder="Your name"
-                    required
-                  />
-                </Field>
-                <Field label="Years of experience" hint="Used to frame the roadmap, never to inflate a resume.">
-                  <Input
-                    type="number"
-                    min={0}
-                    max={50}
-                    value={years}
-                    onChange={(e) => setYears(Number(e.target.value))}
-                  />
-                </Field>
-              </>
+              <Field label="Name">
+                <Input
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder="Your name"
+                  required
+                />
+              </Field>
             )}
 
             <Field label="Email">
