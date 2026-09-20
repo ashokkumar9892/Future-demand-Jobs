@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Award, Lock, Sparkles, Target } from 'lucide-react';
+import { useAuth } from '@/app/providers';
 import { api } from '@/lib/api';
 import {
   Badge,
@@ -24,13 +25,17 @@ import type { CourseListItem, Enrollment } from '@/types/api';
  */
 export function EnrolmentPanel({ course }: { course: CourseListItem }) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [goal, setGoal] = useState('');
   const [hours, setHours] = useState(4);
 
+  // An enrolment belongs to an account. Asking for one anonymously 401s on
+  // every course a visitor opens, so the panel invites them to sign up instead.
   const enrollments = useQuery({
     queryKey: ['enrollments'],
     queryFn: () => api.get<Enrollment[]>('/enrollments'),
+    enabled: Boolean(user),
   });
 
   const mine = enrollments.data?.find((e) => e.courseId === course.id && e.status !== 'Withdrawn');
@@ -61,6 +66,55 @@ export function EnrolmentPanel({ course }: { course: CourseListItem }) {
     mutationFn: () => api.post(`/certificates/courses/${course.id}`),
     onSuccess: invalidate,
   });
+
+  // Placed after the hooks above, not before them: an early return ahead of a
+  // hook changes the hook order between renders.
+  //
+  // A guest previously got the full enrolment form, filled it in, pressed
+  // Confirm and was told "Request failed (401)". The API is right to refuse —
+  // an enrolment has to belong to someone — so the fix is to stop offering it.
+  // The badge stays: what the course costs is exactly what someone deciding
+  // whether to sign up wants to know.
+  if (!user) {
+    return (
+      <Card className="mb-5">
+        <CardHeader
+          title="Enrol in this course"
+          subtitle="Enrolment records your goal and tracks progress towards the certificate."
+          icon={<Target size={15} />}
+          action={
+            access && (
+              <Badge tone={access.isFree ? 'success' : 'warning'}>
+                {access.isFree ? (
+                  'Free'
+                ) : (
+                  <>
+                    <Lock size={10} />
+                    {access.priceLabel ?? 'Advanced'}
+                  </>
+                )}
+              </Badge>
+            )
+          }
+        />
+        <div className="card-pad">
+          <p className="text-[13px] leading-relaxed text-ink-muted">
+            <Link to="/register" className="text-brand-400 transition hover:underline">
+              Create a free account
+            </Link>{' '}
+            to enrol, or{' '}
+            <Link to="/login" className="text-brand-400 transition hover:underline">
+              sign in
+            </Link>
+            .{' '}
+            {locked
+              ? 'This one is paid, so the lessons open once you have an account and have bought it.'
+              : 'The lessons below are readable without one — an account is what saves your progress and issues the certificate.'}
+          </p>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="mb-5">
