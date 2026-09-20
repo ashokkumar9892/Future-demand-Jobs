@@ -3,6 +3,7 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Route as RouteIcon, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/app/providers';
 import { DEMO_MODE } from '@/lib/api';
+import { SUPPORT_EMAIL, supportMailto } from '@/lib/support';
 import { Button, ErrorPanel, Field, Input } from '@/components/ui';
 
 const HIGHLIGHTS = [
@@ -168,6 +169,15 @@ export default function Login({ mode = 'login' }: { mode?: 'login' | 'register' 
                 </Link>
               </>
             )}
+          </p>
+
+          {/* Someone who cannot get past this screen has no way into the app to
+              find help, so the address has to be on the screen itself. */}
+          <p className="mt-3 text-center text-[11px] text-ink-faint">
+            Locked out or stuck?{' '}
+            <a href={supportMailto('FutureTech Academy — cannot sign in')} className="link">
+              {SUPPORT_EMAIL}
+            </a>
           </p>
         </div>
       </div>

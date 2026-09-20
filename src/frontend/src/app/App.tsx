@@ -40,6 +40,7 @@ const FeedbackPage = lazy(() => import('@/pages/Feedback'));
 const MyLearning = lazy(() => import('@/pages/MyLearning'));
 const Checkout = lazy(() => import('@/pages/Checkout'));
 const VerifyCertificate = lazy(() => import('@/pages/VerifyCertificate'));
+const Support = lazy(() => import('@/pages/Support'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
 /**
@@ -160,6 +161,8 @@ export default function App() {
           <Route path="/my-learning" element={<Protected><MyLearning /></Protected>} />
           <Route path="/feedback" element={<Protected><FeedbackPage /></Protected>} />
           <Route path="/settings" element={<Protected><SettingsPage /></Protected>} />
+          {/* Public: someone locked out of their account is exactly who needs it. */}
+          <Route path="/support" element={<Public><Support /></Public>} />
           <Route
             path="/admin"
             element={

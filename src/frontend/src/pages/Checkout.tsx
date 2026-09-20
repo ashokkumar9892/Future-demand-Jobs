@@ -17,6 +17,7 @@ import {
   Textarea,
 } from '@/components/ui';
 import { cn } from '@/lib/format';
+import { SUPPORT_EMAIL, supportMailto } from '@/lib/support';
 import type { CourseDetail, PaymentInstructions, PaymentMethod } from '@/types/api';
 
 /**
@@ -276,6 +277,35 @@ export default function Checkout() {
               <ShieldCheck size={15} className="mt-0.5 shrink-0 text-brand-400" />
               {instructions.notice}
             </p>
+          </Card>
+
+          {/* A payment that never opened its course is the one thing on this
+              platform a learner cannot resolve on their own, so the address
+              sits beside the reference they will need to quote. */}
+          <Card className="card-pad">
+            <p className="label">Payment not confirmed?</p>
+            <p className="mt-1 text-[12px] leading-relaxed text-ink-muted">
+              If you have paid and the course has not opened, write to us quoting reference{' '}
+              <code className="rounded bg-surface-sunken px-1 py-0.5 font-mono text-[11px] text-ink">
+                {instructions.reference}
+              </code>
+              .
+            </p>
+            <a
+              href={supportMailto(
+                `Payment ${instructions.reference} — not confirmed`,
+                `Reference: ${instructions.reference}
+Course: ${instructions.courseTitle}
+Amount: ${instructions.amountLabel}
+
+When and how I paid:
+`,
+              )}
+              className="link mt-2 inline-flex items-center gap-1.5 text-[12px]"
+            >
+              <Mail size={13} />
+              {SUPPORT_EMAIL}
+            </a>
           </Card>
 
           <Disclaimer>

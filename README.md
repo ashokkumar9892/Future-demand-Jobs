@@ -87,6 +87,9 @@ Set **one** of these as a build environment variable on the host:
 | `API_PROXY_TARGET=https://your-api.example.com` | Netlify proxies `/api/*` to the API | Preferred — one origin, so no CORS to configure |
 | `VITE_API_BASE_URL=https://your-api.example.com/api` | The browser calls the API directly | The API must allow this origin, e.g. `Cors__Origins__0=https://your-site.netlify.app` |
 
+Optionally set `VITE_SUPPORT_EMAIL` to route the in-app support links at your
+own inbox — see [Support contact](#support-contact).
+
 On the API side, set at minimum:
 
 ```
@@ -241,6 +244,26 @@ resolved on a background queue rather than during sign-in.
 Any service returning similar JSON keys can be substituted by changing
 `Endpoint` — the parser accepts the common spellings (`regionName`/`region`,
 `country`/`country_name`, `lat`/`latitude`).
+
+### Support contact
+
+Questions a learner cannot resolve in the product — a payment that never opened
+its course, an account they are locked out of, a certificate that did not
+appear — go to a person, by email. The address is **infosession2015@gmail.com**
+and it is defined once, in
+[`src/frontend/src/lib/support.ts`](src/frontend/src/lib/support.ts); set
+`VITE_SUPPORT_EMAIL` at build time to point a deployment somewhere else.
+
+It surfaces on the **Help & Support** page (`/support`, readable without an
+account, since someone locked out is exactly who needs it), at the foot of the
+sidebar, on the sign-in screen, on the checkout screen beside the payment
+reference, on the feedback screen, and on a 404. The links are `mailto:`s
+pre-filled with the account and the page the learner came from, so a first
+reply does not have to ask for either.
+
+Feedback is deliberately kept separate: `/feedback` decides what gets built and
+shows the learner what was decided, but it is not a reply channel, and a guest
+cannot reach it at all.
 
 ---
 

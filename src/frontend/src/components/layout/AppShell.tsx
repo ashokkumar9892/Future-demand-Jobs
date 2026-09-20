@@ -15,6 +15,7 @@ import {
   Gauge,
   GraduationCap,
   LayoutDashboard,
+  LifeBuoy,
   LogOut,
   Menu,
   MessageSquarePlus,
@@ -37,6 +38,7 @@ import { useAuth, useTheme } from '@/app/providers';
 import { DEMO_MODE } from '@/lib/api';
 import { api } from '@/lib/api';
 import { cn, initials } from '@/lib/format';
+import { SUPPORT_EMAIL } from '@/lib/support';
 import type { SearchResponse } from '@/types/api';
 
 interface NavItem {
@@ -94,6 +96,12 @@ const NAV_GROUPS: { heading: string; items: NavItem[] }[] = [
       { to: '/feedback', label: 'Feedback', icon: <MessageSquarePlus size={16} /> , authOnly: true },
       { to: '/settings', label: 'Settings', icon: <Settings size={16} /> , authOnly: true },
     ],
+  },
+  // Not authOnly: a guest who cannot sign in, or who paid and saw nothing
+  // open, is precisely the person who needs the support address.
+  {
+    heading: 'Help',
+    items: [{ to: '/support', label: 'Help & Support', icon: <LifeBuoy size={16} /> }],
   },
   // Its own group, and first for an admin. These used to sit at the foot of
   // "Personal", below Settings, in a sidebar that scrolls — which is where an
@@ -284,6 +292,18 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
             </div>
           )}
+
+          {/* The address itself, not only a link to the page that holds it:
+              whoever needs support is usually mid-problem and should not have
+              to navigate to find out where to write. */}
+          <a
+            href={`mailto:${SUPPORT_EMAIL}`}
+            className="mt-2 flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[10px] text-ink-faint transition hover:bg-surface-overlay hover:text-ink-muted"
+            title={`Email support at ${SUPPORT_EMAIL}`}
+          >
+            <LifeBuoy size={12} className="shrink-0" />
+            <span className="truncate">{SUPPORT_EMAIL}</span>
+          </a>
         </div>
       </aside>
 

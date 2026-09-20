@@ -18,6 +18,7 @@ import {
   Textarea,
 } from '@/components/ui';
 import { cn, formatDate } from '@/lib/format';
+import { SUPPORT_EMAIL, supportMailto } from '@/lib/support';
 import { RatingStars, STATUS_LABEL, STATUS_TONE } from '@/components/feedback';
 import type { Feedback, FeedbackCategory } from '@/types/api';
 
@@ -82,6 +83,11 @@ export default function FeedbackPage() {
           icon={<MessageSquarePlus size={22} />}
           title="Feedback needs the API"
           description="This build runs entirely in your browser, so there is nowhere to store feedback. Run the platform against the .NET API to use this screen."
+          action={
+            <a href={supportMailto('FutureTech Academy — feedback')} className="link text-[12px]">
+              Email it to {SUPPORT_EMAIL} instead
+            </a>
+          }
         />
       </>
     );
@@ -93,6 +99,17 @@ export default function FeedbackPage() {
         title="Feedback"
         description="Tell us what to fix, add or explain better. Every item is read, and you will see here what was decided."
       />
+
+      {/* This queue decides what gets built; it is not a reply channel. Anything
+          waiting on an answer — a payment, an account, a certificate — needs an
+          inbox, and saying so here keeps it from sitting unanswered in a list. */}
+      <Disclaimer className="mb-5">
+        Need an answer rather than a change? Write to{' '}
+        <a href={supportMailto('FutureTech Academy — support request')} className="link">
+          {SUPPORT_EMAIL}
+        </a>{' '}
+        — payments, accounts and certificates are handled there.
+      </Disclaimer>
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
         <Card className="h-fit">
