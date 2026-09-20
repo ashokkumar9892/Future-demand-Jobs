@@ -22,12 +22,13 @@ end.
 4. [Configuration reference](#4-configuration-reference)
 5. [Administrator account](#5-administrator-account)
 6. [Deploy: Windows service](#6-deploy-windows-service)
-7. [Deploy: other targets](#7-deploy-other-targets)
-8. [Deploy the SPA and connect it](#8-deploy-the-spa-and-connect-it)
-9. [Security checklist](#9-security-checklist)
-10. [Verify the deployment](#10-verify-the-deployment)
-11. [Upgrading](#11-upgrading)
-12. [Troubleshooting](#12-troubleshooting)
+7. [Deploy: IIS](#7-deploy-iis)
+8. [Deploy: other targets](#8-deploy-other-targets)
+9. [Deploy the SPA and connect it](#9-deploy-the-spa-and-connect-it)
+10. [Security checklist](#10-security-checklist)
+11. [Verify the deployment](#11-verify-the-deployment)
+12. [Upgrading](#12-upgrading)
+13. [Troubleshooting](#13-troubleshooting)
 
 ---
 
@@ -316,15 +317,208 @@ Get-EventLog -LogName Application -Source FutureTechApi -Newest 20
 
 ---
 
-## 7. Deploy: other targets
+## 7. Deploy: IIS
 
-### IIS
+Copy the published folder into a site folder and point IIS at it. Two things
+differ from every other target:
 
-Install the [ASP.NET Core Hosting Bundle](https://dotnet.microsoft.com/permalink/dotnetcore-current-windows-runtime-bundle-installer),
-then create a site pointing at the published folder with an application pool set
-to **No Managed Code**. The app runs in-process; `Urls` is ignored and IIS
-supplies the binding. Give the app pool identity write access to the SQLite file
-or the folder holding it.
+- IIS needs the **ASP.NET Core Hosting Bundle**, which installs the native
+  module (ANCM) that hands requests to the app. This is required even for a
+  self-contained build — the bundle supplies the module, not just the runtime.
+- The app runs **in-process inside `w3wp.exe`**. `Urls` in `appsettings.json` is
+  ignored; the site binding decides the port. Everything else in
+  [section 4](#4-configuration-reference) behaves normally.
+
+### 7.1 One-time: install the Hosting Bundle
+
+Install the IIS role **first**, then the bundle. If IIS is added afterwards the
+module is not registered and every request returns `500.19`.
+
+Download: [ASP.NET Core 8 Hosting Bundle](https://dotnet.microsoft.com/permalink/dotnetcore-current-windows-runtime-bundle-installer)
+
+```powershell
+# after installing, reload IIS so it picks up the module
+net stop was /y
+net start w3svc
+
+# confirm the runtime and the module are both present
+dotnet --list-runtimes | Select-String "Microsoft.AspNetCore.App 8\."
+Select-String AspNetCoreModuleV2 $env:windir\System32\inetsrv\config\applicationHost.config |
+  Select-Object -First 1
+```
+
+If IIS was installed after the bundle, run the installer again and choose
+**Repair**.
+
+### 7.2 Build the folder you are going to copy
+
+From the repo root:
+
+```powershell
+dotnet publish src\backend\FutureTech.Api\FutureTech.Api.csproj `
+  -c Release -o publish
+```
+
+That produces `publish\` — about 48 MB, 123 files. Publish writes `web.config`
+for you, with the handler mapping and `hostingModel="inprocess"` already set.
+Do not hand-write one.
+
+**Copy the whole folder, subfolders included.** Two of them are load-bearing:
+
+| Subfolder | Why it matters |
+|---|---|
+| `SeedData\` | 12 JSON files. Without them the API starts, reports healthy, and serves an empty platform. |
+| `runtimes\` | Native `e_sqlite3.dll`. Without it the site starts and then fails on the first database call. |
+
+Copying only the top-level `.dll` files is the usual cause of both failures.
+
+For the self-contained build instead (no runtime dependency, ~111 MB), use
+`deploy\windows\publish.ps1` and copy `deploy\windows\out\`. Its `web.config`
+uses `processPath=".\FutureTech.Api.exe"`; everything below is otherwise
+identical, and the Hosting Bundle is still required.
+
+### 7.3 Copy it to the server
+
+```powershell
+robocopy publish C:\inetpub\FutureTechApi /E
+```
+
+`C:\inetpub\wwwroot` works too, but a sibling folder keeps the API out of the
+default site's tree. Remember the path — it is the site's physical path below.
+
+### 7.4 Configure it before the first request
+
+The app seeds the database on startup, so set the secrets **before** the site
+first runs. Copy the annotated template and edit it in place:
+
+```powershell
+copy deploy\windows\appsettings.Production.json C:\inetpub\FutureTechApi\
+```
+
+Then, in `C:\inetpub\FutureTechApi\appsettings.Production.json`:
+
+| Setting | Do this |
+|---|---|
+| `Jwt:SigningKey` | Replace. Generate one with `[Convert]::ToBase64String((1..48 \| ForEach-Object { Get-Random -Max 256 }))` |
+| `Seed:AdminPassword` | Replace — the default is published in these docs. |
+| `Database` / `ConnectionStrings` | See [section 3](#3-choose-a-database). SQLite needs nothing installed. |
+| `Cors:Origins` | Your SPA's origin, only if the browser calls this API directly. |
+| `Urls` | Delete it or leave it; IIS ignores it either way. |
+
+That file is only read when `ASPNETCORE_ENVIRONMENT` is `Production`. Under IIS
+the environment is set in `web.config`:
+
+```xml
+<aspNetCore processPath="dotnet" arguments=".\FutureTech.Api.dll"
+            stdoutLogEnabled="false" stdoutLogFile=".\logs\stdout"
+            hostingModel="inprocess">
+  <environmentVariables>
+    <environmentVariable name="ASPNETCORE_ENVIRONMENT" value="Production" />
+  </environmentVariables>
+</aspNetCore>
+```
+
+**`web.config` is regenerated by every `dotnet publish`.** Keep secrets in
+`appsettings.Production.json`, which publish does not touch, and keep the
+`web.config` edit to this one line — or re-apply it after each publish.
+
+### 7.5 Create the application pool and the site
+
+```powershell
+Import-Module WebAdministration
+
+New-WebAppPool -Name FutureTechApi
+# "No Managed Code" — the app is .NET 8, not .NET Framework
+Set-ItemProperty IIS:\AppPools\FutureTechApi managedRuntimeVersion ''
+Set-ItemProperty IIS:\AppPools\FutureTechApi enable32BitAppOnWin64 $false
+Set-ItemProperty IIS:\AppPools\FutureTechApi processModel.loadUserProfile $true
+# no idle shutdown: startup seeds the database, so a cold start is slow
+Set-ItemProperty IIS:\AppPools\FutureTechApi processModel.idleTimeout ([TimeSpan]::Zero)
+Set-ItemProperty IIS:\AppPools\FutureTechApi recycling.periodicRestart.time ([TimeSpan]::Zero)
+
+New-Website -Name FutureTechApi `
+  -PhysicalPath C:\inetpub\FutureTechApi `
+  -ApplicationPool FutureTechApi `
+  -Port 8080
+```
+
+The same thing in IIS Manager: **Application Pools → Add Application Pool**
+(.NET CLR version *No Managed Code*), then **Sites → Add Website** with that
+pool, the physical path from 7.3, and a port.
+
+Pick a port nothing else holds — IIS's Default Web Site usually owns 80.
+
+### 7.6 Give the app pool write access
+
+The pool's identity is the virtual account `IIS AppPool\FutureTechApi`:
+
+```powershell
+icacls C:\inetpub\FutureTechApi /grant "IIS AppPool\FutureTechApi:(OI)(CI)M" /T
+```
+
+It needs write access because a relative SQLite path is resolved against the
+published folder, so `data\futuretech.db` is created *inside the site folder* on
+first run. The `logs\` folder needs it too, when stdout logging is on.
+
+On SQL Server or PostgreSQL only `logs\` strictly needs it — but grant the
+folder anyway unless you have a reason not to.
+
+### 7.7 Verify
+
+```powershell
+Invoke-RestMethod http://localhost:8080/health
+# -> status=ok
+```
+
+Then run the seeding check in [section 11](#11-verify-the-deployment) against
+port 8080. Swagger is at `http://localhost:8080/swagger`.
+
+### 7.8 Redeploying over a running site
+
+`w3wp.exe` holds the DLLs open, so a plain copy fails partway with files in use.
+Drop `app_offline.htm` in first: IIS shuts the app down and releases them.
+
+```powershell
+# 1. back up the database
+copy C:\inetpub\FutureTechApi\data\futuretech.db C:\backups\futuretech-$(Get-Date -f yyyyMMdd).db
+
+# 2. take the app down
+New-Item C:\inetpub\FutureTechApi\app_offline.htm -ItemType File
+
+# 3. copy, keeping config, data and logs
+robocopy publish C:\inetpub\FutureTechApi /E `
+  /XF app_offline.htm appsettings.Production.json /XD data logs
+
+# 4. bring it back
+Remove-Item C:\inetpub\FutureTechApi\app_offline.htm
+```
+
+Do not use `robocopy /MIR` here — it deletes whatever is not in the source,
+including `data\` and your `appsettings.Production.json`.
+
+Then re-read [section 12](#12-upgrading) on schema changes: there are no EF Core
+migrations yet, so an altered column is not applied automatically.
+
+### Hosting it under a path, e.g. `/api`
+
+Give the API its own site, as above. As a sub-application under an existing site
+it *mostly* works — the `/api/...` controller routes are fine, because IIS sets
+the path base and routing strips it — but two things in `Program.cs` are written
+as root-absolute paths, so they resolve against the server root rather than the
+application:
+
+- `app.MapGet("/", () => Results.Redirect("/swagger"))`
+- `options.SwaggerEndpoint("/swagger/v1/swagger.json", ...)`
+
+Under a sub-application those two point at the wrong place and Swagger UI does
+not load. The API itself is unaffected. Change the two lines or use a dedicated
+site.
+
+---
+
+## 8. Deploy: other targets
+
+IIS has its own runbook: [section 7](#7-deploy-iis).
 
 ### Linux (systemd)
 
@@ -383,7 +577,7 @@ cannot be shared across scaled-out instances.
 
 ---
 
-## 8. Deploy the SPA and connect it
+## 9. Deploy the SPA and connect it
 
 ### Build
 
@@ -435,7 +629,7 @@ by anyone.
 
 ---
 
-## 9. Security checklist
+## 10. Security checklist
 
 Before exposing a deployment:
 
@@ -461,7 +655,7 @@ Before exposing a deployment:
 
 ---
 
-## 10. Verify the deployment
+## 11. Verify the deployment
 
 Do these in order; each one rules out a different failure.
 
@@ -503,7 +697,7 @@ Swagger is at `/swagger` for exploring the API directly.
 
 ---
 
-## 11. Upgrading
+## 12. Upgrading
 
 1. Build a new package.
 2. Stop the service.
@@ -519,7 +713,7 @@ migrations before you have production data you cannot recreate.
 
 ---
 
-## 12. Troubleshooting
+## 13. Troubleshooting
 
 **Service installs but will not start.** Run `.\run-api.ps1` instead; the real
 error goes to the console. Usually a port already in use or malformed JSON in
@@ -552,3 +746,41 @@ leftover `run-api.ps1` console alongside the service. Stop one.
 **"Could not reach the API" on the site.** The SPA is still in demo mode, or the
 proxy is not set. Confirm `VITE_DEMO_MODE=false` and `API_PROXY_TARGET`, and
 that you redeployed after changing them.
+
+### IIS
+
+**`HTTP Error 500.19` on every request.** IIS cannot read `web.config` because
+the ASP.NET Core Module is not registered — the Hosting Bundle is missing, or it
+was installed before the IIS role. Install or **Repair** the bundle, then
+`net stop was /y; net start w3svc`.
+
+**`HTTP Error 500.30` / `500.31` — ANCM failed to start.** The app threw during
+startup. Turn on the stdout log, reproduce, then turn it back off:
+
+```powershell
+cd C:\inetpub\FutureTechApi
+New-Item logs -ItemType Directory -ErrorAction SilentlyContinue
+# set stdoutLogEnabled="true" in web.config, hit the site, then:
+Get-Content logs\stdout_*.log -Tail 40
+```
+
+Leave it off in normal operation — the file grows without bound. The same error
+also appears in Event Viewer → Windows Logs → Application, source *IIS AspNetCore
+Module V2*. Malformed `appsettings.Production.json` and an unreachable database
+are the usual causes.
+
+**`HTTP Error 500.0 — In-Process Handler Load Failure`.** The app pool has
+**Enable 32-Bit Applications** set to True. Set it to False.
+
+**`HTTP Error 403.14 — Directory listing denied`.** `web.config` was not copied,
+so the request never reached the module. Re-copy the published folder.
+
+**`SQLite Error 14: unable to open database file` under IIS.** The app pool
+identity has no write access to the site folder. See
+[section 7.6](#76-give-the-app-pool-write-access).
+
+**The copy fails with files in use.** `w3wp.exe` has the DLLs open. Use the
+`app_offline.htm` sequence in [section 7.8](#78-redeploying-over-a-running-site).
+
+**Site starts but `careers=0`.** `SeedData\` was not copied. See
+[section 7.2](#72-build-the-folder-you-are-going-to-copy).
