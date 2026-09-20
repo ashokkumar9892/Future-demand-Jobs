@@ -1,0 +1,162 @@
+[
+  {
+    "code": "AZ-900",
+    "name": "Microsoft Azure Fundamentals",
+    "vendor": "Microsoft",
+    "level": "Fundamentals",
+    "estimatedPrepHours": 20,
+    "topics": ["Cloud concepts", "Azure architecture and services", "Management and governance", "Pricing and SLAs"],
+    "examCostUsd": 99,
+    "officialUrl": "https://learn.microsoft.com/credentials/certifications/azure-fundamentals/"
+  },
+  {
+    "code": "AI-900",
+    "name": "Microsoft Azure AI Fundamentals",
+    "vendor": "Microsoft",
+    "level": "Fundamentals",
+    "estimatedPrepHours": 20,
+    "topics": ["AI workloads", "Machine learning basics", "Computer vision", "NLP", "Generative AI on Azure"],
+    "examCostUsd": 99,
+    "officialUrl": "https://learn.microsoft.com/credentials/certifications/azure-ai-fundamentals/"
+  },
+  {
+    "code": "AZ-204",
+    "name": "Developing Solutions for Microsoft Azure",
+    "vendor": "Microsoft",
+    "level": "Associate",
+    "estimatedPrepHours": 60,
+    "topics": ["Compute solutions", "Azure Storage", "Azure security", "Monitoring and optimisation", "Connecting services"],
+    "examCostUsd": 165,
+    "officialUrl": "https://learn.microsoft.com/credentials/certifications/azure-developer/"
+  },
+  {
+    "code": "AI-102",
+    "name": "Designing and Implementing a Microsoft Azure AI Solution",
+    "vendor": "Microsoft",
+    "level": "Associate",
+    "estimatedPrepHours": 70,
+    "topics": ["Plan and manage Azure AI", "Generative AI solutions", "Azure AI Search", "Responsible AI", "Agents and orchestration"],
+    "examCostUsd": 165,
+    "officialUrl": "https://learn.microsoft.com/credentials/certifications/azure-ai-engineer/"
+  },
+  {
+    "code": "AZ-305",
+    "name": "Designing Microsoft Azure Infrastructure Solutions",
+    "vendor": "Microsoft",
+    "level": "Expert",
+    "estimatedPrepHours": 90,
+    "topics": ["Identity and governance", "Data storage design", "Business continuity", "Infrastructure design", "Migration"],
+    "examCostUsd": 165,
+    "officialUrl": "https://learn.microsoft.com/credentials/certifications/azure-solutions-architect/"
+  },
+  {
+    "code": "AZ-500",
+    "name": "Microsoft Azure Security Technologies",
+    "vendor": "Microsoft",
+    "level": "Associate",
+    "estimatedPrepHours": 80,
+    "topics": ["Identity and access", "Platform protection", "Security operations", "Data and application security"],
+    "examCostUsd": 165,
+    "officialUrl": "https://learn.microsoft.com/credentials/certifications/azure-security-engineer/"
+  },
+  {
+    "code": "SC-100",
+    "name": "Microsoft Cybersecurity Architect",
+    "vendor": "Microsoft",
+    "level": "Expert",
+    "estimatedPrepHours": 90,
+    "topics": ["Zero Trust strategy", "GRC", "Security operations design", "Identity and application security architecture"],
+    "examCostUsd": 165,
+    "officialUrl": "https://learn.microsoft.com/credentials/certifications/cybersecurity-architect-expert/"
+  },
+  {
+    "code": "AWS-SAA",
+    "name": "AWS Certified Solutions Architect – Associate",
+    "vendor": "AWS",
+    "level": "Associate",
+    "estimatedPrepHours": 70,
+    "topics": ["Resilient architectures", "High-performing architectures", "Secure applications", "Cost-optimised architectures"],
+    "examCostUsd": 150,
+    "officialUrl": "https://aws.amazon.com/certification/certified-solutions-architect-associate/"
+  },
+  {
+    "code": "AWS-SAP",
+    "name": "AWS Certified Solutions Architect – Professional",
+    "vendor": "AWS",
+    "level": "Professional",
+    "estimatedPrepHours": 120,
+    "topics": ["Complex organisations", "New solutions design", "Continuous improvement", "Migration and modernisation"],
+    "examCostUsd": 300,
+    "officialUrl": "https://aws.amazon.com/certification/certified-solutions-architect-professional/"
+  },
+  {
+    "code": "AWS-AIP",
+    "name": "AWS Certified AI Practitioner",
+    "vendor": "AWS",
+    "level": "Foundational",
+    "estimatedPrepHours": 30,
+    "topics": ["AI/ML fundamentals", "Generative AI", "Amazon Bedrock", "Responsible AI", "Security and governance"],
+    "examCostUsd": 100,
+    "officialUrl": "https://aws.amazon.com/certification/certified-ai-practitioner/"
+  },
+  {
+    "code": "AWS-MLA",
+    "name": "AWS Certified Machine Learning Engineer – Associate",
+    "vendor": "AWS",
+    "level": "Associate",
+    "estimatedPrepHours": 80,
+    "topics": ["Data preparation", "Model development", "Deployment and orchestration", "Monitoring and security"],
+    "examCostUsd": 150,
+    "officialUrl": "https://aws.amazon.com/certification/certified-machine-learning-engineer-associate/"
+  },
+  {
+    "code": "AWS-SCS",
+    "name": "AWS Certified Security – Specialty",
+    "vendor": "AWS",
+    "level": "Specialty",
+    "estimatedPrepHours": 100,
+    "topics": ["Threat detection", "Infrastructure security", "Identity and access management", "Data protection"],
+    "examCostUsd": 300,
+    "officialUrl": "https://aws.amazon.com/certification/certified-security-specialty/"
+  },
+  {
+    "code": "CKA",
+    "name": "Certified Kubernetes Administrator",
+    "vendor": "CNCF",
+    "level": "Professional",
+    "estimatedPrepHours": 90,
+    "topics": ["Cluster architecture", "Workloads and scheduling", "Services and networking", "Storage", "Troubleshooting"],
+    "examCostUsd": 445,
+    "officialUrl": "https://www.cncf.io/training/certification/cka/"
+  },
+  {
+    "code": "TF-ASSOC",
+    "name": "HashiCorp Certified: Terraform Associate",
+    "vendor": "HashiCorp",
+    "level": "Associate",
+    "estimatedPrepHours": 40,
+    "topics": ["IaC concepts", "Terraform workflow", "State management", "Modules", "HCP Terraform"],
+    "examCostUsd": 70,
+    "officialUrl": "https://developer.hashicorp.com/certifications/infrastructure-automation"
+  },
+  {
+    "code": "CISSP",
+    "name": "Certified Information Systems Security Professional",
+    "vendor": "ISC2",
+    "level": "Expert",
+    "estimatedPrepHours": 160,
+    "topics": ["Security and risk management", "Asset security", "Security architecture", "IAM", "Security operations"],
+    "examCostUsd": 749,
+    "officialUrl": "https://www.isc2.org/certifications/cissp"
+  },
+  {
+    "code": "DP-203",
+    "name": "Data Engineering on Microsoft Azure",
+    "vendor": "Microsoft",
+    "level": "Associate",
+    "estimatedPrepHours": 80,
+    "topics": ["Data storage design", "Batch and stream processing", "Data security", "Monitoring and optimisation"],
+    "examCostUsd": 165,
+    "officialUrl": "https://learn.microsoft.com/credentials/certifications/azure-data-engineer/"
+  }
+]

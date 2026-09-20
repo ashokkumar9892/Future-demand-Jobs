@@ -1,0 +1,17 @@
+[
+  { "code": "first-lesson", "name": "Programme Started", "description": "Completed your first lesson on the track.", "tier": "Bronze", "criteria": "Complete 1 lesson", "xpReward": 50 },
+  { "code": "ten-lessons", "name": "Momentum", "description": "Ten lessons completed. The habit is forming.", "tier": "Bronze", "criteria": "Complete 10 lessons", "xpReward": 150 },
+  { "code": "fifty-lessons", "name": "Curriculum Depth", "description": "Fifty lessons completed across the track.", "tier": "Gold", "criteria": "Complete 50 lessons", "xpReward": 600 },
+  { "code": "streak-7", "name": "Seven-Day Streak", "description": "Studied every day for a week.", "tier": "Bronze", "criteria": "7 consecutive study days", "xpReward": 120 },
+  { "code": "streak-30", "name": "Thirty-Day Streak", "description": "A full month without breaking the chain.", "tier": "Gold", "criteria": "30 consecutive study days", "xpReward": 500 },
+  { "code": "practice-25", "name": "Deliberate Practice", "description": "Twenty-five scored practice attempts submitted.", "tier": "Silver", "criteria": "25 practice attempts", "xpReward": 250 },
+  { "code": "practice-100", "name": "Practice Volume", "description": "One hundred practice attempts submitted.", "tier": "Gold", "criteria": "100 practice attempts", "xpReward": 700 },
+  { "code": "architecture-master", "name": "Architecture Master", "description": "Scored 85% or higher on an architecture challenge.", "tier": "Gold", "criteria": "85%+ on any architecture challenge", "xpReward": 500 },
+  { "code": "rag-builder", "name": "RAG Builder", "description": "Delivered a working retrieval-augmented generation system.", "tier": "Gold", "criteria": "Complete a RAG or document-chat project", "xpReward": 600 },
+  { "code": "ai-agent-builder", "name": "AI Agent Builder", "description": "Delivered an agent that calls tools and takes real actions.", "tier": "Gold", "criteria": "Complete an agent project", "xpReward": 600 },
+  { "code": "azure-architect", "name": "Azure Architect", "description": "Passed a cloud certification tracked on the platform.", "tier": "Platinum", "criteria": "Pass any certification", "xpReward": 800 },
+  { "code": "cloud-security", "name": "Cloud Security", "description": "Sustained learning plus a strong architecture score covering security.", "tier": "Silver", "criteria": "25 lessons and 70%+ architecture score", "xpReward": 350 },
+  { "code": "interview-ready", "name": "Interview Ready", "description": "Twenty interview answers recorded and scored.", "tier": "Silver", "criteria": "20 interview attempts", "xpReward": 300 },
+  { "code": "project-finisher", "name": "Portfolio Builder", "description": "Three portfolio projects taken to completion.", "tier": "Gold", "criteria": "Complete 3 projects", "xpReward": 550 },
+  { "code": "capstone", "name": "Capstone Architect", "description": "Delivered the final end-to-end architecture project.", "tier": "Platinum", "criteria": "Complete the capstone project", "xpReward": 1000 }
+]

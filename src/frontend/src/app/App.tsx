@@ -35,6 +35,9 @@ const SettingsPage = lazy(() => import('@/pages/Settings'));
 const Admin = lazy(() => import('@/pages/admin/Admin'));
 const AdminInsights = lazy(() => import('@/pages/admin/Insights'));
 const FeedbackPage = lazy(() => import('@/pages/Feedback'));
+const MyLearning = lazy(() => import('@/pages/MyLearning'));
+const Checkout = lazy(() => import('@/pages/Checkout'));
+const VerifyCertificate = lazy(() => import('@/pages/VerifyCertificate'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
 function Protected({ children }: { children: ReactNode }) {
@@ -74,6 +77,9 @@ export default function App() {
       <Suspense fallback={<FullPageLoader />}>
         <Routes>
           <Route path="/login" element={<Login />} />
+          {/* Public: someone shown a certificate can check it without an account. */}
+          <Route path="/verify" element={<VerifyCertificate />} />
+          <Route path="/verify/:number" element={<VerifyCertificate />} />
           <Route path="/register" element={<Login mode="register" />} />
 
           <Route
@@ -91,6 +97,7 @@ export default function App() {
           <Route path="/roadmap" element={<Protected><RoadmapPage /></Protected>} />
           <Route path="/courses" element={<Protected><Courses /></Protected>} />
           <Route path="/courses/:slug" element={<Protected><CourseDetail /></Protected>} />
+          <Route path="/courses/:slug/buy" element={<Protected><Checkout /></Protected>} />
           <Route path="/learn/:slug" element={<Protected><Lesson /></Protected>} />
           <Route path="/videos" element={<Protected><Videos /></Protected>} />
           <Route path="/practice" element={<Protected><Practice /></Protected>} />
@@ -110,6 +117,7 @@ export default function App() {
           <Route path="/bookmarks" element={<Protected><Bookmarks /></Protected>} />
           <Route path="/notes" element={<Protected><Notes /></Protected>} />
           <Route path="/skills" element={<Protected><Skills /></Protected>} />
+          <Route path="/my-learning" element={<Protected><MyLearning /></Protected>} />
           <Route path="/feedback" element={<Protected><FeedbackPage /></Protected>} />
           <Route path="/settings" element={<Protected><SettingsPage /></Protected>} />
           <Route

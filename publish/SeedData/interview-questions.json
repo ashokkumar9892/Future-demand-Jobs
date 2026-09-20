@@ -1,0 +1,383 @@
+[
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Architecture",
+    "difficulty": "Expert",
+    "question": "Design an enterprise RAG system over 500,000 documents where each user may only see a subset. Walk me through it.",
+    "suggestedAnswer": "Clarify first: document formats, update frequency, how entitlements are expressed, latency expectation, cloud. Then two pipelines. Ingestion: extract, structure-aware chunking with heading context, batched embeddings cached by content hash, indexed with ACL, version and date metadata; change detection by content hash; deletion propagating to blob, index and metadata. Query: authenticate, rewrite the question using conversation history, check a semantic cache whose key includes the permission scope, hybrid search with the ACL filter applied in the query, rerank 50 candidates to 10, refuse below a relevance threshold, generate with citation enforcement, validate the citations against the retrieved set. Numbers: 500,000 documents at roughly 12 chunks each is 6 million vectors; plan quota in tokens per minute. Failure modes: provider outage falls over to a second region; search unavailable means refuse rather than answer ungrounded; ingestion backlog is visible and alerted. Measurement: evaluation set with unanswerable cases, recall and groundedness tracked per release with a CI gate.",
+    "tips": "Ask clarifying questions before drawing anything. Say the permission filter is applied in the query, not the prompt — interviewers listen for that specifically. Volunteer the failure modes.",
+    "timeLimitSeconds": 900,
+    "followUps": [
+      "How would you handle documents that supersede each other?",
+      "What happens if the search index is unavailable but the model is fine?",
+      "How do you know retrieval got better after a change?"
+    ],
+    "rubric": [
+      { "dimension": "Requirements", "weight": 0.15, "keywords": ["clarify", "assume", "latency", "format"], "guidance": "Clarify before designing." },
+      { "dimension": "Retrieval", "weight": 0.25, "keywords": ["hybrid", "rerank", "chunk", "threshold"], "guidance": "Hybrid retrieval, reranking and a refusal threshold." },
+      { "dimension": "Security", "weight": 0.25, "keywords": ["acl", "filter", "query", "permission", "cache key"], "guidance": "Permissions in the query, and in the cache key." },
+      { "dimension": "Operations", "weight": 0.2, "keywords": ["evaluation", "monitor", "cost", "failure"], "guidance": "Measurement and failure handling." },
+      { "dimension": "Numbers", "weight": 0.15, "keywords": ["vectors", "tokens per minute", "latency", "quota"], "guidance": "Quantify scale." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "SystemDesign",
+    "difficulty": "Expert",
+    "question": "How would you design an AI gateway serving twelve applications across three teams?",
+    "suggestedAnswer": "Centralise the concerns each application would otherwise reimplement: model routing as configuration, semantic caching, failover, token budgets, rate limiting, key management and audit. Applications authenticate with their own workload identity; the gateway holds provider credentials via managed identity and Key Vault so no application sees a provider key. Semantic caching keyed on the prompt plus a permission scope hash — omitting the scope means one user can receive an answer built from another user's documents, which is the most dangerous bug in this design. Failover to a secondary provider on transient failure, recorded as a metric, with the serving provider recorded per request because model behaviour differs and evaluation data must know. Token budgets per business unit enforced before the call. Every request tagged with tenant, application and user for chargeback. Rate limit on tokens as well as requests. Roll out alongside direct calls, migrate one application, measure the added latency against the caching gain, then migrate the rest.",
+    "tips": "The permission scope in the cache key is the detail that distinguishes a considered answer. Mention that the gateway adds a hop and that you would measure it.",
+    "timeLimitSeconds": 720,
+    "followUps": [
+      "How do you stop one team's traffic starving another's?",
+      "What breaks when you fail over to a different provider?"
+    ],
+    "rubric": [
+      { "dimension": "Concerns", "weight": 0.3, "keywords": ["routing", "cache", "failover", "budget", "audit"], "guidance": "Name what the gateway centralises." },
+      { "dimension": "Caching", "weight": 0.3, "keywords": ["semantic", "scope", "key", "similarity"], "guidance": "Semantic caching with the permission scope in the key." },
+      { "dimension": "Governance", "weight": 0.2, "keywords": ["chargeback", "tag", "rate limit", "token"], "guidance": "Attribution and limits." },
+      { "dimension": "Rollout", "weight": 0.2, "keywords": ["migrate", "measure", "latency", "hop"], "guidance": "Incremental rollout with measurement." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Ai",
+    "difficulty": "Advanced",
+    "question": "Explain your chunking strategy and why you chose it.",
+    "suggestedAnswer": "I parse to document structure first — headings, sections, tables — and chunk within sections rather than across them, prepending the heading path to each chunk. That single step is the cheapest large retrieval improvement available, because a chunk taken from the middle of a document otherwise loses the context that identifies what it is about. Target around 300 tokens with 10 to 15 percent overlap so an answer spanning a boundary remains retrievable. Tables never go through a text splitter: split rows from their headers and you get chunks that retrieve confidently and answer wrongly, which is worse than not retrieving at all. Metadata captured at ingestion: document ID, heading path, page, version, effective date and ACL, because each becomes a filter, a citation component or a freshness signal, and adding them later means reindexing everything. I would then sweep chunk size against an evaluation set rather than trusting the design, since the right value is corpus-dependent.",
+    "tips": "Give a specific number and say you measured it. The tables point demonstrates you have worked with real documents rather than a tutorial corpus.",
+    "timeLimitSeconds": 420,
+    "followUps": [
+      "What happens to a table split across two chunks?",
+      "How would you handle a 300-page manual?"
+    ],
+    "rubric": [
+      { "dimension": "Strategy", "weight": 0.35, "keywords": ["structure", "heading", "section", "overlap"], "guidance": "Structure-aware chunking with heading context." },
+      { "dimension": "Tables", "weight": 0.25, "keywords": ["table", "header", "whole"], "guidance": "Tables kept intact." },
+      { "dimension": "Metadata", "weight": 0.2, "keywords": ["metadata", "version", "page", "acl"], "guidance": "Metadata at ingestion." },
+      { "dimension": "Measurement", "weight": 0.2, "keywords": ["measure", "evaluate", "sweep", "corpus"], "guidance": "Validate by measurement." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Ai",
+    "difficulty": "Advanced",
+    "question": "How would you prevent prompt injection in a system that reads untrusted email?",
+    "suggestedAnswer": "I would start by saying there is no complete fix, so the design assumes injection succeeds and limits the blast radius. The primary control is least privilege: the assistant acts as the handling user's identity and tool calls are authorised against that identity only, so nothing read from an email can widen its permissions. A successful injection then reaches data the user already had. Second, no irreversible action without human approval — drafts go to a queue and a person sends them. Third, delimit email content explicitly as data and state that instructions inside it are to be ignored; necessary but not sufficient. Fourth, screen input for known patterns and screen output for identifiers outside the current case, external URLs and PII. Fifth, audit every tool call so an attempt is detectable even when it fails. The question I would put to the business is not how to stop injection but what the worst outcome is when it succeeds — and if that is unacceptable, reduce the permissions rather than adding another filter.",
+    "tips": "Saying 'there is no complete fix' early is a strength, not a weakness. Lead with least privilege rather than with filtering.",
+    "timeLimitSeconds": 600,
+    "followUps": [
+      "What if the injected instruction is in white text or an HTML comment?",
+      "How would you detect an attempt that failed?"
+    ],
+    "rubric": [
+      { "dimension": "Honesty", "weight": 0.2, "keywords": ["no complete fix", "assume", "succeed"], "guidance": "Acknowledge there is no complete prevention." },
+      { "dimension": "Least privilege", "weight": 0.3, "keywords": ["least privilege", "permission", "identity", "blast radius"], "guidance": "The primary control." },
+      { "dimension": "Approval", "weight": 0.2, "keywords": ["approval", "human", "irreversible"], "guidance": "Human gate on consequential actions." },
+      { "dimension": "Detection", "weight": 0.3, "keywords": ["screen", "output", "audit", "log"], "guidance": "Screening and audit." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Cloud",
+    "difficulty": "Advanced",
+    "question": "Your Azure OpenAI deployment is rate limited during peak hours. What do you do?",
+    "suggestedAnswer": "First confirm from metrics that it is quota rather than something else, and check whether the cause is volume or token growth — a prompt change that grew context can cause this with no traffic increase. Immediate: honour Retry-After, exponential backoff with jitter because without jitter every client retries in lockstep and recreates the spike, queue non-interactive work, and shed interactive load with a clear message rather than a long wait ending in a timeout. Short term: request a quota increase, which takes time to approve, and add a client-side token bucket so requests queue rather than hitting a wall. Medium term: deploy the same model in a second region and route weighted by remaining capacity, subject to residency. Also reduce demand — semantic caching typically removes a meaningful share of requests, and routing simple requests to a smaller model reduces consumption on the constrained deployment. Longer term: provisioned throughput for the baseline with on-demand for peaks. And capacity-plan in tokens per minute rather than requests per second.",
+    "tips": "Mention jitter explicitly. Reducing demand is as valid as increasing supply and many candidates only mention the latter.",
+    "timeLimitSeconds": 480,
+    "followUps": [
+      "How would you plan capacity to avoid this?",
+      "What if residency prevents a second region?"
+    ],
+    "rubric": [
+      { "dimension": "Diagnosis", "weight": 0.25, "keywords": ["quota", "tokens per minute", "metric", "context"], "guidance": "Confirm the cause including token growth." },
+      { "dimension": "Retry behaviour", "weight": 0.25, "keywords": ["retry-after", "backoff", "jitter", "queue"], "guidance": "Correct retry behaviour." },
+      { "dimension": "Capacity", "weight": 0.25, "keywords": ["region", "provisioned", "increase", "bucket"], "guidance": "Increase supply." },
+      { "dimension": "Demand", "weight": 0.25, "keywords": ["cache", "routing", "smaller"], "guidance": "Reduce demand too." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Technical",
+    "difficulty": "Advanced",
+    "question": "How do you implement tool calling safely?",
+    "suggestedAnswer": "The mental model matters: the model does not call my tools, it requests a call and my code decides. So I treat a tool request exactly as an untrusted HTTP request. Two authorisation checks, not one. First, may this user use this tool at all. Second, and the one teams miss, are the arguments within this user's entitlements — because the model chose those arguments and the conversation can influence them. The canonical failure is get_customer_orders trusting the customerId it was given, so a user asks about customer 4471 and reads someone else's data. The model did nothing wrong; the check was missing. Beyond that: strict JSON schemas with validation before execution, few task-shaped tools rather than a CRUD surface because models choose badly among near-duplicates, descriptions that say when not to use the tool, structured errors the model can reason about rather than raw exceptions, idempotency keys on anything with side effects, and a bounded loop with step, cost and time limits. Every call audited with caller, arguments and outcome.",
+    "tips": "The argument-level authorisation point is what separates a strong answer here. Give the concrete failure example.",
+    "timeLimitSeconds": 480,
+    "followUps": [
+      "How do you stop an agent looping on the same tool?",
+      "What do you return to the model when a tool fails?"
+    ],
+    "rubric": [
+      { "dimension": "Model", "weight": 0.2, "keywords": ["requests", "my code decides", "untrusted"], "guidance": "The model requests; your code decides." },
+      { "dimension": "Argument authorisation", "weight": 0.35, "keywords": ["arguments", "entitlement", "customerid", "validate"], "guidance": "Authorise the arguments, not just the tool." },
+      { "dimension": "Design", "weight": 0.25, "keywords": ["schema", "task-shaped", "description", "structured error"], "guidance": "Tool surface design." },
+      { "dimension": "Bounds", "weight": 0.2, "keywords": ["idempotency", "step limit", "cost", "audit"], "guidance": "Bounds and audit." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Technical",
+    "difficulty": "Intermediate",
+    "question": "How do you get reliable structured output from a model?",
+    "suggestedAnswer": "Four layers. Use native structured output with a JSON schema on the request, so generation is constrained during decoding rather than merely requested — far more reliable than prompting, with constraints worth knowing such as all properties required and additionalProperties false, which means flat schemas work best. Design the schema for reliability: flat, enums for anything you will branch on, descriptive field names, and an explicit way to express uncertainty such as a confidence enum and a fieldsNotFound array. Without that last part the only schema-valid response is a fabricated value — you have required the model to guess. Validate business rules after parsing, because schema compliance guarantees shape, not sense: a date can be well-formed and in the future, a total can be positive and fail to reconcile. On failure, retry once with the specific parse or validation error fed back, then route to human review rather than looping. Track the schema failure rate as a metric, because a rise usually means the upstream format changed.",
+    "tips": "The uncertainty field is the point most candidates miss and it is the one that shows product thinking.",
+    "timeLimitSeconds": 360,
+    "followUps": [
+      "What if the provider does not support JSON schema?",
+      "What do you do with low-confidence extractions?"
+    ],
+    "rubric": [
+      { "dimension": "Native schema", "weight": 0.3, "keywords": ["json schema", "structured output", "constrain"], "guidance": "Native support over prompting." },
+      { "dimension": "Uncertainty", "weight": 0.3, "keywords": ["confidence", "unknown", "not found", "guess"], "guidance": "Let the model express uncertainty." },
+      { "dimension": "Validation", "weight": 0.25, "keywords": ["business rule", "validate", "shape", "sense"], "guidance": "Validate beyond the schema." },
+      { "dimension": "Failure", "weight": 0.15, "keywords": ["retry", "human review", "metric"], "guidance": "Bounded retry then human review." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Technical",
+    "difficulty": "Intermediate",
+    "question": "Walk me through how you would stream an LLM response to a browser in ASP.NET Core.",
+    "suggestedAnswer": "Server-sent events, because it is one-directional, plain HTTP, has automatic browser reconnection and needs no WebSocket infrastructure. IAsyncEnumerable maps onto it naturally. The details that bite: set the content type to text/event-stream, disable response buffering or a proxy will hold the whole response and defeat the point, flush after every chunk, and send heartbeat comments during long pauses so intermediaries do not close an idle connection. Cancellation genuinely matters: HttpContext.RequestAborted fires when the user closes the tab, and propagating it into the provider call stops generation — without that you keep paying for tokens nobody will read, which on a busy system is a measurable share of the bill. The case teams forget is failing mid-stream: once a 200 is on the wire you cannot send an error status, so define an error event type in the protocol, render partial content plus a clear failure indicator, and test it deliberately. Finally accumulate server-side and persist on completion, including on cancellation where partial content is usually still worth keeping — never rely on the client to send the assembled message back.",
+    "tips": "The mid-stream failure and the cancellation cost are both details that come from having actually built this.",
+    "timeLimitSeconds": 420,
+    "followUps": [
+      "What happens if the connection drops halfway?",
+      "How do you handle a tool call in the middle of a stream?"
+    ],
+    "rubric": [
+      { "dimension": "Transport", "weight": 0.25, "keywords": ["sse", "server-sent", "iasyncenumerable", "flush"], "guidance": "SSE with correct headers and flushing." },
+      { "dimension": "Cancellation", "weight": 0.3, "keywords": ["requestaborted", "cancel", "stop", "cost"], "guidance": "Propagate cancellation and explain why." },
+      { "dimension": "Mid-stream failure", "weight": 0.25, "keywords": ["error event", "200", "partial", "cannot"], "guidance": "You cannot send an error status after a 200." },
+      { "dimension": "Persistence", "weight": 0.2, "keywords": ["accumulate", "persist", "server-side"], "guidance": "Persist server-side." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "SystemDesign",
+    "difficulty": "Expert",
+    "question": "Design a document ingestion pipeline handling 50,000 documents a day.",
+    "suggestedAnswer": "Ingestion is separate from query: offline, batch, idempotent, and allowed to be slow. Trigger on blob events via Event Grid, with a scheduled delta query for sources that do not emit events. Orchestrate with Durable Functions so each step is checkpointed and a failure at embedding does not redo extraction. Fan out over chunks for embedding, bounded by a concurrency limit — and here is the coupling worth naming, that embedding quota is usually shared with the query path, so an ingestion surge can rate-limit live users. Change detection by content hash: at 50,000 documents a day, skipping unchanged content is the difference between a manageable bill and a silly one. On update, delete the old chunks before indexing new ones or stale chunks persist and the model sees both versions. Deletion must propagate to blob, index and metadata. Failure handling: a dead-letter queue per stage with a named owner and a document status table so a human can see what failed. Monitoring: documents indexed per hour, failure rate by stage, and an alert on documents stuck in processing — silent ingestion failure means users simply cannot find things and nobody gets an error.",
+    "tips": "The shared embedding quota between ingestion and query is a detail that shows operational experience.",
+    "timeLimitSeconds": 600,
+    "followUps": [
+      "What if a document fails extraction repeatedly?",
+      "How do you backfill after changing the embedding model?"
+    ],
+    "rubric": [
+      { "dimension": "Orchestration", "weight": 0.25, "keywords": ["durable", "checkpoint", "fan-out", "event grid"], "guidance": "Checkpointed multi-step orchestration." },
+      { "dimension": "Efficiency", "weight": 0.25, "keywords": ["hash", "unchanged", "skip", "batch"], "guidance": "Change detection and batching." },
+      { "dimension": "Correctness", "weight": 0.25, "keywords": ["delete old", "stale", "propagate", "deletion"], "guidance": "Updates and deletions handled correctly." },
+      { "dimension": "Operations", "weight": 0.25, "keywords": ["dead letter", "status", "alert", "quota"], "guidance": "Failure visibility and quota coupling." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Cloud",
+    "difficulty": "Advanced",
+    "question": "Compare Azure OpenAI and Amazon Bedrock for an enterprise deployment.",
+    "suggestedAnswer": "Both keep prompts within your cloud tenant rather than using them to train the underlying models, and both offer content filtering — Azure AI Content Safety and Bedrock Guardrails — applied outside the model so changing model does not rebuild the safety layer. Azure OpenAI gives deeper access to the OpenAI model family and integrates naturally with Entra ID, managed identity, Azure AI Search and Application Insights, which matters if your estate is already Azure. Bedrock gives breadth across model vendors — Anthropic, Meta, Mistral, Amazon's own — behind the Converse API, which normalises the request shape including tool use so switching models is a configuration change rather than a rewrite. Decision factors in practice: existing cloud footprint usually dominates, then regional availability of the specific model you need, then whether you value depth in one family or breadth across several. Data residency frequently settles it before capability is considered. Whichever you choose, keep the provider behind an abstraction — in a mixed-cloud enterprise you will likely end up designing for both.",
+    "tips": "Mention that residency often decides it before capability. The Converse API point shows you have read beyond the marketing.",
+    "timeLimitSeconds": 420,
+    "followUps": [
+      "How would you support both in one application?",
+      "What changes when you fail over between them?"
+    ],
+    "rubric": [
+      { "dimension": "Similarities", "weight": 0.25, "keywords": ["in tenant", "training", "guardrails", "content safety"], "guidance": "Both keep data in tenant and offer filtering." },
+      { "dimension": "Differences", "weight": 0.3, "keywords": ["converse", "breadth", "depth", "entra", "integration"], "guidance": "Breadth versus depth and ecosystem integration." },
+      { "dimension": "Decision factors", "weight": 0.25, "keywords": ["footprint", "region", "residency", "availability"], "guidance": "What actually decides it." },
+      { "dimension": "Abstraction", "weight": 0.2, "keywords": ["abstraction", "both", "interface"], "guidance": "Keep the provider swappable." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Technical",
+    "difficulty": "Advanced",
+    "question": "How would you evaluate whether an AI feature is getting better or worse between releases?",
+    "suggestedAnswer": "AI systems degrade silently — nothing throws when answers get worse — so this needs to be engineered rather than noticed. Build a fixed evaluation set of 30 to 50 real cases including hard ones and, critically, cases the system should refuse, because without those a system that always answers scores perfectly. Measure retrieval separately from generation: recall at k tells you whether the right content was found at all, and a retrieval failure cannot be repaired downstream. For generation measure groundedness, relevance and refusal accuracy. Three levels of judgement: deterministic checks on every commit because they are free — valid structure, citation present, refusal when context is empty; model-as-judge as a release gate with a threshold against the previous release; human review on a sample to calibrate the judge. Add operational metrics, p95 latency and cost per request. Store every run with its configuration so there is history rather than re-derivation when quality drops in three months. And change one variable at a time — changing prompt and model together tells you nothing about either.",
+    "tips": "The retrieval-versus-generation separation and the unanswerable cases are the two points that distinguish a real answer from a rehearsed one.",
+    "timeLimitSeconds": 480,
+    "followUps": [
+      "How do you avoid the judge model being biased toward its own outputs?",
+      "What do you do when the evaluation set itself goes stale?"
+    ],
+    "rubric": [
+      { "dimension": "Evaluation set", "weight": 0.25, "keywords": ["fixed", "real", "refuse", "unanswerable"], "guidance": "Representative set including unanswerable cases." },
+      { "dimension": "Separation", "weight": 0.25, "keywords": ["retrieval", "generation", "recall", "separately"], "guidance": "Measure retrieval separately." },
+      { "dimension": "Levels", "weight": 0.25, "keywords": ["deterministic", "judge", "human", "gate"], "guidance": "Three levels of judgement." },
+      { "dimension": "Discipline", "weight": 0.25, "keywords": ["one at a time", "history", "configuration", "ci"], "guidance": "One variable at a time, with history." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Coding",
+    "difficulty": "Advanced",
+    "question": "You need to cache embeddings to reduce cost. Describe your implementation, including the failure modes.",
+    "suggestedAnswer": "Key on a hash of the normalised text, since identical content must produce identical embeddings — SHA-256 of the trimmed, whitespace-normalised string. Use a distributed cache so all instances share it. Handle the stampede: when a popular key expires, many concurrent requests miss simultaneously and all call the embedding API, so take a per-key lock, have one caller recompute and the rest read the populated value. Jitter the TTL so a batch of keys written together does not expire together. Failure modes to design for: the cache being unavailable must degrade to calling the provider rather than failing the request, so wrap reads in a try-catch and treat an error as a miss. A model change invalidates every entry, so include the embedding model name and version in the key — otherwise a model upgrade silently serves incompatible vectors, which is the worst kind of bug because nothing errors and retrieval quality just quietly collapses. Cache the vector as bytes rather than JSON floats; the size difference is large at volume. And measure the hit rate, because an embedding cache with a 5% hit rate is not worth its complexity.",
+    "tips": "Including the model name in the key is the detail that shows you have thought past the happy path.",
+    "timeLimitSeconds": 420,
+    "followUps": [
+      "What happens when you change embedding model?",
+      "How would you size the cache?"
+    ],
+    "rubric": [
+      { "dimension": "Key design", "weight": 0.3, "keywords": ["hash", "normalise", "model", "version"], "guidance": "Content hash plus model version." },
+      { "dimension": "Stampede", "weight": 0.25, "keywords": ["lock", "jitter", "concurrent", "ttl"], "guidance": "Per-key locking and jitter." },
+      { "dimension": "Degradation", "weight": 0.25, "keywords": ["unavailable", "miss", "try", "degrade"], "guidance": "Cache failure degrades, never fails the request." },
+      { "dimension": "Measurement", "weight": 0.2, "keywords": ["hit rate", "measure", "bytes", "size"], "guidance": "Measure the hit rate; store efficiently." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Behavioral",
+    "difficulty": "Intermediate",
+    "question": "Why are you moving from .NET development into AI architecture?",
+    "suggestedAnswer": "Frame it as extension rather than change. Most enterprise AI projects fail on integration, security, cost and operations rather than on the model, and those are the problems I have spent twenty years solving — I know what goes wrong in production at 3am, which is judgement that cannot be acquired quickly. The AI layer is genuinely new capability and I have built with it deliberately rather than read about it: a RAG system with per-document permissions enforced as a retrieval filter and measured groundedness, and an agent with idempotent side effects and compensating transactions. I would label those as portfolio projects, because that distinction is easy to check and claiming otherwise ends an interview. And I would name what I am still learning: I am stronger on architecture and integration than on model training. That honesty is what makes the rest credible. What I would avoid is apologising for the twenty years — they are the differentiator, not the liability.",
+    "tips": "Do not apologise for your experience. Name one genuine gap; it makes everything else believable.",
+    "timeLimitSeconds": 300,
+    "followUps": [
+      "What is the hardest thing you have had to learn in this transition?",
+      "How do you keep current given how fast this moves?"
+    ],
+    "rubric": [
+      { "dimension": "Transferable", "weight": 0.3, "keywords": ["integration", "security", "cost", "production"], "guidance": "Name what transfers specifically." },
+      { "dimension": "Evidence", "weight": 0.3, "keywords": ["built", "rag", "agent", "measured", "portfolio"], "guidance": "Concrete measured projects, labelled accurately." },
+      { "dimension": "Honesty", "weight": 0.25, "keywords": ["still learning", "not", "gap"], "guidance": "One genuine limitation." },
+      { "dimension": "Framing", "weight": 0.15, "keywords": ["extending", "differentiator", "judgement"], "guidance": "Extension, not apology." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Behavioral",
+    "difficulty": "Intermediate",
+    "question": "Tell me about a time a project you worked on failed. What happened and what did you learn?",
+    "suggestedAnswer": "Choose a real failure with a real cause, not a disguised strength. Structure it: what the project was and why it mattered, what went wrong, your specific part in it, what the consequence was, and what you changed afterwards. The part that matters is owning your contribution without either deflecting entirely or taking implausible blame for everything. A strong shape: 'We built an integration platform on an assumption about message volume that nobody validated. At ten times the assumed volume the design did not hold and we spent a quarter reworking it. I was the technical lead and I had not insisted on load testing early because the timeline was tight — that was my call and it was wrong. Since then I treat validating the load assumption as a gate before design is finalised, and on the next project that caught a similar problem in week two rather than month six.' Avoid: blaming a named individual, blaming 'the business', or choosing a failure so small it is obviously safe. Interviewers are assessing whether you can be honest about a mistake, which matters more at architect level than the mistake itself.",
+    "tips": "Pick a genuine failure. A too-safe example signals you are not comfortable being wrong, which is a bigger problem than the failure.",
+    "timeLimitSeconds": 300,
+    "followUps": [
+      "What would you have done differently at the start?",
+      "How did you rebuild trust with the stakeholders?"
+    ],
+    "rubric": [
+      { "dimension": "Genuine", "weight": 0.3, "keywords": ["real", "failed", "consequence", "cost"], "guidance": "A real failure with a real consequence." },
+      { "dimension": "Ownership", "weight": 0.3, "keywords": ["my", "I", "decision", "wrong"], "guidance": "Own your specific contribution." },
+      { "dimension": "Learning", "weight": 0.25, "keywords": ["since", "changed", "now", "gate"], "guidance": "A concrete behavioural change afterwards." },
+      { "dimension": "Professionalism", "weight": 0.15, "keywords": ["team", "not blame", "stakeholder"], "guidance": "No blaming individuals." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Behavioral",
+    "difficulty": "Advanced",
+    "question": "How do you influence a technical decision when you have no authority over the team making it?",
+    "suggestedAnswer": "Influence at architect level comes from evidence and relationships rather than position. My approach: first understand why they reached their decision, because it usually has a constraint behind it that I did not know about — and often that changes my own view. Then, if I still disagree, make the case with data rather than opinion: measure the thing in dispute, build a small proof of concept, or write the trade-off down so it can be discussed rather than defended. Written trade-offs work particularly well because they depersonalise the disagreement. I would also be clear about what kind of decision it is: if it is reversible, the cost of being wrong is low and the right move is often to let them proceed and revisit with real data. If it is expensive to reverse, that justifies more effort and, if necessary, escalation — but escalation is a last resort and should never be a surprise to the person involved. Finally, accept the outcome gracefully when the decision goes the other way, and support it. Being seen to relitigate a settled decision costs you the influence you would need next time.",
+    "tips": "Mention reversibility — it shows you calibrate effort to consequence rather than fighting every battle equally.",
+    "timeLimitSeconds": 360,
+    "followUps": [
+      "What if they proceed and it goes wrong?",
+      "When would you escalate?"
+    ],
+    "rubric": [
+      { "dimension": "Understand first", "weight": 0.25, "keywords": ["why", "constraint", "understand", "listen"], "guidance": "Understand their reasoning before arguing." },
+      { "dimension": "Evidence", "weight": 0.3, "keywords": ["data", "measure", "proof of concept", "written"], "guidance": "Evidence over opinion." },
+      { "dimension": "Reversibility", "weight": 0.25, "keywords": ["reversible", "expensive", "cost", "calibrate"], "guidance": "Calibrate effort to the cost of being wrong." },
+      { "dimension": "Grace", "weight": 0.2, "keywords": ["accept", "support", "escalate", "last resort"], "guidance": "Accept and support the outcome." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Architecture",
+    "difficulty": "Advanced",
+    "question": "A team proposes splitting a monolith into fifteen microservices. How do you respond?",
+    "suggestedAnswer": "I would ask what problem they are solving, because the answer determines everything. If it is 'independent deployment of two components that change at very different rates', that is a real problem with a targeted solution. If it is 'monoliths are bad', that is not a reason. Fifteen services for one team is usually a mistake: the operational cost of fifteen deployables, fifteen pipelines, fifteen sets of monitoring and the distributed debugging that follows will outweigh the flexibility unless there are genuinely independent teams. I would propose a modular monolith first — clean internal boundaries, enforced module dependencies, separate schemas — which delivers most of the design benefit with none of the distribution cost, and makes later extraction straightforward because the seams already exist. Then extract a service when there is a specific named reason: independent scaling, team autonomy, a differing compliance boundary, or a genuinely different technology need. I would also warn about the common outcome, which is a distributed monolith: services that share a database and must deploy together, giving the costs of both approaches and the benefits of neither. The test is whether each service can deploy independently and owns its data exclusively.",
+    "tips": "Asking what problem they are solving is the answer, not a preamble to it. Name the distributed monolith failure explicitly.",
+    "timeLimitSeconds": 420,
+    "followUps": [
+      "When is fifteen services the right answer?",
+      "How would you enforce boundaries inside a monolith?"
+    ],
+    "rubric": [
+      { "dimension": "Problem first", "weight": 0.3, "keywords": ["what problem", "why", "reason", "specific"], "guidance": "Start from the problem being solved." },
+      { "dimension": "Modular monolith", "weight": 0.25, "keywords": ["modular monolith", "boundary", "seam", "schema"], "guidance": "Propose the intermediate step." },
+      { "dimension": "Extraction criteria", "weight": 0.25, "keywords": ["scaling", "autonomy", "compliance", "technology"], "guidance": "Name legitimate extraction reasons." },
+      { "dimension": "Anti-pattern", "weight": 0.2, "keywords": ["distributed monolith", "shared database", "deploy together"], "guidance": "Warn about the common failure." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "SystemDesign",
+    "difficulty": "Expert",
+    "question": "Design an AI system that must work when the model provider is unavailable.",
+    "suggestedAnswer": "Start by asking what 'work' means when the model is down, because the honest answer is usually 'degraded, not identical'. Layers, cheapest first. A semantic cache serves repeat questions with no provider call at all, which covers a meaningful share of traffic during a short outage. A second deployment in another region handles a regional problem. A second provider handles a provider-wide problem — and here I would be explicit that behaviour differs between providers, so prompts must be tested against both, the evaluation set run against both, and the serving provider recorded per request so a quality dip during failover is explicable. Beyond that, a genuine degraded mode: for a RAG assistant, return the retrieved documents without a generated answer. That is still useful — the user gets the right source and reads it themselves — and it is far better than an error page. For asynchronous work, queue and process when capacity returns. What I would not do is silently degrade: tell the user they are seeing a reduced experience. And I would exercise failover deliberately on a schedule, because an untested failover path is an assumption rather than a control.",
+    "tips": "The 'return retrieved documents without generation' degraded mode is the answer interviewers remember, because it shows product thinking rather than just infrastructure thinking.",
+    "timeLimitSeconds": 540,
+    "followUps": [
+      "How would you test this?",
+      "What do you tell users during a degradation?"
+    ],
+    "rubric": [
+      { "dimension": "Layers", "weight": 0.25, "keywords": ["cache", "region", "second provider", "queue"], "guidance": "Layered fallbacks in increasing cost." },
+      { "dimension": "Degraded mode", "weight": 0.3, "keywords": ["degraded", "retrieved documents", "without generation", "useful"], "guidance": "A genuine useful degraded experience." },
+      { "dimension": "Provider difference", "weight": 0.25, "keywords": ["behaviour", "differ", "test both", "record"], "guidance": "Behaviour differs between providers." },
+      { "dimension": "Testing and honesty", "weight": 0.2, "keywords": ["exercise", "test", "tell the user", "silent"], "guidance": "Exercise failover; do not degrade silently." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Ai",
+    "difficulty": "Intermediate",
+    "question": "When would you fine-tune a model, and when is it the wrong answer?",
+    "suggestedAnswer": "Fine-tuning teaches behaviour; retrieval supplies facts. Fine-tune when prompting has failed to achieve a consistent style or format, when you want a smaller cheaper model to match a larger one on a narrow repetitive task, or when you need consistent domain-specific behaviour across many inputs — and when you have hundreds to thousands of quality examples and are willing to maintain them. It is the wrong answer whenever the problem is factual: the model gets your product details wrong, the facts change, or you need citations. Baking facts into weights means they go stale with no way to update short of retraining, and a model cannot cite a source for something it memorised. The most expensive mistake I have seen described is teams spending months preparing fine-tuning data to inject knowledge, producing a model that is confidently wrong in a new way and stale within a quarter. The order is prompting first because it costs minutes, then retrieval, then fine-tuning only if a specific behavioural gap remains.",
+    "tips": "The behaviour-versus-facts line is the whole answer. Say it early.",
+    "timeLimitSeconds": 300,
+    "followUps": [
+      "How many examples would you want before fine-tuning?",
+      "How do you maintain a fine-tuned model over time?"
+    ],
+    "rubric": [
+      { "dimension": "Distinction", "weight": 0.4, "keywords": ["behaviour", "facts", "style", "format"], "guidance": "Behaviour versus facts." },
+      { "dimension": "Valid cases", "weight": 0.3, "keywords": ["smaller model", "consistent", "narrow", "examples"], "guidance": "Legitimate fine-tuning cases." },
+      { "dimension": "Invalid cases", "weight": 0.3, "keywords": ["stale", "citation", "knowledge", "retrieval"], "guidance": "Why knowledge injection fails." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Cloud",
+    "difficulty": "Intermediate",
+    "question": "How do you design an Azure application so that no secret appears in configuration?",
+    "suggestedAnswer": "User-assigned managed identity for all Azure-to-Azure access, with RBAC roles granted to that identity on Azure OpenAI, AI Search, Azure SQL and storage. User-assigned rather than system-assigned because its lifecycle is independent, so role assignments made once in infrastructure code survive redeployment or replacement of the compute resource. The application uses DefaultAzureCredential, which resolves to the managed identity in Azure and to developer credentials locally, giving one code path with no secret in either environment. Genuine secrets that remain — third-party API keys, certificates, signing keys — live in Key Vault, reached using the managed identity so there is no bootstrap secret, and referenced from app settings via Key Vault references so the value never appears in configuration files or deployment logs. Rotation then becomes a Key Vault operation with no redeployment. For users, Entra ID with OIDC and group claims mapped to roles by the API. And two rules that matter specifically for AI: no provider key ever reaches the browser, and user entitlements are passed into retrieval as a query filter, never as a prompt instruction.",
+    "tips": "The Key Vault reference detail — so the value never appears in config or deployment logs — is worth stating explicitly.",
+    "timeLimitSeconds": 360,
+    "followUps": [
+      "How does this work on a developer's laptop?",
+      "How do you rotate the third-party key?"
+    ],
+    "rubric": [
+      { "dimension": "Managed identity", "weight": 0.35, "keywords": ["managed identity", "user-assigned", "rbac", "defaultazurecredential"], "guidance": "User-assigned identity with RBAC." },
+      { "dimension": "Key Vault", "weight": 0.3, "keywords": ["key vault", "reference", "rotation", "third-party"], "guidance": "Where real secrets live." },
+      { "dimension": "User identity", "weight": 0.2, "keywords": ["entra", "oidc", "claims"], "guidance": "User authentication." },
+      { "dimension": "AI rules", "weight": 0.15, "keywords": ["browser", "filter", "never"], "guidance": "No keys in the browser; entitlements as a filter." }
+    ]
+  },
+  {
+    "careerSlug": "ai-solutions-architect",
+    "category": "Architecture",
+    "difficulty": "Expert",
+    "question": "How would you model and control the cost of an AI platform at enterprise scale?",
+    "suggestedAnswer": "Model it from drivers rather than from a bill: requests per month by feature, input tokens broken into system prompt, history and retrieved context, output tokens, embedding calls, reranking calls, and infrastructure tiers. The thing most people miss is that retrieved context dominates input tokens — twenty chunks at 300 tokens is 6,000, far more than prompt and history combined, so that is where the leverage is. Controls in order of effect: semantic caching, which on assistant workloads commonly removes 20 to 40 percent of calls; model routing, because most requests are not hard; fewer and better chunks, which typically improves groundedness as well as halving that cost line; trimming history by summarisation; capping output length, since output often costs four times input. Then governance: token budgets per business unit enforced before the call rather than reconciled afterwards, every request tagged with tenant, feature and user for chargeback, and an alert when cost per request drifts above the modelled figure — which catches a prompt that grew or a routing change within days rather than at the monthly invoice. And always present the model at projected volume and at double it, naming which line dominates at scale.",
+    "tips": "Give real arithmetic if you can. Saying that fewer chunks improves quality as well as cost is the point that lands.",
+    "timeLimitSeconds": 480,
+    "followUps": [
+      "Your bill triples with no user growth. Where do you look?",
+      "How do you charge this back to business units?"
+    ],
+    "rubric": [
+      { "dimension": "Drivers", "weight": 0.25, "keywords": ["requests", "input", "output", "context", "infrastructure"], "guidance": "Model from drivers." },
+      { "dimension": "Dominant line", "weight": 0.2, "keywords": ["context", "chunks", "dominate"], "guidance": "Retrieved context dominates." },
+      { "dimension": "Controls", "weight": 0.3, "keywords": ["cache", "routing", "fewer chunks", "output", "history"], "guidance": "Name the levers in order." },
+      { "dimension": "Governance", "weight": 0.25, "keywords": ["budget", "chargeback", "alert", "drift", "2x"], "guidance": "Budgets, attribution, drift alerting and sensitivity." }
+    ]
+  }
+]

@@ -4,6 +4,7 @@ import { Clock, Moon, Save, Sun, User } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth, useTheme } from '@/app/providers';
 import { PageHeader } from '@/components/layout/AppShell';
+import { PreferencesCard } from '@/components/preferences';
 import {
   Badge,
   Button,
@@ -378,6 +379,8 @@ export default function Settings() {
           <Disclaimer>{estimate.data?.disclaimer}</Disclaimer>
         </div>
       </div>
+
+      <PreferencesCard />
     </>
   );
 }

@@ -11,9 +11,10 @@ import {
   PlayCircle,
   Target,
 } from 'lucide-react';
-import { api } from '@/lib/api';
+import { api, DEMO_MODE } from '@/lib/api';
 import { PageHeader } from '@/components/layout/AppShell';
 import { Badge, Card, CardHeader, ErrorPanel, LoadingPanel, Progress, Stat } from '@/components/ui';
+import { EnrolmentPanel } from '@/components/enrolment';
 import { cn, minutesLabel } from '@/lib/format';
 import type { CourseDetail as CourseDetailDto, LessonListItem } from '@/types/api';
 
@@ -54,6 +55,8 @@ export default function CourseDetail() {
           )
         }
       />
+
+      {!DEMO_MODE && <EnrolmentPanel course={course} />}
 
       <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Card className="card-pad">

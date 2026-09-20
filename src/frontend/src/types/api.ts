@@ -48,6 +48,8 @@ export interface CareerSummary {
   skillsToLearn: number;
   salaryAsOf: string;
   salarySource: string;
+  /** Pay in the selected market. The USD fields above stay the platform's base figures. */
+  salary: SalaryBand;
 }
 
 export interface SkillGapEntry {
@@ -176,6 +178,7 @@ export interface CourseListItem {
   lessonCount: number;
   completedLessons: number;
   progressPercent: number;
+  access?: CourseAccess;
 }
 
 export interface LessonListItem {
@@ -1074,4 +1077,178 @@ export interface Paged<T> {
   page: number;
   pageSize: number;
   items: T[];
+}
+
+// ---------- markets, enrolment, certificates, payment ----------
+
+export interface Country {
+  code: string;
+  name: string;
+  currencyCode: string;
+  currencySymbol: string;
+  isDefault: boolean;
+}
+
+/** `hasData` is false when nothing has been published for that market. */
+export interface SalaryBand {
+  countryCode: string;
+  countryName: string;
+  currencyCode: string;
+  currencySymbol: string;
+  min: number;
+  max: number;
+  seniorMin: number;
+  seniorMax: number;
+  range?: string;
+  seniorRange?: string;
+  asOf?: string;
+  source?: string;
+  hasData: boolean;
+  message?: string;
+}
+
+export type CourseAccessState =
+  | 'Open'
+  | 'Purchased'
+  | 'PaymentRequired'
+  | 'AwaitingConfirmation'
+  | 'NotSoldHere'
+  | 'SignInRequired';
+
+export interface CourseAccess {
+  tier: 'Free' | 'Advanced';
+  isFree: boolean;
+  hasAccess: boolean;
+  state: CourseAccessState;
+  message: string;
+  price: number;
+  priceLabel?: string;
+  currencyCode?: string;
+  countryCode: string;
+  paymentRequestId?: string;
+  paymentReference?: string;
+  paymentStatus?: string;
+}
+
+export interface Enrollment {
+  id: string;
+  courseId: string;
+  courseTitle: string;
+  courseSlug: string;
+  phaseNumber: number;
+  careerTitle: string;
+  status: 'Active' | 'Completed' | 'Withdrawn';
+  enrolledAt: string;
+  lastAccessedAt?: string;
+  completedAt?: string;
+  goal?: string;
+  weeklyHoursTarget: number;
+  isPriority: boolean;
+  totalLessons: number;
+  completedLessons: number;
+  progressPercent: number;
+  minutesStudied: number;
+  estimatedHours: number;
+  certificateEligible: boolean;
+  certificateThresholdPercent: number;
+  certificateId?: string;
+  certificateNumber?: string;
+}
+
+export interface EnrollRequest {
+  goal?: string | null;
+  weeklyHoursTarget?: number;
+  isPriority?: boolean;
+}
+
+export interface Certificate {
+  id: string;
+  courseId: string;
+  certificateNumber: string;
+  learnerName: string;
+  courseTitle: string;
+  careerTitle: string;
+  courseSlug: string;
+  percentComplete: number;
+  lessonsCompleted: number;
+  totalLessons: number;
+  minutesStudied: number;
+  issuedAt: string;
+}
+
+export interface CertificateVerification {
+  found: boolean;
+  certificateNumber?: string;
+  learnerName?: string;
+  courseTitle?: string;
+  percentComplete: number;
+  issuedAt?: string;
+  statement: string;
+}
+
+export interface LearnerPreferences {
+  theme: string;
+  certificateName?: string;
+  autoplayVideos: boolean;
+  showKeyTakeaways: boolean;
+  preferredSessionMinutes: number;
+  effectiveCertificateName: string;
+  countryCode: string;
+  countryName: string;
+  currencyCode: string;
+}
+
+export interface PaymentMethod {
+  id: string;
+  kind: 'QrCode' | 'Email' | 'BankTransfer';
+  label: string;
+  instructions: string;
+  qrPayload?: string;
+  qrImageUrl?: string;
+  payeeEmail?: string;
+  reference?: string;
+}
+
+export interface PaymentInstructions {
+  paymentRequestId: string;
+  reference: string;
+  courseId: string;
+  courseTitle: string;
+  amount: number;
+  currencyCode: string;
+  amountLabel: string;
+  countryCode: string;
+  status: string;
+  methods: PaymentMethod[];
+  notice: string;
+}
+
+export type PaymentStatus =
+  | 'Pending'
+  | 'AwaitingConfirmation'
+  | 'Paid'
+  | 'Rejected'
+  | 'Cancelled'
+  | 'Refunded';
+
+export interface PaymentRequestDto {
+  id: string;
+  userId: string;
+  learnerName: string;
+  learnerEmail: string;
+  courseId: string;
+  courseTitle: string;
+  reference: string;
+  amount: number;
+  currencyCode: string;
+  amountLabel: string;
+  countryCode: string;
+  method: string;
+  status: PaymentStatus;
+  learnerNote?: string;
+  adminNote?: string;
+  confirmedByName?: string;
+  createdAt: string;
+  submittedAt?: string;
+  decidedAt?: string;
 }

@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
   BookOpen,
+  CreditCard,
   Globe2,
   Inbox,
   LogIn,
@@ -45,9 +46,10 @@ import type {
   LocationRollup,
   LoginEvent,
   Paged,
+  PaymentRequestDto,
 } from '@/types/api';
 
-type Tab = 'overview' | 'learners' | 'logins' | 'courses' | 'feedback';
+type Tab = 'overview' | 'learners' | 'logins' | 'courses' | 'feedback' | 'payments';
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'overview', label: 'Overview' },
@@ -55,6 +57,7 @@ const TABS: { key: Tab; label: string }[] = [
   { key: 'logins', label: 'Login activity' },
   { key: 'courses', label: 'Course engagement' },
   { key: 'feedback', label: 'Feedback' },
+  { key: 'payments', label: 'Payments' },
 ];
 
 export default function Insights() {
@@ -89,6 +92,7 @@ export default function Insights() {
       {tab === 'logins' && <LoginsTab />}
       {tab === 'courses' && <CoursesTab />}
       {tab === 'feedback' && <FeedbackTab />}
+      {tab === 'payments' && <PaymentsTab />}
     </>
   );
 }
@@ -991,4 +995,199 @@ function formatDateTime(iso: string): string {
     hour: '2-digit',
     minute: '2-digit',
   });
+}
+
+// ---------- payments ----------
+
+const PAYMENT_STATUSES = ['Pending', 'AwaitingConfirmation', 'Paid', 'Rejected', 'Cancelled', 'Refunded'];
+
+const PAYMENT_TONE: Record<string, 'neutral' | 'brand' | 'success' | 'warning' | 'info' | 'danger'> = {
+  Pending: 'info',
+  AwaitingConfirmation: 'warning',
+  Paid: 'success',
+  Rejected: 'danger',
+  Cancelled: 'neutral',
+  Refunded: 'neutral',
+};
+
+/**
+ * Where an administrator reconciles payments against their own bank records.
+ * Confirming one is what enrols the learner and unlocks the course, so it is
+ * deliberately a manual, explicit act.
+ */
+function PaymentsTab() {
+  const [status, setStatus] = useState('open');
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['admin-payments', status, search, page],
+    queryFn: () =>
+      api.get<Paged<PaymentRequestDto>>(
+        `/admin/payments?status=${status}&page=${page}&pageSize=25` +
+          (search ? `&search=${encodeURIComponent(search)}` : ''),
+      ),
+  });
+
+  return (
+    <Card>
+      <CardHeader
+        title="Payments"
+        subtitle={`${data?.total ?? 0} request${data?.total === 1 ? '' : 's'} · awaiting confirmation first`}
+        icon={<CreditCard size={15} />}
+        action={
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-faint" />
+              <Input
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+                placeholder="Reference, email or course"
+                className="h-8 w-48 pl-7 text-xs"
+              />
+            </div>
+            <Select
+              value={status}
+              onChange={(e) => {
+                setStatus(e.target.value);
+                setPage(1);
+              }}
+              className="h-8 w-40 text-xs"
+            >
+              <option value="open">Open</option>
+              <option value="all">All</option>
+              {PAYMENT_STATUSES.map((value) => (
+                <option key={value} value={value}>
+                  {value === 'AwaitingConfirmation' ? 'Awaiting confirmation' : value}
+                </option>
+              ))}
+            </Select>
+          </div>
+        }
+      />
+
+      {isLoading && <LoadingPanel label="Loading payments" />}
+      {error && (
+        <div className="p-4">
+          <ErrorPanel message={(error as Error).message} />
+        </div>
+      )}
+      {data && data.total === 0 && !isLoading && (
+        <div className="p-4">
+          <EmptyState
+            title="Nothing in this view"
+            description="Payments appear here when a learner buys an advanced course."
+          />
+        </div>
+      )}
+
+      <div className="divide-y divide-line">
+        {(data?.items ?? []).map((payment) => (
+          <PaymentRow key={payment.id} payment={payment} />
+        ))}
+      </div>
+
+      <Pager page={page} pageSize={data?.pageSize ?? 25} total={data?.total ?? 0} onChange={setPage} />
+
+      <div className="border-t border-line px-5 py-3">
+        <Disclaimer>
+          No payment gateway is connected. Check the reference against your own bank or wallet records
+          before confirming — confirming is what grants the learner access.
+        </Disclaimer>
+      </div>
+    </Card>
+  );
+}
+
+function PaymentRow({ payment }: { payment: PaymentRequestDto }) {
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [note, setNote] = useState(payment.adminNote ?? '');
+
+  const decide = useMutation({
+    mutationFn: (next: string) =>
+      api.put<PaymentRequestDto>(`/admin/payments/${payment.id}`, { status: next, adminNote: note }),
+    onSuccess: () => {
+      setOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['admin-payments'] });
+      queryClient.invalidateQueries({ queryKey: ['engagement-overview'] });
+    },
+  });
+
+  return (
+    <div className="px-5 py-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-ink">{payment.courseTitle}</p>
+          <p className="mt-0.5 text-[11px] text-ink-faint">
+            <span className="font-mono">{payment.reference}</span> · {payment.learnerName} &lt;
+            {payment.learnerEmail}&gt; · {payment.countryCode}
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <span className="text-sm font-semibold tabular-nums text-ink">{payment.amountLabel}</span>
+          <Badge tone={PAYMENT_TONE[payment.status] ?? 'neutral'}>
+            {payment.status === 'AwaitingConfirmation' ? 'Awaiting confirmation' : payment.status}
+          </Badge>
+          <Button size="sm" variant={open ? 'ghost' : 'secondary'} onClick={() => setOpen(!open)}>
+            {open ? 'Cancel' : 'Review'}
+          </Button>
+        </div>
+      </div>
+
+      {payment.learnerNote && (
+        <p className="mt-2 rounded-lg border border-line bg-surface-sunken px-3 py-2 text-[12px] leading-relaxed text-ink-muted">
+          <span className="label">Learner&rsquo;s reference</span>
+          <br />
+          {payment.learnerNote}
+        </p>
+      )}
+
+      {!open && payment.confirmedByName && (
+        <p className="mt-2 text-[11px] text-ink-faint">
+          Decided by {payment.confirmedByName}
+          {payment.decidedAt ? ` on ${formatDate(payment.decidedAt)}` : ''}
+          {payment.adminNote ? ` · ${payment.adminNote}` : ''}
+        </p>
+      )}
+
+      {open && (
+        <div className="mt-4 space-y-3 rounded-xl border border-line bg-surface-sunken p-4">
+          <Field label="Internal note" hint="Why you confirmed or rejected. Never shown to the learner.">
+            <Textarea
+              rows={2}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="e.g. Matched against bank statement, 19 Sep."
+            />
+          </Field>
+
+          {decide.isError && <ErrorPanel message={(decide.error as Error).message} />}
+
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button
+              size="sm"
+              variant="ghost"
+              loading={decide.isPending}
+              onClick={() => decide.mutate('Rejected')}
+            >
+              Not received
+            </Button>
+            <Button
+              size="sm"
+              variant="primary"
+              loading={decide.isPending}
+              onClick={() => decide.mutate('Paid')}
+              icon={<CreditCard size={13} />}
+            >
+              Confirm payment &amp; grant access
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

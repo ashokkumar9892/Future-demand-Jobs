@@ -65,9 +65,20 @@ export default function CareerDetail() {
       <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Card className="card-pad">
           <Stat
-            label="Salary range"
-            value={`${money(c.salaryMinUsd)}–${money(c.salaryMaxUsd)}`}
-            detail={`Senior ${money(c.seniorSalaryMinUsd)}–${money(c.seniorSalaryMaxUsd)}`}
+            label={`Salary range · ${c.salary?.countryName ?? 'USA'}`}
+            value={
+              c.salary && !c.salary.hasData
+                ? 'Not published'
+                : (c.salary?.range ?? `${money(c.salaryMinUsd)}–${money(c.salaryMaxUsd)}`)
+            }
+            detail={
+              c.salary && !c.salary.hasData
+                ? c.salary.message
+                : `Senior ${
+                    c.salary?.seniorRange ??
+                    `${money(c.seniorSalaryMinUsd)}–${money(c.seniorSalaryMaxUsd)}`
+                  }`
+            }
           />
         </Card>
         <Card className="card-pad">

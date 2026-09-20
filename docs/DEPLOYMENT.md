@@ -56,6 +56,15 @@ node --version
 
 ## 2. Build the API
 
+Run every command in this section from the **repo root** (the folder
+containing `README.md`, `src/` and `deploy/`). The paths below are relative
+to it; running them from inside a project folder gives
+`MSB1009: Project file does not exist`.
+
+```powershell
+cd C:\path\to\Future-demand-Jobs
+```
+
 ### Self-contained (recommended for a server you control)
 
 No .NET runtime needed on the target. About 111 MB.

@@ -1,0 +1,332 @@
+[
+  {
+    "title": "AI Claims Processing for an Insurance Company",
+    "slug": "insurance-ai-claims-processing",
+    "scenario": "A national insurer wants adjusters to query policy documents and claim evidence in natural language, with AI extraction of claim form data. Sensitive personal and medical data is involved. The business has standardised on Azure, .NET and Angular, and requires 99.9% availability.",
+    "requirements": [
+      "10,000 named users, peak concurrency around 800",
+      "Sensitive personal and medical data — EU residency, full audit trail",
+      "Azure only; existing Entra ID tenant with adjuster and manager groups",
+      ".NET 8 backend, Angular frontend",
+      "99.9% availability (about 43 minutes downtime per month)",
+      "AI document processing for claim forms with confidence-based routing",
+      "Adjusters must only see claims for their own business unit"
+    ],
+    "choiceGroups": [
+      { "key": "frontend", "label": "Frontend", "options": ["Angular", "React", "Blazor Server", "Razor Pages"] },
+      { "key": "backend", "label": "Backend API", "options": ["ASP.NET Core Web API", "Azure Functions (Consumption)", "Node.js/Express", "Python FastAPI"] },
+      { "key": "hosting", "label": "Compute hosting", "options": ["Azure Container Apps", "AKS", "App Service", "Virtual Machines"] },
+      { "key": "database", "label": "Primary database", "options": ["Azure SQL Database", "Cosmos DB", "PostgreSQL Flexible Server", "MongoDB Atlas"] },
+      { "key": "model", "label": "AI model service", "options": ["Azure OpenAI (EU region)", "OpenAI public API", "Amazon Bedrock", "Self-hosted open model"] },
+      { "key": "vector", "label": "Vector store", "options": ["Azure AI Search", "Pinecone", "PostgreSQL + pgvector", "In-memory index"] },
+      { "key": "auth", "label": "Authentication", "options": ["Entra ID (OIDC) with group claims", "Custom JWT with local users", "API keys per user", "Basic authentication"] },
+      { "key": "caching", "label": "Caching", "options": ["Azure Cache for Redis with semantic caching", "In-process memory cache", "No caching", "CDN only"] },
+      { "key": "messaging", "label": "Async processing", "options": ["Service Bus + Durable Functions", "Direct synchronous calls", "Database polling", "Kafka cluster"] },
+      { "key": "monitoring", "label": "Observability", "options": ["Application Insights with cost and token telemetry", "Console logging", "Third-party APM only", "Azure Monitor metrics only"] },
+      { "key": "secrets", "label": "Secrets and identity", "options": ["Managed identity + Key Vault", "Connection strings in app settings", "Environment variables on the host", "Secrets in the repository"] },
+      { "key": "deployment", "label": "Deployment", "options": ["Bicep/Terraform with GitHub Actions OIDC", "Manual portal deployment", "Publish from Visual Studio", "FTP upload"] }
+    ],
+    "suggested": [
+      { "key": "frontend", "answer": "Angular", "acceptable": ["React"], "rationale": "The organisation already builds Angular applications; introducing a second framework adds cost without benefit here." },
+      { "key": "backend", "answer": "ASP.NET Core Web API", "acceptable": [], "rationale": "Matches the existing stack and team. Consumption-plan Functions would cold-start and time out on long streaming responses." },
+      { "key": "hosting", "answer": "Azure Container Apps", "acceptable": ["AKS"], "rationale": "Containers with concurrency-based autoscale and revisions, without a cluster to operate. AKS is defensible only if you can name a capability Container Apps lacks." },
+      { "key": "database", "answer": "Azure SQL Database", "acceptable": ["PostgreSQL Flexible Server"], "rationale": "Claims data is relational with reporting needs, and the team has deep SQL Server experience. Zone-redundant configuration supports the availability target." },
+      { "key": "model", "answer": "Azure OpenAI (EU region)", "acceptable": [], "rationale": "EU residency and in-tenant data handling are hard requirements. The public OpenAI API cannot satisfy the residency constraint." },
+      { "key": "vector", "answer": "Azure AI Search", "acceptable": ["PostgreSQL + pgvector"], "rationale": "Hybrid search, semantic reranking and security trimming in one managed service, with the ACL filter applied in the query." },
+      { "key": "auth", "answer": "Entra ID (OIDC) with group claims", "acceptable": [], "rationale": "The tenant already exists, and business-unit groups become the retrieval filter that enforces claim isolation." },
+      { "key": "caching", "answer": "Azure Cache for Redis with semantic caching", "acceptable": [], "rationale": "Semantic caching is usually the largest single cost reduction. The cache key must include the permission scope or one user receives another's grounded answer." },
+      { "key": "messaging", "answer": "Service Bus + Durable Functions", "acceptable": ["Kafka cluster"], "rationale": "Document ingestion is a checkpointed multi-step workflow. Durable Functions resumes at the failed step rather than reprocessing." },
+      { "key": "monitoring", "answer": "Application Insights with cost and token telemetry", "acceptable": [], "rationale": "Token cost is a first-class operational signal for AI systems, alongside latency and error rate." },
+      { "key": "secrets", "answer": "Managed identity + Key Vault", "acceptable": [], "rationale": "Removes Azure-to-Azure secrets entirely; Key Vault holds only genuine third-party secrets, reached via the identity." },
+      { "key": "deployment", "answer": "Bicep/Terraform with GitHub Actions OIDC", "acceptable": [], "rationale": "Reproducible environments and no stored service principal secret in the pipeline." }
+    ],
+    "rationale": "The constraints do most of the work here. EU residency with medical data eliminates public model APIs before capability is considered. The existing Entra ID tenant means group claims are already available and should become the retrieval filter — which is the difference between a system that enforces claim isolation and one that merely asks a model to. Container Apps over AKS is the judgement call: AKS is not wrong, but taking on cluster operations needs a reason you can name. The detail most candidates miss is the permission scope in the semantic cache key; without it, caching introduces a data leak that looks like a performance win.",
+    "diagramMermaid": "flowchart TD\n  U[Adjuster] --> FD[Front Door + WAF]\n  FD --> NG[Angular workspace]\n  NG --> API[ASP.NET Core API\\nauthn, rate limit, audit]\n  API --> ORCH[AI Orchestrator\\nContainer Apps]\n  ORCH --> CACHE[(Redis semantic cache\\nkey includes permission scope)]\n  ORCH --> SRCH[(Azure AI Search\\nhybrid + ACL filter)]\n  ORCH --> AOAI[Azure OpenAI EU]\n  API --> SQL[(Azure SQL\\nzone redundant)]\n  BLOB[(Claim documents)] --> EG[Event Grid]\n  EG --> DF[Durable Functions\\nextract, chunk, embed, index]\n  DF --> SRCH\n  ORCH --> AI[App Insights\\nlatency, tokens, cost]",
+    "difficulty": "Expert",
+    "estimatedMinutes": 35
+  },
+  {
+    "title": "Multi-Tenant SaaS Document Assistant",
+    "slug": "multi-tenant-saas-document-assistant",
+    "scenario": "A B2B SaaS product adds an AI assistant over each customer's uploaded documents. 400 tenants, the largest with 200,000 documents, the smallest with 50. Tenants must never see each other's content, and the pricing model charges per AI request.",
+    "requirements": [
+      "400 tenants with wildly different data volumes",
+      "Absolute tenant isolation — a cross-tenant leak is an existential risk",
+      "Per-tenant usage metering for billing",
+      "Per-tenant rate limits to stop one customer degrading others",
+      "New tenants provisioned automatically within minutes"
+    ],
+    "choiceGroups": [
+      { "key": "isolation", "label": "Vector index isolation", "options": ["Shared index with tenant filter", "Index per tenant", "Cluster per tenant", "No isolation, filter in prompt"] },
+      { "key": "database", "label": "Operational data", "options": ["Shared database with tenant column and row-level security", "Database per tenant", "Schema per tenant", "One table per tenant"] },
+      { "key": "metering", "label": "Usage metering", "options": ["Gateway records tokens per tenant per request", "Monthly provider invoice reconciliation", "Client-side counting", "No metering"] },
+      { "key": "ratelimit", "label": "Rate limiting", "options": ["Per-tenant token and request quotas at the gateway", "Global rate limit only", "Per-user limits only", "No limits"] },
+      { "key": "caching", "label": "Cache strategy", "options": ["Semantic cache keyed on tenant + permission scope", "Global semantic cache", "No cache", "Client-side cache"] },
+      { "key": "provisioning", "label": "Tenant provisioning", "options": ["Automated via IaC pipeline", "Manual runbook", "Support ticket", "Self-service with manual approval"] }
+    ],
+    "suggested": [
+      { "key": "isolation", "answer": "Shared index with tenant filter", "acceptable": ["Index per tenant"], "rationale": "A shared index with an enforced tenant filter scales to 400 tenants without index sprawl; index-per-tenant is defensible for a few large regulated tenants but becomes an operational burden at this count. Whichever you choose, the filter must be applied in the query and covered by an automated negative test." },
+      { "key": "database", "answer": "Shared database with tenant column and row-level security", "acceptable": ["Schema per tenant"], "rationale": "Row-level security enforces isolation at the database rather than relying on every query being written correctly. Database-per-tenant multiplies migration and backup effort by 400." },
+      { "key": "metering", "answer": "Gateway records tokens per tenant per request", "acceptable": [], "rationale": "Billing requires per-request attribution. Reconciling a monthly provider invoice cannot attribute usage to a tenant." },
+      { "key": "ratelimit", "answer": "Per-tenant token and request quotas at the gateway", "acceptable": [], "rationale": "Token limits matter more than request limits: one large-context request can outweigh a hundred small ones." },
+      { "key": "caching", "answer": "Semantic cache keyed on tenant + permission scope", "acceptable": [], "rationale": "A global semantic cache across tenants is a cross-tenant data leak disguised as an optimisation — the single most dangerous mistake available in this design." },
+      { "key": "provisioning", "answer": "Automated via IaC pipeline", "acceptable": [], "rationale": "Manual provisioning at 400 tenants guarantees configuration drift, and drift in an isolation control is a breach waiting to happen." }
+    ],
+    "rationale": "Tenant isolation is the design. Every choice is judged by whether it makes a cross-tenant leak possible. The shared-index answer is right for scale but only with the filter enforced in the query and a negative test in CI proving it. The cache question is the discriminator: candidates who answer 'global semantic cache' have introduced a leak while optimising, and it is the kind of bug that ships because it looks like a performance improvement and produces no error.",
+    "diagramMermaid": "flowchart TD\n  T1[Tenant A user] --> GW[API Gateway\\nper-tenant quotas]\n  T2[Tenant B user] --> GW\n  GW --> ORCH[Orchestrator]\n  ORCH --> C[(Semantic cache\\nkey = tenant + scope + prompt)]\n  ORCH --> IDX[(Shared index\\ntenantId filter in query)]\n  ORCH --> M[Model]\n  ORCH --> MET[(Usage metering\\ntokens per tenant)]\n  ORCH --> DB[(Shared DB\\nrow-level security)]\n  style C fill:#7f1d1d,color:#fff",
+    "difficulty": "Expert",
+    "estimatedMinutes": 30
+  },
+  {
+    "title": "On-Premises Bank Adding Generative AI",
+    "slug": "on-premises-bank-generative-ai",
+    "scenario": "A regional bank runs everything on-premises. It wants an internal assistant over procedures and regulations for its 3,000 staff. Regulators require that customer data does not leave the bank's control, and the security team is sceptical of cloud AI.",
+    "requirements": [
+      "3,000 internal users, no customer-facing exposure in phase 1",
+      "Customer data must not leave the bank's control",
+      "Existing Active Directory, no cloud footprint beyond Microsoft 365",
+      "Security team requires a documented threat model before approval",
+      "Twelve-month delivery expectation"
+    ],
+    "choiceGroups": [
+      { "key": "model", "label": "Model hosting", "options": ["Azure OpenAI in a private VNet with private endpoints", "Public OpenAI API", "Self-hosted open model on-premises GPUs", "No AI — rules engine only"] },
+      { "key": "connectivity", "label": "Connectivity", "options": ["ExpressRoute or site-to-site VPN into a landing zone", "Public internet with TLS", "No connectivity — fully on-premises", "Third-party SaaS connector"] },
+      { "key": "data", "label": "Data placement", "options": ["Procedures and regulations only; no customer records indexed", "All data including customer records indexed", "Customer records indexed with encryption", "No documents indexed"] },
+      { "key": "identity", "label": "Identity", "options": ["AD synced to Entra ID with OIDC", "Local application accounts", "Shared service account", "Anonymous internal access"] },
+      { "key": "approval", "label": "Governance approach", "options": ["Threat model + risk tier + phased pilot", "Deploy and iterate", "Full regulator pre-approval before any build", "Security review after launch"] }
+    ],
+    "suggested": [
+      { "key": "model", "answer": "Azure OpenAI in a private VNet with private endpoints", "acceptable": ["Self-hosted open model on-premises GPUs"], "rationale": "In-tenant processing with private networking satisfies most regulatory positions and is far faster to deliver than standing up GPU infrastructure. Self-hosting is a legitimate answer if the regulator's position genuinely requires it — but it should be a stated constraint, not a default." },
+      { "key": "connectivity", "answer": "ExpressRoute or site-to-site VPN into a landing zone", "acceptable": [], "rationale": "Private connectivity keeps the data plane off the public internet, which is usually the security team's actual concern." },
+      { "key": "data", "answer": "Procedures and regulations only; no customer records indexed", "acceptable": [], "rationale": "Phase 1 scope should avoid customer data entirely. Indexing customer records makes every retrieval query a potential leak and makes deletion requests far harder to honour." },
+      { "key": "identity", "answer": "AD synced to Entra ID with OIDC", "acceptable": [], "rationale": "Reuses existing identity and makes group claims available as retrieval filters." },
+      { "key": "approval", "answer": "Threat model + risk tier + phased pilot", "acceptable": [], "rationale": "A documented threat model is a stated requirement. A measured pilot converts the security team from blocker to stakeholder." }
+    ],
+    "rationale": "The winning move is scope, not technology: excluding customer records from phase 1 removes most of the regulatory objection and lets the bank build confidence on low-risk content first. Candidates who index everything on day one create a problem that is expensive to unwind. Private connectivity and in-tenant processing address the security team's real concern, which is usually the network path rather than the concept. Self-hosting is a defensible answer but should be chosen because a constraint demands it, not by reflex.",
+    "diagramMermaid": "flowchart LR\n  ONP[On-premises .NET app] --> VPN[ExpressRoute / VPN]\n  VPN --> LZ[Azure landing zone VNet]\n  LZ --> ORCH[AI Orchestrator\\nprivate subnet]\n  ORCH --> PE1[Private endpoint] --> AOAI[Azure OpenAI]\n  ORCH --> PE2[Private endpoint] --> SRCH[(AI Search\\nprocedures only)]\n  AD[Active Directory] --> ENTRA[Entra ID] --> ORCH\n  ORCH --> AUD[(Immutable audit)]",
+    "difficulty": "Advanced",
+    "estimatedMinutes": 30
+  },
+  {
+    "title": "Real-Time Support Agent Assist",
+    "slug": "realtime-support-agent-assist",
+    "scenario": "During live customer calls, support agents need suggested answers surfaced within two seconds of the customer finishing a sentence. The knowledge base has 80,000 articles. Wrong suggestions are worse than no suggestion.",
+    "requirements": [
+      "Suggestion within 2 seconds of transcript segment arrival",
+      "300 concurrent calls at peak",
+      "Wrong suggestions must be rare — precision matters more than coverage",
+      "Agents can dismiss suggestions; dismissals are a quality signal",
+      "Cost per call must stay under $0.05"
+    ],
+    "choiceGroups": [
+      { "key": "trigger", "label": "Suggestion trigger", "options": ["Server-side on transcript segment with debounce", "Every word of the transcript", "Agent presses a button", "Fixed 10-second interval"] },
+      { "key": "retrieval", "label": "Retrieval strategy", "options": ["Hybrid search with high relevance threshold", "Vector only, top 20", "Keyword only", "Full-text scan"] },
+      { "key": "model", "label": "Generation model", "options": ["Small fast model with strict grounding", "Frontier model for best quality", "No generation — show retrieved articles", "Fine-tuned domain model"] },
+      { "key": "precision", "label": "Precision control", "options": ["High threshold; show nothing when uncertain", "Always show the top result", "Show three options ranked", "Show everything above zero"] },
+      { "key": "caching", "label": "Cost control", "options": ["Semantic cache on common questions", "No cache", "Cache per agent", "Precompute all answers"] },
+      { "key": "feedback", "label": "Quality feedback", "options": ["Log dismissals and feed into evaluation set", "No feedback capture", "Monthly agent survey", "Manual review only"] }
+    ],
+    "suggested": [
+      { "key": "trigger", "answer": "Server-side on transcript segment with debounce", "acceptable": [], "rationale": "Per-word triggering multiplies cost and produces flickering suggestions; a debounced segment trigger balances latency against noise." },
+      { "key": "retrieval", "answer": "Hybrid search with high relevance threshold", "acceptable": [], "rationale": "Hybrid handles product codes and paraphrase together; the high threshold is what delivers precision over coverage." },
+      { "key": "model", "answer": "Small fast model with strict grounding", "acceptable": ["No generation — show retrieved articles"], "rationale": "The latency budget and cost ceiling both point to a small model. Showing retrieved articles without generation is a legitimate answer and is also the right degraded mode when the model is unavailable." },
+      { "key": "precision", "answer": "High threshold; show nothing when uncertain", "acceptable": [], "rationale": "The requirement states wrong suggestions are worse than none. Showing nothing is the correct behaviour below the threshold, and it must be a deliberate product decision rather than an accident." },
+      { "key": "caching", "answer": "Semantic cache on common questions", "acceptable": [], "rationale": "Support workloads are highly repetitive; caching both meets the cost ceiling and improves the latency budget." },
+      { "key": "feedback", "answer": "Log dismissals and feed into evaluation set", "acceptable": [], "rationale": "Dismissals are free labelled negative examples and the best available quality signal in a live system." }
+    ],
+    "rationale": "This challenge is about accepting a stated trade-off rather than maximising every dimension. Precision over coverage means the system must be willing to show nothing, and the threshold that governs that is the central design parameter — it should be tunable and measured against dismissal rate. The latency budget rules out a large model and a long reranking chain, which is why the small-model plus high-threshold combination wins. Candidates who reach for the frontier model have not reconciled the budget with the requirement.",
+    "diagramMermaid": "flowchart LR\n  CALL[Live call transcript] --> SEG[Segment + debounce]\n  SEG --> C{Semantic cache hit?}\n  C -->|Yes| SUG[Suggestion ~50ms]\n  C -->|No| R[Hybrid search\\nhigh threshold]\n  R --> T{Above threshold?}\n  T -->|No| NONE[Show nothing]\n  T -->|Yes| M[Small model\\nstrict grounding]\n  M --> SUG\n  SUG --> D[Agent dismisses?]\n  D --> EV[(Evaluation set)]",
+    "difficulty": "Advanced",
+    "estimatedMinutes": 25
+  },
+  {
+    "title": "Automated Invoice Processing at Scale",
+    "slug": "automated-invoice-processing-scale",
+    "scenario": "A shared services centre processes 200,000 supplier invoices a month across 40 countries in 12 languages. They want straight-through processing for as many as possible, with humans reviewing the rest.",
+    "requirements": [
+      "200,000 invoices per month, 12 languages",
+      "Straight-through processing target of 70% with under 0.5% error rate",
+      "Duplicate invoice detection is mandatory — duplicate payments are the main financial risk",
+      "Full audit trail for every extraction and correction",
+      "Reviewer corrections should improve the system over time"
+    ],
+    "choiceGroups": [
+      { "key": "extraction", "label": "Extraction approach", "options": ["Schema-constrained model output with per-field confidence", "Regex and template matching", "Free-text model output parsed heuristically", "Manual entry only"] },
+      { "key": "routing", "label": "Routing decision", "options": ["Confidence threshold plus business-rule validation", "Always route to human review", "Always auto-process", "Random sampling"] },
+      { "key": "duplicates", "label": "Duplicate detection", "options": ["Vendor + invoice number + amount with fuzzy matching", "Exact file hash only", "Manual reviewer check", "None"] },
+      { "key": "language", "label": "Multi-language handling", "options": ["Multilingual model with per-language evaluation", "Translate to English then extract", "Separate pipeline per language", "English only, reject others"] },
+      { "key": "feedback", "label": "Improvement loop", "options": ["Store corrections and use as few-shot examples", "Retrain monthly on all data", "No feedback loop", "Adjust prompts by intuition"] },
+      { "key": "audit", "label": "Audit trail", "options": ["Original extraction, confidence, corrections, reviewer identity", "Final values only", "Reviewer initials on paper", "No audit"] }
+    ],
+    "suggested": [
+      { "key": "extraction", "answer": "Schema-constrained model output with per-field confidence", "acceptable": [], "rationale": "A strict schema guarantees shape, and per-field confidence is what makes routing possible at all. Template matching cannot cope with 40 countries of supplier formats." },
+      { "key": "routing", "answer": "Confidence threshold plus business-rule validation", "acceptable": [], "rationale": "Confidence alone is insufficient: a high-confidence extraction whose line items do not reconcile with the total is still wrong. Both gates are needed to hit 0.5%." },
+      { "key": "duplicates", "answer": "Vendor + invoice number + amount with fuzzy matching", "acceptable": [], "rationale": "File hashes miss the real case — the same invoice resubmitted as a rescanned PDF or a different format. Fuzzy matching on business keys catches it." },
+      { "key": "language", "answer": "Multilingual model with per-language evaluation", "acceptable": ["Separate pipeline per language"], "rationale": "One pipeline is far cheaper to operate, but accuracy must be measured per language rather than assumed — the aggregate figure will hide a language that performs badly." },
+      { "key": "feedback", "answer": "Store corrections and use as few-shot examples", "acceptable": [], "rationale": "Corrections are free labelled data. Few-shot examples deliver most of the benefit without a retraining commitment." },
+      { "key": "audit", "answer": "Original extraction, confidence, corrections, reviewer identity", "acceptable": [], "rationale": "Finance audit requires knowing what the system proposed, not only what was finally paid." }
+    ],
+    "rationale": "The 0.5% error rate is what drives the design. Confidence-based routing alone will not reach it, because a model can be confidently wrong in a consistent way; business-rule validation catches the class of error confidence does not. Duplicate detection deserves particular attention because it is the only failure here that directly loses money, and the naive file-hash answer misses the realistic case entirely. The per-language evaluation point matters because a single aggregate accuracy figure will mask one language performing badly for months.",
+    "diagramMermaid": "flowchart TD\n  INV[Invoice upload] --> DUP{Duplicate?\\nvendor + number + amount}\n  DUP -->|Yes| FLAG[Flag and stop]\n  DUP -->|No| EX[Schema-constrained extraction\\nper-field confidence]\n  EX --> VAL{Confidence high AND\\nbusiness rules pass?}\n  VAL -->|Yes| STP[Straight-through]\n  VAL -->|No| RQ[Review queue]\n  RQ --> HUM[Reviewer corrects]\n  HUM --> FS[(Corrections store\\nfew-shot examples)]\n  STP --> AUD[(Audit: extraction,\\nconfidence, corrections)]\n  HUM --> AUD",
+    "difficulty": "Advanced",
+    "estimatedMinutes": 28
+  },
+  {
+    "title": "Legal Contract Analysis Platform",
+    "slug": "legal-contract-analysis-platform",
+    "scenario": "A law firm wants to analyse contracts for specific clauses and obligations. Accuracy is paramount: a missed indemnity clause has real consequences. Contracts are long, heavily cross-referenced, and negation matters enormously.",
+    "requirements": [
+      "Contracts of 20 to 400 pages with dense cross-references",
+      "Must find all instances of a clause type, not just the best match — recall matters more than precision",
+      "Negation and exclusions carry critical meaning",
+      "Every finding must cite the exact clause and page",
+      "Lawyers must be able to verify every answer against the source"
+    ],
+    "choiceGroups": [
+      { "key": "chunking", "label": "Chunking", "options": ["Clause-level with section hierarchy preserved", "Fixed 1000 characters", "Page per chunk", "Whole document"] },
+      { "key": "retrieval", "label": "Retrieval", "options": ["Hybrid with cross-encoder reranking and high recall settings", "Vector only, top 5", "Keyword only", "Whole document in context"] },
+      { "key": "negation", "label": "Negation handling", "options": ["Reranker plus explicit extraction of exclusions as structured fields", "Rely on the model reading carefully", "Keyword search for 'not'", "Ignore negation"] },
+      { "key": "coverage", "label": "Completeness strategy", "options": ["Exhaustive pass over all clause-level chunks for the clause type", "Top-k retrieval only", "Sample and extrapolate", "First match wins"] },
+      { "key": "citation", "label": "Citation", "options": ["Clause reference and page, linked to the source view", "Document name only", "No citation", "Paraphrase with page range"] },
+      { "key": "verification", "label": "Human verification", "options": ["Side-by-side source view with findings highlighted", "Findings list only", "PDF download", "Email summary"] }
+    ],
+    "suggested": [
+      { "key": "chunking", "answer": "Clause-level with section hierarchy preserved", "acceptable": [], "rationale": "Contracts have explicit structure; clause boundaries are natural chunk boundaries and the section hierarchy is what makes cross-references resolvable." },
+      { "key": "retrieval", "answer": "Hybrid with cross-encoder reranking and high recall settings", "acceptable": [], "rationale": "Recall matters more than precision here, so retrieve wide and let the reranker order. Vector-only would miss defined terms and clause numbering." },
+      { "key": "negation", "answer": "Reranker plus explicit extraction of exclusions as structured fields", "acceptable": [], "rationale": "Embeddings barely distinguish 'covers' from 'does not cover'. A cross-encoder reads both together, and extracting exclusions as separate structured fields makes them visible rather than buried in prose." },
+      { "key": "coverage", "answer": "Exhaustive pass over all clause-level chunks for the clause type", "acceptable": [], "rationale": "Top-k retrieval is designed to return the best matches, not all matches. When the requirement is completeness, retrieval is the wrong tool — classify every clause instead." },
+      { "key": "citation", "answer": "Clause reference and page, linked to the source view", "acceptable": [], "rationale": "A lawyer must be able to verify against the original text; a citation that cannot be followed is not a citation." },
+      { "key": "verification", "answer": "Side-by-side source view with findings highlighted", "acceptable": [], "rationale": "Verification speed determines whether the tool is used at all." }
+    ],
+    "rationale": "The distinguishing insight is that 'find all instances' is not a retrieval problem. Top-k retrieval returns the best matches by construction and will silently miss the fourth indemnity clause. When completeness is the requirement, the right design is an exhaustive classification pass over clause-level chunks, using retrieval only to prioritise review order. Negation is the second trap: this is precisely the corpus where pure vector search is dangerous, and extracting exclusions as structured fields makes them auditable rather than trusting prose comprehension.",
+    "diagramMermaid": "flowchart TD\n  DOC[Contract] --> P[Parse clause structure\\nsection hierarchy]\n  P --> CH[Clause-level chunks]\n  CH --> IDX[(Index)]\n  Q[Find all indemnity clauses] --> EX[Exhaustive classification\\nover ALL clause chunks]\n  EX --> CL[Classify: is this an\\nindemnity clause?]\n  CL --> NEG[Extract exclusions\\nas structured fields]\n  NEG --> RES[Findings with\\nclause ref + page]\n  RES --> UI[Side-by-side source view]\n  IDX -.prioritise review order.-> EX",
+    "difficulty": "Expert",
+    "estimatedMinutes": 30
+  },
+  {
+    "title": "Healthcare Clinical Documentation Assistant",
+    "slug": "healthcare-clinical-documentation",
+    "scenario": "A hospital group wants to draft clinical notes from consultation recordings. Clinicians review and sign every note. Patient data is highly regulated, and an incorrect note that gets signed has patient-safety implications.",
+    "requirements": [
+      "Patient data must remain within the hospital's regulated environment",
+      "Every note requires clinician review and signature before entering the record",
+      "Notes must not introduce facts that were not said in the consultation",
+      "Full audit of what was generated versus what was signed",
+      "System must degrade safely when unavailable — clinicians fall back to manual notes"
+    ],
+    "choiceGroups": [
+      { "key": "residency", "label": "Data residency", "options": ["In-region cloud with BAA and private endpoints", "Public API in another region", "Local GPU deployment", "Send de-identified data to a public API"] },
+      { "key": "grounding", "label": "Preventing invented facts", "options": ["Strict extraction from transcript with per-statement source spans", "Free generation with a review step", "Template filling with model assistance", "Summarise with a low temperature"] },
+      { "key": "approval", "label": "Approval model", "options": ["Clinician signs; diff between generated and signed is stored", "Auto-file with post-hoc audit", "Clinician approves in bulk", "Nurse reviews on the clinician's behalf"] },
+      { "key": "pii", "label": "PII handling", "options": ["Data stays in the regulated boundary; no PII in telemetry", "Redact in logs after writing", "Log everything for debugging", "Tokenise and send to a public API"] },
+      { "key": "degraded", "label": "Degraded mode", "options": ["Fall back to manual note entry with a clear indicator", "Queue and generate later", "Block the consultation workflow", "Serve a cached similar note"] },
+      { "key": "governance", "label": "Governance tier", "options": ["High risk: named owner, fairness testing, monitored rollout", "Standard logging only", "No formal governance", "Annual review"] }
+    ],
+    "suggested": [
+      { "key": "residency", "answer": "In-region cloud with BAA and private endpoints", "acceptable": ["Local GPU deployment"], "rationale": "Regulated health data needs a contractual and network boundary. Local deployment is legitimate where the regulator requires it; de-identification is not a reliable control for free-text clinical narrative." },
+      { "key": "grounding", "answer": "Strict extraction from transcript with per-statement source spans", "acceptable": [], "rationale": "Linking each generated statement to a transcript span makes invented facts visible during review rather than requiring the clinician to notice an absence." },
+      { "key": "approval", "answer": "Clinician signs; diff between generated and signed is stored", "acceptable": [], "rationale": "The diff is both the audit record and the highest-quality training signal available — it shows exactly where the system was wrong." },
+      { "key": "pii", "answer": "Data stays in the regulated boundary; no PII in telemetry", "acceptable": [], "rationale": "Redacting after writing means the unredacted value already exists in the log store. Redaction must precede logging." },
+      { "key": "degraded", "answer": "Fall back to manual note entry with a clear indicator", "acceptable": [], "rationale": "A clinical workflow must never be blocked by an assistive tool. Serving a cached similar note would be actively dangerous." },
+      { "key": "governance", "answer": "High risk: named owner, fairness testing, monitored rollout", "acceptable": [], "rationale": "Patient-safety implications place this in the highest risk tier regardless of how well it performs in testing." }
+    ],
+    "rationale": "Two answers separate a considered design here. First, per-statement source spans: review only works if the clinician can see what each sentence was derived from — asking a busy clinician to spot an absent fact in fluent prose is not a control. Second, the degraded mode: 'serve a cached similar note' is the dangerous distractor, and any design that lets an assistive tool block or corrupt a clinical workflow has misunderstood its place. The diff between generated and signed is the detail that gives you both audit and improvement from the same artefact.",
+    "diagramMermaid": "flowchart TD\n  REC[Consultation recording] --> TR[Transcription\\nin regulated boundary]\n  TR --> GEN[Draft note\\nper-statement source spans]\n  GEN --> REV[Clinician review\\nspans shown inline]\n  REV --> SIGN[Clinician signs]\n  SIGN --> EHR[(Patient record)]\n  GEN --> DIFF[(Generated vs signed diff\\naudit + improvement)]\n  SIGN --> DIFF\n  FAIL[System unavailable] --> MAN[Manual entry\\nclear indicator]\n  style MAN fill:#065f46,color:#fff",
+    "difficulty": "Expert",
+    "estimatedMinutes": 30
+  },
+  {
+    "title": "Engineering Knowledge Assistant with Code",
+    "slug": "engineering-knowledge-assistant-code",
+    "scenario": "An engineering organisation wants an assistant over internal documentation, runbooks, architecture decision records and source code across 400 repositories. Engineers ask questions mixing natural language and code identifiers.",
+    "requirements": [
+      "400 repositories, documentation and code, updated continuously",
+      "Questions mix prose and exact identifiers such as class and method names",
+      "Answers must link to the exact file and line",
+      "Private repositories must respect repository-level access",
+      "Index must reflect main branch within an hour of merge"
+    ],
+    "choiceGroups": [
+      { "key": "chunking", "label": "Code chunking", "options": ["Syntax-aware: function and class boundaries with file path context", "Fixed 1000 characters", "Whole file", "Line ranges of 50"] },
+      { "key": "retrieval", "label": "Retrieval", "options": ["Hybrid weighted toward keyword for identifiers", "Vector only", "Keyword only", "grep across repositories"] },
+      { "key": "freshness", "label": "Index freshness", "options": ["Webhook on merge triggering incremental reindex", "Nightly full reindex", "Weekly reindex", "Manual reindex"] },
+      { "key": "access", "label": "Repository access control", "options": ["Repository ACL as an index filter from the user's token", "All repositories visible to all", "Separate index per team", "Filter results after retrieval"] },
+      { "key": "citation", "label": "Citations", "options": ["File path, line range and commit SHA", "Repository name only", "File path only", "No citation"] },
+      { "key": "cost", "label": "Embedding cost control", "options": ["Content hash cache; only changed files re-embedded", "Re-embed everything nightly", "No caching", "Embed only documentation, not code"] }
+    ],
+    "suggested": [
+      { "key": "chunking", "answer": "Syntax-aware: function and class boundaries with file path context", "acceptable": [], "rationale": "A function split in half is useless, and the file path plus namespace is the code equivalent of a heading path — it is what makes the chunk identifiable." },
+      { "key": "retrieval", "answer": "Hybrid weighted toward keyword for identifiers", "acceptable": [], "rationale": "Identifiers are exactly what embeddings handle worst. Weighting keyword higher for this corpus is a deliberate tuning decision, validated against an evaluation set." },
+      { "key": "freshness", "answer": "Webhook on merge triggering incremental reindex", "acceptable": [], "rationale": "The one-hour requirement rules out nightly. Incremental keeps cost proportional to change rather than to corpus size." },
+      { "key": "access", "answer": "Repository ACL as an index filter from the user's token", "acceptable": ["Separate index per team"], "rationale": "Filtering after retrieval means private code was already loaded into process memory and possibly logs." },
+      { "key": "citation", "answer": "File path, line range and commit SHA", "acceptable": [], "rationale": "The commit SHA matters: code moves, and a citation without it becomes wrong the moment the file changes." },
+      { "key": "cost", "answer": "Content hash cache; only changed files re-embedded", "acceptable": [], "rationale": "Across 400 repositories, re-embedding unchanged files nightly is the difference between a sensible bill and an absurd one." }
+    ],
+    "rationale": "The commit SHA in the citation is the detail that separates someone who has built this from someone who has designed it on a whiteboard: without it, every citation silently rots as files change and users lose trust in the tool. The keyword weighting is the second point — this corpus is dominated by exact identifiers, which is the case where vector search is weakest, and recognising that the standard hybrid weighting needs tuning for this corpus shows measurement rather than pattern-matching.",
+    "diagramMermaid": "flowchart LR\n  MERGE[Merge to main] --> WH[Webhook]\n  WH --> INC[Incremental reindex\\ncontent hash cache]\n  INC --> IDX[(Index: code + docs\\nrepo ACL metadata)]\n  Q[Engineer question] --> TOK[User token\\nrepo access]\n  TOK --> F[ACL filter]\n  Q --> H[Hybrid search\\nkeyword weighted up]\n  F --> H\n  H --> IDX\n  H --> A[Answer + file, lines, SHA]",
+    "difficulty": "Advanced",
+    "estimatedMinutes": 25
+  },
+  {
+    "title": "High-Volume Batch Document Classification",
+    "slug": "high-volume-batch-classification",
+    "scenario": "A logistics company must classify 2 million shipping documents a month into 40 categories, extract three fields from each, and route them to downstream systems. Latency is irrelevant; cost and accuracy are everything.",
+    "requirements": [
+      "2 million documents per month — cost is the primary constraint",
+      "Latency is irrelevant; overnight completion is acceptable",
+      "Classification accuracy above 97%",
+      "Must handle a seasonal 4x volume spike in November",
+      "Misclassification must be detectable, not silent"
+    ],
+    "choiceGroups": [
+      { "key": "model", "label": "Model choice", "options": ["Small model, fine-tuned on classification examples", "Frontier model for every document", "Traditional ML classifier with model fallback", "Rules engine only"] },
+      { "key": "batching", "label": "Processing mode", "options": ["Batch API at reduced rate with overnight windows", "Real-time API per document", "Streaming", "Manual batches"] },
+      { "key": "spike", "label": "Seasonal spike handling", "options": ["Queue-based with elastic workers and a longer completion window", "Provision for peak year-round", "Reject excess volume", "Manual processing during peak"] },
+      { "key": "detection", "label": "Error detection", "options": ["Confidence thresholds plus a sampled human audit", "Trust the output", "Full human review", "Downstream complaints"] },
+      { "key": "cost", "label": "Primary cost lever", "options": ["Model size and batch pricing", "Faster hardware", "More parallelism", "Larger context windows"] },
+      { "key": "fallback", "label": "Low-confidence handling", "options": ["Route to a larger model, then to a human", "Assign the most common category", "Discard", "Retry the same model"] }
+    ],
+    "suggested": [
+      { "key": "model", "answer": "Small model, fine-tuned on classification examples", "acceptable": ["Traditional ML classifier with model fallback"], "rationale": "This is the case where fine-tuning genuinely pays: a narrow repetitive task at volume, where a fine-tuned small model matches a frontier model at a fraction of the cost. A classical classifier with a model fallback is also entirely defensible and often cheaper still." },
+      { "key": "batching", "answer": "Batch API at reduced rate with overnight windows", "acceptable": [], "rationale": "Latency is explicitly irrelevant, so batch pricing is free money. Most providers discount batch processing substantially." },
+      { "key": "spike", "answer": "Queue-based with elastic workers and a longer completion window", "acceptable": [], "rationale": "Provisioning for a 4x November peak year-round wastes capacity for eleven months. A queue absorbs the spike; the completion window stretches." },
+      { "key": "detection", "answer": "Confidence thresholds plus a sampled human audit", "acceptable": [], "rationale": "The requirement is that misclassification must be detectable. A sampled audit is what converts an accuracy claim into a measured figure." },
+      { "key": "cost", "answer": "Model size and batch pricing", "acceptable": [], "rationale": "Token cost dominates at this volume; hardware and parallelism affect throughput, not cost per document." },
+      { "key": "fallback", "answer": "Route to a larger model, then to a human", "acceptable": [], "rationale": "A tiered cascade keeps the expensive path small: most documents never reach the larger model." }
+    ],
+    "rationale": "This is the inverse of the usual interactive design, and the point is to notice that. Latency being irrelevant unlocks batch pricing and a tiered cascade, and 2 million repetitive classifications a month is one of the few genuine fine-tuning cases — a narrow task at volume where a small model can be taught to match a large one. Candidates who reach for a frontier model per document have not internalised that cost is the stated constraint. The seasonal spike answer also matters: queueing rather than provisioning for peak is the correct instinct when the completion window is elastic.",
+    "diagramMermaid": "flowchart TD\n  DOCS[2M documents/month] --> Q[(Queue)]\n  Q --> W[Elastic workers]\n  W --> SM[Small fine-tuned model\\nbatch pricing]\n  SM --> C{Confidence high?}\n  C -->|Yes| ROUTE[Route downstream]\n  C -->|No| LG[Larger model]\n  LG --> C2{Confidence high?}\n  C2 -->|Yes| ROUTE\n  C2 -->|No| HUM[Human review]\n  ROUTE --> AUD[Sampled audit\\nmeasures real accuracy]",
+    "difficulty": "Advanced",
+    "estimatedMinutes": 25
+  },
+  {
+    "title": "Migrating a Vector Store Without Downtime",
+    "slug": "vector-store-migration-no-downtime",
+    "scenario": "A live RAG system on Pinecone must move to Azure AI Search for compliance reasons. 4 million vectors, 300 queries per minute at peak, and the embedding model is also changing as part of the move.",
+    "requirements": [
+      "No user-visible downtime",
+      "4 million vectors to migrate; the embedding model changes, so everything must be re-embedded",
+      "Answer quality must not regress — and this must be proven, not assumed",
+      "Rollback must be possible at any point",
+      "Migration cost must be estimated before starting"
+    ],
+    "choiceGroups": [
+      { "key": "strategy", "label": "Migration strategy", "options": ["Dual-write and shadow-read, then cut over", "Big-bang cutover at a quiet time", "Migrate tenant by tenant", "Export and import overnight"] },
+      { "key": "embedding", "label": "Re-embedding approach", "options": ["Batch re-embed from source documents with a content hash cache", "Convert existing vectors", "Re-embed on demand at query time", "Reuse the old vectors"] },
+      { "key": "validation", "label": "Quality validation", "options": ["Run the evaluation set against both and compare", "Spot-check a few queries", "Trust the vendor benchmark", "Wait for user complaints"] },
+      { "key": "cutover", "label": "Cutover mechanism", "options": ["Percentage-based traffic shift with automatic rollback", "DNS change", "Feature flag per tenant", "Redeploy pointing at the new store"] },
+      { "key": "rollback", "label": "Rollback plan", "options": ["Keep the old store live and populated until validation completes", "Restore from backup", "Re-migrate in reverse", "No rollback"] }
+    ],
+    "suggested": [
+      { "key": "strategy", "answer": "Dual-write and shadow-read, then cut over", "acceptable": ["Migrate tenant by tenant"], "rationale": "Shadow reads let you compare results on real traffic before any user is affected — the only way to detect a quality regression before it reaches someone." },
+      { "key": "embedding", "answer": "Batch re-embed from source documents with a content hash cache", "acceptable": [], "rationale": "Vectors from different embedding models are not convertible. Re-embedding from source is the only correct path, and the cache keeps the cost bounded." },
+      { "key": "validation", "answer": "Run the evaluation set against both and compare", "acceptable": [], "rationale": "The requirement is that quality must not regress and must be proven. Spot-checking cannot prove anything." },
+      { "key": "cutover", "answer": "Percentage-based traffic shift with automatic rollback", "acceptable": [], "rationale": "Gradual shift limits blast radius and lets you watch real metrics; automatic rollback on error rate means the decision does not depend on someone being awake." },
+      { "key": "rollback", "answer": "Keep the old store live and populated until validation completes", "acceptable": [], "rationale": "Rollback must be instant. Restoring from backup is not a rollback plan for a live system; it is an outage with extra steps." }
+    ],
+    "rationale": "The trap is treating this as a data migration when it is really a model migration: because the embedding model changes, no vector can be converted and the entire corpus must be re-embedded from source. That single fact drives the cost estimate and the timeline. Shadow reads are what turn 'we think quality is the same' into evidence, and keeping the old store live is what makes rollback instant rather than aspirational. Candidates who answer 'export and import' have missed that the vectors are not portable at all.",
+    "diagramMermaid": "flowchart TD\n  SRC[Source documents] --> RE[Batch re-embed\\nnew model, hash cache]\n  RE --> NEW[(Azure AI Search)]\n  OLD[(Pinecone - live)] --> Q[Query path]\n  Q --> SHADOW[Shadow read from new\\ncompare, do not serve]\n  SHADOW --> CMP[(Comparison metrics)]\n  CMP --> EV{Evaluation set\\nparity reached?}\n  EV -->|No| TUNE[Tune and repeat]\n  EV -->|Yes| SHIFT[Shift 1% -> 10% -> 50% -> 100%]\n  SHIFT --> RB{Error rate up?}\n  RB -->|Yes| ROLL[Automatic rollback to old]\n  RB -->|No| DONE[Decommission old store]",
+    "difficulty": "Expert",
+    "estimatedMinutes": 28
+  }
+]

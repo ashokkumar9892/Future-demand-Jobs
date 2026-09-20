@@ -124,13 +124,21 @@ function CareerCard({ career }: { career: CareerSummary }) {
 
       <div className="grid grid-cols-2 gap-4 px-5 py-4">
         <div>
-          <p className="label">Salary range</p>
-          <p className="mt-1 text-lg font-semibold tabular-nums tracking-tight text-ink">
-            {money(career.salaryMinUsd)}–{money(career.salaryMaxUsd)}
-          </p>
-          <p className="text-[11px] text-ink-faint">
-            Senior {money(career.seniorSalaryMinUsd)}–{money(career.seniorSalaryMaxUsd)}
-          </p>
+          <p className="label">Salary range · {career.salary?.countryName ?? 'USA'}</p>
+          {career.salary && !career.salary.hasData ? (
+            <p className="mt-1 text-[11px] leading-relaxed text-ink-faint">{career.salary.message}</p>
+          ) : (
+            <>
+              <p className="mt-1 text-lg font-semibold tabular-nums tracking-tight text-ink">
+                {career.salary?.range ?? `${money(career.salaryMinUsd)}–${money(career.salaryMaxUsd)}`}
+              </p>
+              <p className="text-[11px] text-ink-faint">
+                Senior{' '}
+                {career.salary?.seniorRange ??
+                  `${money(career.seniorSalaryMinUsd)}–${money(career.seniorSalaryMaxUsd)}`}
+              </p>
+            </>
+          )}
         </div>
         <div>
           <p className="label">Training</p>

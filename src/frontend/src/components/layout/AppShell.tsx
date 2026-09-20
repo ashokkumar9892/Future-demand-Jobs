@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { CountrySwitcher } from '@/components/market';
 import {
   Award,
   BookOpen,
@@ -57,6 +58,7 @@ const NAV_GROUPS: { heading: string; items: NavItem[] }[] = [
     heading: 'Learn',
     items: [
       { to: '/courses', label: 'Courses', icon: <BookOpen size={16} /> },
+      { to: '/my-learning', label: 'My Learning', icon: <GraduationCap size={16} /> },
       { to: '/videos', label: 'Videos', icon: <PlayCircle size={16} /> },
       { to: '/skills', label: 'Skill Matrix', icon: <Target size={16} /> },
     ],
@@ -339,6 +341,8 @@ function Topbar({ onOpenNav }: { onOpenNav: () => void }) {
       </div>
 
       <div className="ml-auto hidden items-center gap-2 sm:flex">
+        {/* Salary figures and course prices follow this choice. */}
+        <CountrySwitcher />
         <Link
           to="/practice"
           className="rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-ink-muted transition hover:bg-surface-overlay hover:text-ink"

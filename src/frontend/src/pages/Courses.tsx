@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { BookOpen, Clock, Search } from 'lucide-react';
+import { BookOpen, Clock, Lock, Search, Sparkles } from 'lucide-react';
 import { api } from '@/lib/api';
 import { PageHeader } from '@/components/layout/AppShell';
 import { Badge, Card, ErrorPanel, Input, LoadingPanel, Progress, Stat, Tabs } from '@/components/ui';
@@ -121,7 +121,20 @@ export default function Courses() {
               </Badge>
               <Badge tone={course.level === 'Expert' ? 'danger' : 'info'}>{course.level}</Badge>
               {course.minimumTrack === 'FastTrack' && <Badge tone="success">In Fast Track</Badge>}
+              {course.access?.isFree && <Badge tone="success">Free</Badge>}
+              {course.access && !course.access.isFree && (
+                <Badge tone={course.access.hasAccess ? 'success' : 'warning'}>
+                  {course.access.hasAccess ? <Sparkles size={10} /> : <Lock size={10} />}
+                  {course.access.hasAccess
+                    ? 'Advanced · yours'
+                    : `Advanced${course.access.priceLabel ? ` · ${course.access.priceLabel}` : ''}`}
+                </Badge>
+              )}
             </div>
+
+            {course.access && !course.access.hasAccess && (
+              <p className="mt-2 text-[11px] leading-relaxed text-amber-300">{course.access.message}</p>
+            )}
 
             <div className="mt-4">
               <div className="mb-1.5 flex items-baseline justify-between text-[11px]">

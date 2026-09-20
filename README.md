@@ -158,9 +158,89 @@ HTTP API directly.
 | Interview | 20 questions across 7 categories, plus a multi-turn mock interview with a five-dimension scorecard |
 | Planning | Study-time calculator, automatic plan generation, month and week calendars, START TODAY'S TRAINING |
 | Tracking | Lesson progress, quiz scores, practice scores, project milestones, study streak, XP, badges, readiness |
+| Accounts | Self-service registration, per-account preferences, and an audited sign-in history with device and resolved location |
+| Enrolment | Enrol in a course with a goal and a weekly-hours target; withdraw without losing progress |
+| Certificates | Course completion certificate at 80%, with a public verification page for the number |
+| Markets | USA, UK and India — salary bands and course prices per market, in that market's own currency |
+| Free and advanced | Courses are free by default; advanced ones unlock on a confirmed payment |
+| Feedback | Learners submit feedback and see the reply; admins triage it through to Implemented |
+| Admin reporting | Who has an account, which course each is working through, where they signed in from, and the feedback and payment queues |
 
 Content lives as JSON in `src/backend/FutureTech.Api/SeedData/` and is editable
 through the Admin console without a rebuild.
+
+---
+
+## Setting up the new areas
+
+Enrolment, certificates and feedback work the moment the API starts. The three
+areas below do nothing useful until an operator supplies real data, because the
+platform will not invent it.
+
+### Salary figures for the UK and India
+
+The content pack ships USA figures with a USA source, which are backfilled into
+the USA salary band on every start. The other markets start empty and say so.
+
+Admin → **Career salary by country**, or the audited endpoint:
+
+```http
+PUT /api/admin/careers/{careerId}/salary
+{ "salaryMinUsd": 4500000, "salaryMaxUsd": 8000000,
+  "seniorSalaryMinUsd": 8000000, "seniorSalaryMaxUsd": 12000000,
+  "source": "Your source here", "countryCode": "IN" }
+```
+
+The amounts are in the country's own currency despite the field names, which
+keep their old spelling so existing callers still work. India is rendered in
+lakh (₹45L–₹80L+), the UK and USA in thousands.
+
+### Charging for an advanced course
+
+1. Admin → **Courses** → set `accessTier` to `Advanced`.
+2. Admin → **Course prices by country** → add a row per market
+   (`courseId`, `countryCode`, `currencyCode`, `amount`).
+3. Admin → **Payment methods** → add at least one row for that market:
+
+   | Field | QR route | Email route |
+   |---|---|---|
+   | `kind` | `QrCode` | `Email` |
+   | `qrPayload` | `upi://pay?pa=you@bank&pn=Your%20Name&cu=INR` | — |
+   | `qrImageUrl` | an image you host, instead of `qrPayload` | — |
+   | `payeeEmail` | — | `billing@yourdomain` |
+   | `reference` | the UPI id or account shown as text | optional |
+   | `instructions` | what the learner should do | what the learner should do |
+
+The QR is rendered in the browser from `qrPayload`, so no payment detail is sent
+to a third-party QR service. A course with no price row in a learner's market
+reads as *not on sale there* rather than free.
+
+Payments then arrive in Admin → Learners & Feedback → **Payments**. Check the
+reference against your own bank records before confirming: confirming is what
+enrols the learner and unlocks the lessons.
+
+### Login locations
+
+On by default, using ip-api.com's free endpoint — plain HTTP, rate-limited to
+roughly 45 requests a minute, which is why answers are cached per address and
+resolved on a background queue rather than during sign-in.
+
+```jsonc
+"GeoIp": {
+  "Enabled": true,          // false stops all outbound location requests
+  "Endpoint": "http://ip-api.com/json/{ip}?fields=...",
+  "CacheDays": 30
+},
+"Network": {
+  // Only turn this on behind a proxy you control, or a client can forge
+  // its own address in the audit trail.
+  "TrustForwardedHeaders": false
+}
+```
+
+Any service returning similar JSON keys can be substituted by changing
+`Endpoint` — the parser accepts the common spellings (`regionName`/`region`,
+`country`/`country_name`, `lat`/`latitude`).
 
 ---
 
@@ -226,6 +306,33 @@ stated study hours, not guarantees of employment, salary or hiring outcomes.
 `SalarySource`. Updates go through a dedicated endpoint that writes an audited
 `SalaryRevisions` row.
 
+**Salaries are never converted between markets.** A country's band is a market
+fact, not a unit conversion: applying an exchange rate to a USA band produces a
+number no Indian or British employer would recognise. Each `CareerSalaryBand`
+therefore carries its own source, and the seeded USA figures are backfilled only
+into the USA band. The UK and India start empty, and the UI says *"No salary
+figures have been published for the United Kingdom yet"* rather than showing a
+guess. An operator enters real, sourced figures in Admin → Career salary by
+country.
+
+**Certificates state their limits.** A completion certificate records lesson
+completion on this platform and says so on its face. It is not an accredited
+qualification and does not certify professional competence. The learner's name
+and the course title are snapshotted at issue, so renaming an account or editing
+a course later cannot silently rewrite a document already shown to an employer.
+
+**No payment gateway is pretended.** The platform never accepts card details and
+processes nothing. It shows the operator's own QR or contact address plus a
+reference; money moves through the learner's own bank or wallet, and an
+administrator confirms receipt before access opens. Every payment screen says
+this in as many words.
+
+**Login locations are approximate and optional.** A sign-in location comes from
+a third-party geo-IP lookup of the request address and is the city of the
+network, not of the person. Private and loopback addresses are recorded as
+"Local network" rather than guessed at. Set `GeoIp:Enabled` to `false` and the
+platform makes no outbound location request at all, showing the IP alone.
+
 ---
 
 ## Verification
@@ -266,9 +373,26 @@ tested.
 - **Lesson content exists for the primary track only.** The other twelve careers
   have full skill gaps, ladders, certifications, projects and interview focus,
   but not lesson-by-lesson curricula. The career detail page says so.
-- **No migrations yet.** `EnsureCreated` is used for first-run friction; a schema
-  change currently means dropping the local database. Switch to
-  `db.Database.MigrateAsync()` before any real deployment.
+- **No migrations yet.** `EnsureCreated` is used for first-run friction. New
+  *tables* are now added to an existing database at startup by
+  `SchemaSync.EnsureTablesAsync`, which is additive only — it never alters or
+  drops anything, so a changed *column* still needs the database recreating.
+  Switch to `db.Database.MigrateAsync()` before any real deployment.
+- **Payments are reconciled by hand.** No gateway is integrated. A learner pays
+  through their own bank or wallet and an administrator confirms receipt, so
+  access is granted minutes or hours after payment, not instantly. There is no
+  automatic refund path: moving a payment to `Refunded` records the decision but
+  moves no money.
+- **Login locations are network-level and third-party.** They come from a free
+  geo-IP service over plain HTTP, are the city of the network rather than the
+  person, and are wrong for VPN and mobile-carrier addresses. An unresolved
+  address stays `Pending` until the background queue reaches it.
+- **Certificates are self-issued.** The platform attests to lesson completion on
+  itself and nothing more. The verification page confirms a number was issued
+  here; it is not a third-party accreditation, and the certificate says so.
+- **Markets are limited to three.** USA, UK and India ship as seeded rows. Others
+  can be added in Admin → Markets & currencies, but a new market has no salary
+  bands or course prices until someone enters them.
 - **The Mermaid bundle is large** (~4.7 MB raw). It is lazily imported and only
   loads on screens that render a diagram, but it dominates that chunk.
 - **Salary figures are aggregated public estimates**, not a licensed data feed.
