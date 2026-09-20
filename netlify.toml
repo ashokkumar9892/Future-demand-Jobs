@@ -13,11 +13,17 @@
   # Vite 8 and TypeScript 6 need a current Node.
   NODE_VERSION = "22"
 
-  # Netlify cannot run the .NET API, so the deployed SPA answers its own
-  # requests from the bundled seed content and keeps progress in localStorage.
-  # To point this deployment at a real API instead, set VITE_DEMO_MODE to
-  # "false" and API_PROXY_TARGET to the API's absolute URL.
-  VITE_DEMO_MODE = "true"
+  # Demo mode answers every request in the browser from the bundled seed
+  # content, for a deployment with no API behind it. "false" makes the SPA call
+  # the real API through the proxy rule below. Netlify gives values set here
+  # precedence over the ones set in its UI, so this is the switch that counts.
+  VITE_DEMO_MODE = "false"
+
+  # Proxy target for /api/*, read by scripts/generate-redirects.mjs. Proxying
+  # rather than calling the API directly keeps the browser on one origin: no
+  # CORS grant to maintain, and — while the API is plain HTTP — no mixed-content
+  # block, because this hop happens on Netlify's side, not in the browser.
+  API_PROXY_TARGET = "http://35.196.141.157:5080"
 
 [[headers]]
   for = "/*"
