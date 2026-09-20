@@ -39,12 +39,22 @@ export default defineConfig({
     chunkSizeWarningLimit: 1200,
     rollupOptions: {
       output: {
-        // Mermaid, Monaco and the chart library are large and route-specific;
-        // keeping them out of the main chunk keeps first paint fast.
+        // Mermaid and the chart library used to be named manual chunks here, on
+        // the reasoning that a separate chunk keeps them off the critical path.
+        // It did the opposite. A named manual chunk is emitted as a static chunk
+        // of the entry, so the bundler wrote <link rel="modulepreload"> for both
+        // into index.html and every visitor downloaded them before first paint --
+        // 5.4MB, 1.5MB gzipped, on the login screen, for a diagram library that
+        // only a handful of routes ever render.
+        //
+        // Left to itself the bundler splits on the real boundaries: the pages are
+        // already lazy, MermaidDiagram already imports mermaid dynamically, and
+        // recharts becomes a shared chunk of the routes that chart. First load is
+        // now 381KB raw / 117KB gzipped. Do not name these here again.
+        //
+        // Demo content stays manual: it is a build-time constant that is either
+        // wholly present or tree-shaken away, never partially reachable.
         manualChunks(id) {
-          if (id.includes('node_modules/mermaid')) return 'mermaid';
-          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3')) return 'charts';
-          if (id.includes('node_modules/monaco-editor')) return 'monaco';
           if (id.includes('SeedData')) return 'demo-content';
           return undefined;
         },

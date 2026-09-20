@@ -59,13 +59,45 @@ public class CareerService(
 
     public async Task<CareerDetailDto> GetAsync(string slug, string? country, CancellationToken ct = default)
     {
+        // Loaded as five queries rather than one, and deliberately so.
+        //
+        // Four collection Includes in a single query is a cartesian product.
+        // The flagship career has 24 skills x 6 ladder stages x 5 certifications
+        // x 10 projects = 7,200 rows, and every row carries a full copy of the
+        // career's prose and the project's brief alongside it. That materialised
+        // tens of megabytes to render one page and made this the slowest
+        // endpoint in the application by an order of magnitude — 440ms against
+        // 15ms for a career with fewer projects, on the same local database.
+        //
+        // Five queries fetch 45 rows. EF's AsSplitQuery does the same thing in
+        // one call, but it lives in the Relational assembly and this project
+        // references only EF core so the service stays provider-agnostic across
+        // SQLite, SQL Server and Postgres. Writing the split out by hand keeps
+        // that boundary intact.
         var career = await db.CareerPaths.AsNoTracking()
-            .Include(c => c.CareerSkills).ThenInclude(cs => cs.Skill)
-            .Include(c => c.LadderStages)
-            .Include(c => c.CareerCertifications).ThenInclude(cc => cc.Certification)
-            .Include(c => c.CareerProjects).ThenInclude(cp => cp.Project)
             .FirstOrDefaultAsync(c => c.Slug == slug, ct)
             ?? throw AppException.NotFound("Career path");
+
+        // Safe to assign: the entity is untracked, so these are plain objects
+        // and nothing is going to try to persist the graph.
+        career.CareerSkills = await db.CareerSkills.AsNoTracking()
+            .Include(cs => cs.Skill)
+            .Where(cs => cs.CareerPathId == career.Id)
+            .ToListAsync(ct);
+
+        career.LadderStages = await db.LadderStages.AsNoTracking()
+            .Where(l => l.CareerPathId == career.Id)
+            .ToListAsync(ct);
+
+        career.CareerCertifications = await db.CareerCertifications.AsNoTracking()
+            .Include(cc => cc.Certification)
+            .Where(cc => cc.CareerPathId == career.Id)
+            .ToListAsync(ct);
+
+        career.CareerProjects = await db.CareerProjects.AsNoTracking()
+            .Include(cp => cp.Project)
+            .Where(cp => cp.CareerPathId == career.Id)
+            .ToListAsync(ct);
 
         var userLevels = await CurrentUserLevelsAsync(ct);
         var gap = BuildGap(career, userLevels);
@@ -84,15 +116,22 @@ public class CareerService(
             .ToListAsync(ct);
 
         var completedLessonIds = await CompletedLessonIdsAsync(ct);
-        var lessonsByCourse = await db.Lessons.AsNoTracking()
-            .Where(l => l.Module!.Course!.CareerPathId == career.Id)
-            .Select(l => new { CourseId = l.Module!.CourseId, l.Id })
-            .ToListAsync(ct);
+
+        // Count the completed lessons per course in one pass. The previous
+        // version rescanned the career's whole lesson list once per course,
+        // which grew with the product of the two.
+        var completedByCourse = (await db.Lessons.AsNoTracking()
+                .Where(l => l.Module!.Course!.CareerPathId == career.Id)
+                .Select(l => new { CourseId = l.Module!.CourseId, l.Id })
+                .ToListAsync(ct))
+            .Where(l => completedLessonIds.Contains(l.Id))
+            .GroupBy(l => l.CourseId)
+            .ToDictionary(g => g.Key, g => g.Count());
 
         var courseDtos = courses.Select(c => new CareerCourseDto(
             c.Id, c.PhaseNumber, c.Title, c.Slug, c.Summary, c.EstimatedHours,
             Text.Humanize(c.Level), c.LessonCount,
-            lessonsByCourse.Count(l => l.CourseId == c.Id && completedLessonIds.Contains(l.Id)))).ToList();
+            completedByCourse.TryGetValue(c.Id, out var done) ? done : 0)).ToList();
 
         var (weeklyHours, studyDays, trackMode) = await PaceAsync(ct);
         var hours = StudyMath.HoursForTrack(career.EstimatedHours, trackMode);
