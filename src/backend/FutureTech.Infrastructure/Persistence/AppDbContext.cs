@@ -72,6 +72,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<LoginEvent> LoginEvents => Set<LoginEvent>();
     public DbSet<IpLocation> IpLocations => Set<IpLocation>();
     public DbSet<Feedback> Feedback => Set<Feedback>();
+    public DbSet<AccessPolicy> AccessPolicies => Set<AccessPolicy>();
 
     public override Task<int> SaveChangesAsync(CancellationToken ct = default) => base.SaveChangesAsync(ct);
 

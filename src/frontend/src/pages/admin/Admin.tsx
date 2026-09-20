@@ -17,6 +17,7 @@ import {
   Stat,
   Textarea,
 } from '@/components/ui';
+import { AccessPolicyPanel, MarketSalaryPanel } from '@/pages/admin/AccessAndMarkets';
 import { cn } from '@/lib/format';
 import type { AdminPage, AdminResource, AdminStats, CareerSummary } from '@/types/api';
 
@@ -106,6 +107,8 @@ export default function Admin() {
       )}
 
       <SalaryPanel />
+      <MarketSalaryPanel />
+      <AccessPolicyPanel />
 
       <div className="grid gap-5 xl:grid-cols-[260px_minmax(0,1fr)]">
         <Card className="h-fit">

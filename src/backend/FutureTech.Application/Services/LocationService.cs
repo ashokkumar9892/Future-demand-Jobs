@@ -1,4 +1,5 @@
 using FutureTech.Application.Abstractions;
+using FutureTech.Application.Common;
 using FutureTech.Application.Contracts;
 using FutureTech.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,21 @@ public interface ILocationService
         IReadOnlyList<Guid> careerPathIds, string countryCode, CancellationToken ct = default);
 
     SalaryBandDto ToBandDto(Country country, CareerSalaryBand? band);
+
+    /// <summary>
+    /// Every career's band for one market, including the careers that have none
+    /// yet. Admin needs the gaps as much as the figures: an empty row is the
+    /// prompt to publish one, and is what the learner currently sees.
+    /// </summary>
+    Task<IReadOnlyList<AdminSalaryBandDto>> ListBandsForAdminAsync(
+        string countryCode, CancellationToken ct = default);
+
+    /// <summary>Creates or replaces one career's band in one market.</summary>
+    Task<AdminSalaryBandDto> SaveBandAsync(
+        Guid careerPathId, string countryCode, SalaryBandRequest request, CancellationToken ct = default);
+
+    /// <summary>Withdraws a published band, returning that market to "no figures published".</summary>
+    Task DeleteBandAsync(Guid careerPathId, string countryCode, CancellationToken ct = default);
 }
 
 public class LocationService(IAppDbContext db, ICurrentUser currentUser) : ILocationService
@@ -109,6 +125,95 @@ public class LocationService(IAppDbContext db, ICurrentUser currentUser) : ILoca
             b.Source,
             true,
             null);
+    }
+
+    public async Task<IReadOnlyList<AdminSalaryBandDto>> ListBandsForAdminAsync(
+        string countryCode, CancellationToken ct = default)
+    {
+        var country = await ResolveAsync(countryCode, ct);
+
+        var careers = await db.CareerPaths.AsNoTracking()
+            .OrderBy(c => c.Rank)
+            .Select(c => new { c.Id, c.Title, c.Slug })
+            .ToListAsync(ct);
+
+        var bands = await db.CareerSalaryBands.AsNoTracking()
+            .Where(b => b.CountryCode == country.Code)
+            .ToDictionaryAsync(b => b.CareerPathId, ct);
+
+        return careers.Select(c =>
+        {
+            bands.TryGetValue(c.Id, out var band);
+            return new AdminSalaryBandDto(
+                c.Id, c.Title, c.Slug, country.Code,
+                band?.CurrencyCode ?? country.CurrencyCode,
+                band?.SalaryMin ?? 0, band?.SalaryMax ?? 0,
+                band?.SeniorSalaryMin ?? 0, band?.SeniorSalaryMax ?? 0,
+                band is null || band.AsOf == default ? null : band.AsOf.ToString("yyyy-MM-dd"),
+                band?.Source ?? string.Empty,
+                band is not null && band.SalaryMax > 0 && !string.IsNullOrWhiteSpace(band.Source));
+        }).ToList();
+    }
+
+    public async Task<AdminSalaryBandDto> SaveBandAsync(
+        Guid careerPathId, string countryCode, SalaryBandRequest request, CancellationToken ct = default)
+    {
+        var country = await ResolveAsync(countryCode, ct);
+
+        if (!await db.CareerPaths.AnyAsync(c => c.Id == careerPathId, ct))
+            throw AppException.NotFound("Career");
+
+        if (request.SalaryMax <= 0 || request.SalaryMin < 0 || request.SalaryMin > request.SalaryMax)
+            throw new AppException("Salary minimum must be zero or more and not above the maximum.");
+
+        if (request.SeniorSalaryMax > 0 && request.SeniorSalaryMin > request.SeniorSalaryMax)
+            throw new AppException("Senior salary minimum must not be above the senior maximum.");
+
+        // A band without a source is indistinguishable from no band: ToBandDto
+        // treats it as unpublished, so saving one would look like a silent
+        // no-op to whoever just typed the figures in.
+        if (string.IsNullOrWhiteSpace(request.Source))
+            throw new AppException("A source is required — it is what makes the figures publishable.");
+
+        var band = await db.CareerSalaryBands
+            .FirstOrDefaultAsync(b => b.CareerPathId == careerPathId && b.CountryCode == country.Code, ct);
+
+        if (band is null)
+        {
+            band = new CareerSalaryBand { CareerPathId = careerPathId, CountryCode = country.Code };
+            db.CareerSalaryBands.Add(band);
+        }
+
+        band.CurrencyCode = country.CurrencyCode;
+        band.SalaryMin = request.SalaryMin;
+        band.SalaryMax = request.SalaryMax;
+        band.SeniorSalaryMin = request.SeniorSalaryMin;
+        band.SeniorSalaryMax = request.SeniorSalaryMax;
+        band.Source = request.Source.Trim();
+        band.AsOf = DateOnly.TryParse(request.AsOf, out var asOf) ? asOf : DateOnly.FromDateTime(DateTime.UtcNow);
+        band.UpdatedAt = DateTimeOffset.UtcNow;
+
+        await db.SaveChangesAsync(ct);
+
+        var career = await db.CareerPaths.AsNoTracking()
+            .Where(c => c.Id == careerPathId)
+            .Select(c => new { c.Title, c.Slug })
+            .FirstAsync(ct);
+
+        return new AdminSalaryBandDto(
+            careerPathId, career.Title, career.Slug, country.Code, band.CurrencyCode,
+            band.SalaryMin, band.SalaryMax, band.SeniorSalaryMin, band.SeniorSalaryMax,
+            band.AsOf.ToString("yyyy-MM-dd"), band.Source, true);
+    }
+
+    public async Task DeleteBandAsync(Guid careerPathId, string countryCode, CancellationToken ct = default)
+    {
+        var band = await db.CareerSalaryBands
+            .FirstOrDefaultAsync(b => b.CareerPathId == careerPathId && b.CountryCode == countryCode, ct);
+        if (band is null) return;
+
+        db.CareerSalaryBands.Remove(band);
+        await db.SaveChangesAsync(ct);
     }
 
     /// <summary>"$180K–$240K+", "£95K–£130K+", "₹45L–₹70L+".</summary>

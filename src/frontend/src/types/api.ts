@@ -1252,3 +1252,35 @@ export interface PaymentRequestDto {
   submittedAt?: string;
   decidedAt?: string;
 }
+
+// ---------- free access ----------
+
+/** Served anonymously by /access-policy; edited by an administrator. */
+export interface AccessPolicy {
+  allowAnonymousBrowsing: boolean;
+  freeMinutesBeforeSignup: number;
+  signupNudgeAtPercent: number;
+  freeMinutesBeforePayment: number;
+  freeCoursesBeforePayment: number;
+  paymentPromptBlocks: boolean;
+  signupPromptTitle: string;
+  signupPromptBody: string;
+  paymentPromptTitle: string;
+  paymentPromptBody: string;
+}
+
+/** One career's figures for one market, as the Admin salary editor sees them. */
+export interface AdminSalaryBand {
+  careerPathId: string;
+  careerTitle: string;
+  careerSlug: string;
+  countryCode: string;
+  currencyCode: string;
+  salaryMin: number;
+  salaryMax: number;
+  seniorSalaryMin: number;
+  seniorSalaryMax: number;
+  asOf?: string | null;
+  source: string;
+  hasData: boolean;
+}

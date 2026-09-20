@@ -87,3 +87,15 @@ public record CodingExerciseSeed(
     string Explanation, int EstimatedMinutes);
 
 public record BadgeSeed(string Code, string Name, string Description, string Tier, string Criteria, int XpReward);
+
+public record SalaryBandSeed(
+    string CareerSlug, int SalaryMin, int SalaryMax, int SeniorSalaryMin, int SeniorSalaryMax);
+
+/// <summary>
+/// One market's published figures. Grouped by country so the source and the
+/// as-of date are stated once for the set they actually describe, rather than
+/// repeated per career where they could drift apart.
+/// </summary>
+public record SalaryMarketSeed(
+    string CountryCode, string CurrencyCode, DateOnly AsOf, string Source,
+    List<SalaryBandSeed> Bands);

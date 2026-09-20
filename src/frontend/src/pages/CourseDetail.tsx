@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -11,6 +11,7 @@ import {
   PlayCircle,
   Target,
 } from 'lucide-react';
+import { useAccess } from '@/app/access-provider';
 import { api, DEMO_MODE } from '@/lib/api';
 import { PageHeader } from '@/components/layout/AppShell';
 import { Badge, Card, CardHeader, ErrorPanel, LoadingPanel, Progress, Stat } from '@/components/ui';
@@ -27,6 +28,13 @@ export default function CourseDetail() {
   });
 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+
+  // Counts towards the free-course allowance. Keyed by slug in the meter, so
+  // coming back to a course already counted does not spend another one.
+  const { courseOpened } = useAccess();
+  useEffect(() => {
+    if (slug) courseOpened(slug);
+  }, [slug, courseOpened]);
 
   if (isLoading) return <LoadingPanel label="Loading course" />;
   if (error) return <ErrorPanel message={(error as Error).message} />;

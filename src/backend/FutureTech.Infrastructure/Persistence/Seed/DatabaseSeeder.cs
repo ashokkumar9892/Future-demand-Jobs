@@ -48,6 +48,11 @@ public class DatabaseSeeder(
             await SeedDemoUsersAsync(ct);
 
         await ReconcileGeographyAsync(ct);
+        // Called here rather than from ReconcileGeographyAsync, which returns
+        // early once the default market is fully backfilled — on an existing
+        // database that is the normal case, and these would never run.
+        await ReconcilePublishedBandsAsync(ct);
+        await ReconcileAccessPolicyAsync(ct);
         await ReconcileAdminAsync(ct);
     }
 
@@ -114,6 +119,79 @@ public class DatabaseSeeder(
 
         await db.SaveChangesAsync(ct);
         logger.LogInformation("Backfilled {Count} USA salary band(s) from the career content.", missing.Count);
+    }
+
+    /// <summary>
+    /// Adds the bands published for non-default markets in salary-bands.json.
+    /// <para>
+    /// Additive per (country, career): a band already in the database is left
+    /// alone, because it may have been corrected in Admin and the seed file has
+    /// no way to know that. Removing a career from the file therefore does not
+    /// retract its band — delete it in Admin instead.
+    /// </para>
+    /// </summary>
+    private async Task ReconcilePublishedBandsAsync(CancellationToken ct)
+    {
+        var markets = Load<List<SalaryMarketSeed>>("salary-bands.json");
+        if (markets is null || markets.Count == 0) return;
+
+        var careerIdBySlug = await db.CareerPaths.AsNoTracking()
+            .Select(c => new { c.Id, c.Slug })
+            .ToDictionaryAsync(c => c.Slug, c => c.Id, StringComparer.OrdinalIgnoreCase, ct);
+
+        var added = 0;
+
+        foreach (var market in markets)
+        {
+            var existing = await db.CareerSalaryBands.AsNoTracking()
+                .Where(b => b.CountryCode == market.CountryCode)
+                .Select(b => b.CareerPathId)
+                .ToListAsync(ct);
+
+            foreach (var band in market.Bands)
+            {
+                if (!careerIdBySlug.TryGetValue(band.CareerSlug, out var careerId))
+                {
+                    logger.LogWarning("salary-bands.json references unknown career {Slug}", band.CareerSlug);
+                    continue;
+                }
+
+                if (existing.Contains(careerId) || band.SalaryMax <= 0) continue;
+
+                db.CareerSalaryBands.Add(new CareerSalaryBand
+                {
+                    CareerPathId = careerId,
+                    CountryCode = market.CountryCode,
+                    CurrencyCode = market.CurrencyCode,
+                    SalaryMin = band.SalaryMin,
+                    SalaryMax = band.SalaryMax,
+                    SeniorSalaryMin = band.SeniorSalaryMin,
+                    SeniorSalaryMax = band.SeniorSalaryMax,
+                    Source = market.Source,
+                    AsOf = market.AsOf
+                });
+                added++;
+            }
+        }
+
+        if (added == 0) return;
+
+        await db.SaveChangesAsync(ct);
+        logger.LogInformation("Published {Count} salary band(s) from salary-bands.json.", added);
+    }
+
+    /// <summary>
+    /// Ensures the single access-policy row exists. Its defaults reproduce the
+    /// behaviour the platform shipped with, so an existing installation gains
+    /// the row without changing how it behaves until an operator edits it.
+    /// </summary>
+    private async Task ReconcileAccessPolicyAsync(CancellationToken ct)
+    {
+        if (await db.AccessPolicies.AnyAsync(ct)) return;
+
+        db.AccessPolicies.Add(new AccessPolicy());
+        await db.SaveChangesAsync(ct);
+        logger.LogInformation("Created the default access policy.");
     }
 
     /// <summary>

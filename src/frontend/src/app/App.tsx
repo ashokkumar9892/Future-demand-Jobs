@@ -1,6 +1,8 @@
 import { Suspense, lazy, type ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { AccessProvider } from '@/app/access-provider';
 import { useAuth } from '@/app/providers';
+import { AccessGate } from '@/components/access-gate';
 import { AppShell } from '@/components/layout/AppShell';
 import { LoadingPanel } from '@/components/ui';
 
@@ -40,6 +42,30 @@ const Checkout = lazy(() => import('@/pages/Checkout'));
 const VerifyCertificate = lazy(() => import('@/pages/VerifyCertificate'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
+/**
+ * Readable without an account, subject to the free-access policy.
+ *
+ * The API already serves this content anonymously — every catalogue and lesson
+ * GET is AllowAnonymous — so the only thing that kept it behind sign-in was
+ * this router. A visitor gets the same shell and the same pages; the meter in
+ * AccessProvider decides when they are asked to create an account.
+ *
+ * A signed-in learner who has not finished onboarding is sent to the wizard, as
+ * on a protected route: their personal panels have nothing to render without it.
+ */
+function Public({ children }: { children: ReactNode }) {
+  const { user, ready } = useAuth();
+  const location = useLocation();
+
+  if (!ready) return <FullPageLoader />;
+
+  if (user && user.role !== 'Admin' && !user.onboardingCompleted && location.pathname !== '/onboarding') {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  return <AppShell>{children}</AppShell>;
+}
+
 function Protected({ children }: { children: ReactNode }) {
   const { user, ready } = useAuth();
   const location = useLocation();
@@ -55,6 +81,17 @@ function Protected({ children }: { children: ReactNode }) {
   }
 
   return <AppShell>{children}</AppShell>;
+}
+
+function Home() {
+  const { user, ready } = useAuth();
+  if (!ready) return <FullPageLoader />;
+  if (!user) return <Navigate to="/careers" replace />;
+  return (
+    <Protected>
+      <Dashboard />
+    </Protected>
+  );
 }
 
 function AdminOnly({ children }: { children: ReactNode }) {
@@ -74,6 +111,7 @@ function FullPageLoader() {
 export default function App() {
   return (
     <BrowserRouter>
+      <AccessProvider>
       <Suspense fallback={<FullPageLoader />}>
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -91,25 +129,27 @@ export default function App() {
             }
           />
 
-          <Route path="/" element={<Protected><Dashboard /></Protected>} />
-          <Route path="/careers" element={<Protected><Careers /></Protected>} />
-          <Route path="/careers/:slug" element={<Protected><CareerDetail /></Protected>} />
+          {/* The dashboard is entirely personal, so a visitor with no account
+              lands on the catalogue instead of being bounced to sign-in. */}
+          <Route path="/" element={<Home />} />
+          <Route path="/careers" element={<Public><Careers /></Public>} />
+          <Route path="/careers/:slug" element={<Public><CareerDetail /></Public>} />
           <Route path="/roadmap" element={<Protected><RoadmapPage /></Protected>} />
-          <Route path="/courses" element={<Protected><Courses /></Protected>} />
-          <Route path="/courses/:slug" element={<Protected><CourseDetail /></Protected>} />
+          <Route path="/courses" element={<Public><Courses /></Public>} />
+          <Route path="/courses/:slug" element={<Public><CourseDetail /></Public>} />
           <Route path="/courses/:slug/buy" element={<Protected><Checkout /></Protected>} />
-          <Route path="/learn/:slug" element={<Protected><Lesson /></Protected>} />
-          <Route path="/videos" element={<Protected><Videos /></Protected>} />
-          <Route path="/practice" element={<Protected><Practice /></Protected>} />
-          <Route path="/practice/:id" element={<Protected><PracticeDetail /></Protected>} />
-          <Route path="/coding-labs" element={<Protected><CodingLabs /></Protected>} />
-          <Route path="/coding-labs/:slug" element={<Protected><CodingLabDetail /></Protected>} />
-          <Route path="/architecture-lab" element={<Protected><ArchitectureLab /></Protected>} />
-          <Route path="/architecture-lab/:id" element={<Protected><ArchitectureLabDetail /></Protected>} />
-          <Route path="/projects" element={<Protected><Projects /></Protected>} />
-          <Route path="/projects/:slug" element={<Protected><ProjectDetail /></Protected>} />
-          <Route path="/certifications" element={<Protected><Certifications /></Protected>} />
-          <Route path="/interview-prep" element={<Protected><InterviewPrep /></Protected>} />
+          <Route path="/learn/:slug" element={<Public><Lesson /></Public>} />
+          <Route path="/videos" element={<Public><Videos /></Public>} />
+          <Route path="/practice" element={<Public><Practice /></Public>} />
+          <Route path="/practice/:id" element={<Public><PracticeDetail /></Public>} />
+          <Route path="/coding-labs" element={<Public><CodingLabs /></Public>} />
+          <Route path="/coding-labs/:slug" element={<Public><CodingLabDetail /></Public>} />
+          <Route path="/architecture-lab" element={<Public><ArchitectureLab /></Public>} />
+          <Route path="/architecture-lab/:id" element={<Public><ArchitectureLabDetail /></Public>} />
+          <Route path="/projects" element={<Public><Projects /></Public>} />
+          <Route path="/projects/:slug" element={<Public><ProjectDetail /></Public>} />
+          <Route path="/certifications" element={<Public><Certifications /></Public>} />
+          <Route path="/interview-prep" element={<Public><InterviewPrep /></Public>} />
           <Route path="/mock-interview" element={<Protected><MockInterview /></Protected>} />
           <Route path="/job-readiness" element={<Protected><JobReadiness /></Protected>} />
           <Route path="/resume" element={<Protected><ResumeBuilder /></Protected>} />
@@ -141,9 +181,11 @@ export default function App() {
             }
           />
 
-          <Route path="*" element={<Protected><NotFound /></Protected>} />
+          <Route path="*" element={<Public><NotFound /></Public>} />
         </Routes>
+        <AccessGate />
       </Suspense>
+      </AccessProvider>
     </BrowserRouter>
   );
 }

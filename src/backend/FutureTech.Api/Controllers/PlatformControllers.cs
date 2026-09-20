@@ -201,3 +201,53 @@ public class AdminController(IAdminService admin, ICareerService careers) : Cont
     public Task<CareerSummaryDto> UpdateSalary(Guid id, SalaryUpdateRequest request, CancellationToken ct) =>
         careers.UpdateSalaryAsync(id, request, ct);
 }
+
+[ApiController]
+[Route("api/access-policy")]
+public class AccessPolicyController(IAccessPolicyService policy) : ControllerBase
+{
+    /// <summary>
+    /// Anonymous on purpose: the browser applies the gate, and a visitor with
+    /// no account is precisely who it applies to. It carries no secrets — only
+    /// the thresholds and the wording the wall already shows.
+    /// </summary>
+    [HttpGet]
+    [AllowAnonymous]
+    public Task<AccessPolicyDto> Get(CancellationToken ct) => policy.GetAsync(ct);
+}
+
+[ApiController]
+[Route("api/admin/access-policy")]
+[Authorize(Policy = "Admin")]
+public class AdminAccessPolicyController(IAccessPolicyService policy) : ControllerBase
+{
+    [HttpGet]
+    public Task<AccessPolicyDto> Get(CancellationToken ct) => policy.GetAsync(ct);
+
+    [HttpPut]
+    public Task<AccessPolicyDto> Update(AccessPolicyRequest request, CancellationToken ct) =>
+        policy.UpdateAsync(request, ct);
+}
+
+[ApiController]
+[Route("api/admin/salary-bands")]
+[Authorize(Policy = "Admin")]
+public class AdminSalaryBandController(ILocationService location) : ControllerBase
+{
+    /// <summary>Every career's figures for one market, gaps included.</summary>
+    [HttpGet("{countryCode}")]
+    public Task<IReadOnlyList<AdminSalaryBandDto>> List(string countryCode, CancellationToken ct) =>
+        location.ListBandsForAdminAsync(countryCode, ct);
+
+    [HttpPut("{countryCode}/{careerPathId:guid}")]
+    public Task<AdminSalaryBandDto> Save(
+        string countryCode, Guid careerPathId, SalaryBandRequest request, CancellationToken ct) =>
+        location.SaveBandAsync(careerPathId, countryCode, request, ct);
+
+    [HttpDelete("{countryCode}/{careerPathId:guid}")]
+    public async Task<IActionResult> Delete(string countryCode, Guid careerPathId, CancellationToken ct)
+    {
+        await location.DeleteBandAsync(careerPathId, countryCode, ct);
+        return NoContent();
+    }
+}

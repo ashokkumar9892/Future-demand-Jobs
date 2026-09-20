@@ -89,7 +89,7 @@ dotnet publish src/backend/FutureTech.Api/FutureTech.Api.csproj \
   -c Release -r linux-x64 --self-contained true -o publish
 ```
 
-The published folder must contain `SeedData/` (12 JSON files). Without it the
+The published folder must contain `SeedData/` (13 JSON files). Without it the
 API starts and serves an empty platform.
 
 ---
@@ -367,7 +367,7 @@ Do not hand-write one.
 
 | Subfolder | Why it matters |
 |---|---|
-| `SeedData\` | 12 JSON files. Without them the API starts, reports healthy, and serves an empty platform. |
+| `SeedData\` | 13 JSON files. Without them the API starts, reports healthy, and serves an empty platform. |
 | `runtimes\` | Native `e_sqlite3.dll`. Without it the site starts and then fails on the first database call. |
 
 Copying only the top-level `.dll` files is the usual cause of both failures.

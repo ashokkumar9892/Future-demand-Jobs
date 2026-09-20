@@ -204,3 +204,59 @@ public record CalendarDayDto(string OnDate, string Status, int TargetMinutes, in
 public record CalendarWeekDto(int WeekNumber, string Label, string StartDate, string EndDate, string Theme, IReadOnlyList<CalendarDayDto> Days);
 
 public record CalendarMonthDto(int Year, int Month, string MonthName, IReadOnlyList<CalendarWeekDto> Weeks, int TotalPlannedMinutes, int TotalCompletedMinutes);
+
+/// <summary>
+/// The free-access thresholds, as the browser needs them.
+/// <para>
+/// Served anonymously: the gate cannot be applied until the visitor knows where
+/// it is, and a visitor with no account is exactly who it applies to. Nothing
+/// here is sensitive — it is the same information the wall states in words.
+/// </para>
+/// </summary>
+public record AccessPolicyDto(
+    bool AllowAnonymousBrowsing,
+    int FreeMinutesBeforeSignup,
+    int SignupNudgeAtPercent,
+    int FreeMinutesBeforePayment,
+    int FreeCoursesBeforePayment,
+    bool PaymentPromptBlocks,
+    string SignupPromptTitle,
+    string SignupPromptBody,
+    string PaymentPromptTitle,
+    string PaymentPromptBody);
+
+/// <summary>Admin edit. Every field is required so a partial save cannot silently reset one.</summary>
+public record AccessPolicyRequest(
+    bool AllowAnonymousBrowsing,
+    int FreeMinutesBeforeSignup,
+    int SignupNudgeAtPercent,
+    int FreeMinutesBeforePayment,
+    int FreeCoursesBeforePayment,
+    bool PaymentPromptBlocks,
+    string SignupPromptTitle,
+    string SignupPromptBody,
+    string PaymentPromptTitle,
+    string PaymentPromptBody);
+
+/// <summary>One market's band for one career, for the Admin salary editor.</summary>
+public record AdminSalaryBandDto(
+    Guid CareerPathId,
+    string CareerTitle,
+    string CareerSlug,
+    string CountryCode,
+    string CurrencyCode,
+    int SalaryMin,
+    int SalaryMax,
+    int SeniorSalaryMin,
+    int SeniorSalaryMax,
+    string? AsOf,
+    string Source,
+    bool HasData);
+
+public record SalaryBandRequest(
+    int SalaryMin,
+    int SalaryMax,
+    int SeniorSalaryMin,
+    int SeniorSalaryMax,
+    string Source,
+    string? AsOf);

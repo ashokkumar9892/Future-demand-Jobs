@@ -1,0 +1,30 @@
+[
+  {
+    // Figures are India market facts, not converted US numbers. They are
+    // annual total compensation for an experienced engineer in a metro
+    // (Bengaluru, Hyderabad, Pune, NCR) at a product company, GCC or large
+    // consultancy — the employers that actually hire for these titles.
+    //
+    // Estimates, like the US set. Correct them in Admin as you learn what your
+    // own market pays; the seeder never overwrites a band that already exists.
+    "countryCode": "IN",
+    "currencyCode": "INR",
+    "asOf": "2026-09-01",
+    "source": "Aggregated public India ranges (AmbitionBox, Glassdoor India, Levels.fyi, Naukri). Estimates only — update via Admin.",
+    "bands": [
+      { "careerSlug": "ai-solutions-architect",               "salaryMin": 4500000, "salaryMax": 7500000, "seniorSalaryMin": 7000000, "seniorSalaryMax": 10000000 },
+      { "careerSlug": "cloud-security-architect",             "salaryMin": 4200000, "salaryMax": 7000000, "seniorSalaryMin": 6500000, "seniorSalaryMax": 9500000 },
+      { "careerSlug": "enterprise-ai-architect",              "salaryMin": 4800000, "salaryMax": 8000000, "seniorSalaryMin": 7500000, "seniorSalaryMax": 10000000 },
+      { "careerSlug": "ai-engineering-manager",               "salaryMin": 4500000, "salaryMax": 7500000, "seniorSalaryMin": 7000000, "seniorSalaryMax": 10000000 },
+      { "careerSlug": "cloud-solutions-architect",            "salaryMin": 3500000, "salaryMax": 6000000, "seniorSalaryMin": 5500000, "seniorSalaryMax": 8500000 },
+      { "careerSlug": "ai-integration-engineer",              "salaryMin": 2800000, "salaryMax": 5000000, "seniorSalaryMin": 4500000, "seniorSalaryMax": 7000000 },
+      { "careerSlug": "ai-ml-engineer",                       "salaryMin": 3000000, "salaryMax": 5500000, "seniorSalaryMin": 5000000, "seniorSalaryMax": 8000000 },
+      { "careerSlug": "platform-devsecops-engineer",          "salaryMin": 2800000, "salaryMax": 4800000, "seniorSalaryMin": 4500000, "seniorSalaryMax": 6800000 },
+      { "careerSlug": "data-architect-engineer",              "salaryMin": 3000000, "salaryMax": 5200000, "seniorSalaryMin": 4800000, "seniorSalaryMax": 7500000 },
+      { "careerSlug": "cybersecurity-engineer",               "salaryMin": 2500000, "salaryMax": 4500000, "seniorSalaryMin": 4200000, "seniorSalaryMax": 6500000 },
+      { "careerSlug": "full-stack-ai-engineer",               "salaryMin": 2400000, "salaryMax": 4200000, "seniorSalaryMin": 3800000, "seniorSalaryMax": 6000000 },
+      { "careerSlug": "robotics-autonomous-systems-engineer", "salaryMin": 2500000, "salaryMax": 4500000, "seniorSalaryMin": 4200000, "seniorSalaryMax": 7000000 },
+      { "careerSlug": "iot-edge-architect",                   "salaryMin": 2800000, "salaryMax": 4800000, "seniorSalaryMin": 4500000, "seniorSalaryMax": 7000000 }
+    ]
+  }
+]

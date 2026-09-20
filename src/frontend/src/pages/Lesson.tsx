@@ -17,6 +17,7 @@ import {
   PlayCircle,
   Video as VideoIcon,
 } from 'lucide-react';
+import { useAuth } from '@/app/providers';
 import { api } from '@/lib/api';
 import { Badge, Button, Card, CardHeader, ErrorPanel, LoadingPanel, Progress, Tabs, Textarea } from '@/components/ui';
 import { CodeBlock, Markdown, MermaidDiagram } from '@/components/content';
@@ -587,12 +588,16 @@ function QuizRunner({ lessonId, quiz, lessonSlug }: { lessonId: string; quiz: No
 
 function NotesPanel({ lessonId, lessonTitle }: { lessonId: string; lessonTitle: string }) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [body, setBody] = useState('');
   const [important, setImportant] = useState(false);
 
+  // Notes belong to an account. Asking for them anonymously would 401 on every
+  // lesson a visitor opens, so the panel invites them to sign up instead.
   const notes = useQuery({
     queryKey: ['notes', 'lesson', lessonId],
     queryFn: () => api.get<Note[]>(`/notes?scope=Lesson&refId=${lessonId}`),
+    enabled: Boolean(user),
   });
 
   const create = useMutation({
@@ -620,6 +625,22 @@ function NotesPanel({ lessonId, lessonTitle }: { lessonId: string; lessonTitle: 
   });
 
   const existing = useMemo(() => notes.data ?? [], [notes.data]);
+
+  // Placed after the hooks above, not before them: an early return ahead of a
+  // hook changes the hook order between renders.
+  if (!user) {
+    return (
+      <Card>
+        <CardHeader title="Notes" icon={<NotebookPen size={15} />} />
+        <p className="card-pad text-xs text-ink-muted">
+          <Link to="/register" className="text-brand-400 transition hover:underline">
+            Create a free account
+          </Link>{' '}
+          to take notes on this lesson and keep them with your progress.
+        </p>
+      </Card>
+    );
+  }
 
   return (
     <Card>
