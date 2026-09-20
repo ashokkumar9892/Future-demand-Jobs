@@ -75,6 +75,7 @@ public interface IAppDbContext
     DbSet<IpLocation> IpLocations { get; }
     DbSet<Feedback> Feedback { get; }
     DbSet<AccessPolicy> AccessPolicies { get; }
+    DbSet<AppUsageDay> AppUsageDays { get; }
 
     Task<int> SaveChangesAsync(CancellationToken ct = default);
 }

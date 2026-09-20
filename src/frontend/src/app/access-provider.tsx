@@ -11,6 +11,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/app/providers';
 import { api, DEMO_MODE } from '@/lib/api';
+import { flushOnExit, sendHeartbeat } from '@/lib/usage';
 import type { Enrollment } from '@/types/api';
 import {
   DEFAULT_POLICY,
@@ -32,6 +33,9 @@ import {
  */
 
 const TICK_SECONDS = 15;
+
+/** How much active time accumulates before it is reported. */
+const REPORT_SECONDS = 60;
 
 interface AccessContextValue {
   gate: GateState;
@@ -69,13 +73,51 @@ export function AccessProvider({ children }: { children: ReactNode }) {
   // Accumulate active time. If the tab is hidden the tick is skipped rather
   // than the timer being torn down, which keeps this to one effect instead of
   // a visibility state machine.
+  // Seconds counted but not yet reported to the server. Batched so a reader
+  // costs one small request a minute rather than one every tick.
+  const unreportedRef = useRef(0);
+  const signedInRef = useRef(Boolean(user));
+  useEffect(() => {
+    signedInRef.current = Boolean(user);
+  }, [user]);
+
   useEffect(() => {
     const id = window.setInterval(() => {
       if (document.visibilityState !== 'visible') return;
       setUsage(addSeconds(userIdRef.current, TICK_SECONDS));
+
+      unreportedRef.current += TICK_SECONDS;
+      if (unreportedRef.current >= REPORT_SECONDS) {
+        const pending = unreportedRef.current;
+        unreportedRef.current = 0;
+        void sendHeartbeat(pending, signedInRef.current);
+      }
     }, TICK_SECONDS * 1000);
 
     return () => window.clearInterval(id);
+  }, []);
+
+  // Whatever has not been reported yet would otherwise be lost when the tab
+  // closes or is hidden. pagehide covers closing and the back/forward cache,
+  // which is where a plain unload listener misses on mobile Safari.
+  useEffect(() => {
+    const flush = () => {
+      const pending = unreportedRef.current;
+      if (pending <= 0) return;
+      unreportedRef.current = 0;
+      flushOnExit(pending, signedInRef.current);
+    };
+
+    const onHide = () => {
+      if (document.visibilityState === 'hidden') flush();
+    };
+
+    window.addEventListener('pagehide', flush);
+    document.addEventListener('visibilitychange', onHide);
+    return () => {
+      window.removeEventListener('pagehide', flush);
+      document.removeEventListener('visibilitychange', onHide);
+    };
   }, []);
 
   const courseOpened = useCallback((slug: string) => {

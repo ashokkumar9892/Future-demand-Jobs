@@ -28,6 +28,7 @@ import {
   Settings,
   Shield,
   Sun,
+  UserRound,
   Target,
   Users,
   X,
@@ -43,24 +44,26 @@ interface NavItem {
   label: string;
   icon: ReactNode;
   adminOnly?: boolean;
+  /** Personal to an account; hidden from a guest, who would only be bounced to sign-in. */
+  authOnly?: boolean;
 }
 
 const NAV_GROUPS: { heading: string; items: NavItem[] }[] = [
   {
     heading: 'Overview',
     items: [
-      { to: '/', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
+      { to: '/', label: 'Dashboard', icon: <LayoutDashboard size={16} /> , authOnly: true },
       { to: '/careers', label: 'Career Paths', icon: <Briefcase size={16} /> },
-      { to: '/roadmap', label: 'My Roadmap', icon: <Route size={16} /> },
+      { to: '/roadmap', label: 'My Roadmap', icon: <Route size={16} /> , authOnly: true },
     ],
   },
   {
     heading: 'Learn',
     items: [
       { to: '/courses', label: 'Courses', icon: <BookOpen size={16} /> },
-      { to: '/my-learning', label: 'My Learning', icon: <GraduationCap size={16} /> },
+      { to: '/my-learning', label: 'My Learning', icon: <GraduationCap size={16} /> , authOnly: true },
       { to: '/videos', label: 'Videos', icon: <PlayCircle size={16} /> },
-      { to: '/skills', label: 'Skill Matrix', icon: <Target size={16} /> },
+      { to: '/skills', label: 'Skill Matrix', icon: <Target size={16} /> , authOnly: true },
     ],
   },
   {
@@ -77,19 +80,19 @@ const NAV_GROUPS: { heading: string; items: NavItem[] }[] = [
     items: [
       { to: '/certifications', label: 'Certifications', icon: <Award size={16} /> },
       { to: '/interview-prep', label: 'Interview Prep', icon: <MessagesSquare size={16} /> },
-      { to: '/mock-interview', label: 'Mock Interview', icon: <MessagesSquare size={16} /> },
-      { to: '/job-readiness', label: 'Job Readiness', icon: <Gauge size={16} /> },
-      { to: '/resume', label: 'Resume Builder', icon: <FileText size={16} /> },
+      { to: '/mock-interview', label: 'Mock Interview', icon: <MessagesSquare size={16} /> , authOnly: true },
+      { to: '/job-readiness', label: 'Job Readiness', icon: <Gauge size={16} /> , authOnly: true },
+      { to: '/resume', label: 'Resume Builder', icon: <FileText size={16} /> , authOnly: true },
     ],
   },
   {
     heading: 'Personal',
     items: [
-      { to: '/calendar', label: 'Calendar', icon: <Calendar size={16} /> },
-      { to: '/bookmarks', label: 'Bookmarks', icon: <Bookmark size={16} /> },
-      { to: '/notes', label: 'Notes', icon: <NotebookPen size={16} /> },
-      { to: '/feedback', label: 'Feedback', icon: <MessageSquarePlus size={16} /> },
-      { to: '/settings', label: 'Settings', icon: <Settings size={16} /> },
+      { to: '/calendar', label: 'Calendar', icon: <Calendar size={16} /> , authOnly: true },
+      { to: '/bookmarks', label: 'Bookmarks', icon: <Bookmark size={16} /> , authOnly: true },
+      { to: '/notes', label: 'Notes', icon: <NotebookPen size={16} /> , authOnly: true },
+      { to: '/feedback', label: 'Feedback', icon: <MessageSquarePlus size={16} /> , authOnly: true },
+      { to: '/settings', label: 'Settings', icon: <Settings size={16} /> , authOnly: true },
       { to: '/admin', label: 'Admin', icon: <Shield size={16} />, adminOnly: true },
       { to: '/admin/learners', label: 'Learners & Feedback', icon: <Users size={16} />, adminOnly: true },
     ],
@@ -143,7 +146,9 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-4">
           {NAV_GROUPS.map((group) => {
-            const items = group.items.filter((i) => !i.adminOnly || user?.role === 'Admin');
+            const items = group.items.filter(
+              (i) => (!i.adminOnly || user?.role === 'Admin') && (!i.authOnly || user),
+            );
             if (items.length === 0) return null;
 
             return (
@@ -194,31 +199,76 @@ export function AppShell({ children }: { children: ReactNode }) {
               </p>
             </div>
           )}
-          <div className="flex items-center gap-2.5 rounded-lg px-2 py-2">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-600/20 text-[11px] font-semibold text-brand-300">
-              {initials(user?.displayName ?? 'FT')}
+          {/* Anonymous browsing means this block can no longer assume an
+              account. Without a guest state it rendered an empty name, a
+              placeholder avatar and a sign-out button that signs nobody out. */}
+          {user ? (
+            <>
+              <div className="flex items-center gap-2.5 rounded-lg px-2 py-2">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-600/20 text-[11px] font-semibold text-brand-300">
+                  {initials(user.displayName)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[12px] font-medium text-ink">{user.displayName}</p>
+                  <p className="truncate text-[10px] text-ink-faint">
+                    {user.targetCareerTitle ?? user.email}
+                  </p>
+                </div>
+                <button
+                  onClick={toggle}
+                  className="rounded-md p-1.5 text-ink-muted transition hover:bg-surface-overlay hover:text-ink"
+                  aria-label="Toggle theme"
+                  title="Toggle theme"
+                >
+                  {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+                </button>
+              </div>
+              {/* A labelled control, not a faint 15px glyph sitting beside an
+                  almost identical one. Signing out is a deliberate action and
+                  has to be findable. */}
+              <button
+                onClick={logout}
+                className="mt-1 flex w-full items-center gap-2 rounded-lg border border-line px-2.5 py-2 text-[12px] font-medium text-ink-muted transition hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300"
+              >
+                <LogOut size={14} className="shrink-0" />
+                Sign out
+              </button>
+            </>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2.5 px-2">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-ink-faint">
+                  <UserRound size={15} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[12px] font-medium text-ink">Browsing as a guest</p>
+                  <p className="truncate text-[10px] text-ink-faint">Progress is not saved</p>
+                </div>
+                <button
+                  onClick={toggle}
+                  className="rounded-md p-1.5 text-ink-muted transition hover:bg-surface-overlay hover:text-ink"
+                  aria-label="Toggle theme"
+                  title="Toggle theme"
+                >
+                  {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+                </button>
+              </div>
+              <div className="flex gap-2">
+                <Link
+                  to="/register"
+                  className="flex-1 rounded-lg bg-brand-600 px-2.5 py-2 text-center text-[12px] font-medium text-white transition hover:bg-brand-500"
+                >
+                  Create account
+                </Link>
+                <Link
+                  to="/login"
+                  className="flex-1 rounded-lg border border-line px-2.5 py-2 text-center text-[12px] font-medium text-ink-muted transition hover:bg-surface-overlay hover:text-ink"
+                >
+                  Sign in
+                </Link>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-[12px] font-medium text-ink">{user?.displayName}</p>
-              <p className="truncate text-[10px] text-ink-faint">{user?.targetCareerTitle ?? user?.email}</p>
-            </div>
-            <button
-              onClick={toggle}
-              className="rounded-md p-1.5 text-ink-faint transition hover:bg-surface-overlay hover:text-ink"
-              aria-label="Toggle theme"
-              title="Toggle theme"
-            >
-              {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
-            </button>
-            <button
-              onClick={logout}
-              className="rounded-md p-1.5 text-ink-faint transition hover:bg-surface-overlay hover:text-rose-300"
-              aria-label="Sign out"
-              title="Sign out"
-            >
-              <LogOut size={15} />
-            </button>
-          </div>
+          )}
         </div>
       </aside>
 

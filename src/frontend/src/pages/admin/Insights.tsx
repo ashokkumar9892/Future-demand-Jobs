@@ -35,6 +35,7 @@ import {
 } from '@/components/ui';
 import { formatDate, minutesLabel } from '@/lib/format';
 import { RatingStars, STATUS_LABEL, STATUS_TONE } from '@/components/feedback';
+import { UsagePanel } from '@/pages/admin/UsagePanel';
 import type {
   AdminFeedback,
   CourseEngagement,
@@ -111,6 +112,8 @@ function OverviewTab({ onJump }: { onJump: (tab: Tab) => void }) {
 
   return (
     <div className="space-y-5">
+      <UsagePanel />
+
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Card className="card-pad">
           <Stat label="Learners" value={data.totalLearners} detail={`${data.newLast30Days} joined in 30 days`} />

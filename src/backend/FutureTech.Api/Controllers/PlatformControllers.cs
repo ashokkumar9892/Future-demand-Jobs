@@ -251,3 +251,31 @@ public class AdminSalaryBandController(ILocationService location) : ControllerBa
         return NoContent();
     }
 }
+
+[ApiController]
+[Route("api/usage")]
+public class UsageController(IUsageService usage) : ControllerBase
+{
+    /// <summary>
+    /// Anonymous: the visitors this is most needed for are precisely the ones
+    /// without an account. A signed-in caller's time is attributed to the
+    /// account from the token and the supplied visitor id is ignored.
+    /// </summary>
+    [HttpPost("heartbeat")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Heartbeat(UsageHeartbeatRequest request, CancellationToken ct)
+    {
+        await usage.RecordAsync(request, ct);
+        return NoContent();
+    }
+}
+
+[ApiController]
+[Route("api/admin/usage")]
+[Authorize(Policy = "Admin")]
+public class AdminUsageController(IUsageService usage) : ControllerBase
+{
+    [HttpGet]
+    public Task<UsageOverviewDto> Get([FromQuery] int days = 30, CancellationToken ct = default) =>
+        usage.OverviewAsync(days, ct);
+}

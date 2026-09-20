@@ -37,6 +37,7 @@ public static class DependencyInjection
         services.AddScoped<IPreferencesService>(sp => sp.GetRequiredService<EnrollmentService>());
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IAccessPolicyService, AccessPolicyService>();
+        services.AddScoped<IUsageService, UsageService>();
         return services;
     }
 }

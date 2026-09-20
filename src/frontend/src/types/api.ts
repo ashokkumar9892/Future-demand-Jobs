@@ -1284,3 +1284,35 @@ export interface AdminSalaryBand {
   source: string;
   hasData: boolean;
 }
+
+// ---------- time in the application ----------
+
+export interface UsageDay {
+  date: string;
+  learnerMinutes: number;
+  visitorMinutes: number;
+  learners: number;
+  visitors: number;
+}
+
+export interface UsagePerson {
+  userId?: string;
+  name: string;
+  minutes: number;
+  activeDays: number;
+  lastSeenAt: string;
+}
+
+export interface UsageOverview {
+  days: number;
+  totalMinutes: number;
+  learnerMinutes: number;
+  visitorMinutes: number;
+  activeLearners: number;
+  activeVisitors: number;
+  averageMinutesPerLearner: number;
+  averageMinutesPerVisitor: number;
+  minutesToday: number;
+  daily: UsageDay[];
+  topLearners: UsagePerson[];
+}

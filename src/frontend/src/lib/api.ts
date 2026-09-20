@@ -132,6 +132,29 @@ function safeParse(text: string): unknown {
 
 export const api = {
   get: <T>(path: string) => request<T>('GET', path),
+  /**
+   * A POST that survives the page being closed. `keepalive` lets the browser
+   * finish the request after unload, and unlike sendBeacon it still carries the
+   * Authorization header, so a signed-in learner's last seconds are attributed
+   * to their account rather than lost.
+   */
+  postKeepalive: (path: string, body: unknown) => {
+    if (DEMO_MODE) return;
+    const token = tokenStore.get();
+    try {
+      void fetch(`${API_BASE}${path}`, {
+        method: 'POST',
+        keepalive: true,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(body),
+      }).catch(() => undefined);
+    } catch {
+      /* nothing useful to do while the page is going away */
+    }
+  },
   post: <T>(path: string, body?: unknown) => request<T>('POST', path, body ?? {}),
   put: <T>(path: string, body?: unknown) => request<T>('PUT', path, body ?? {}),
   del: <T>(path: string) => request<T>('DELETE', path),

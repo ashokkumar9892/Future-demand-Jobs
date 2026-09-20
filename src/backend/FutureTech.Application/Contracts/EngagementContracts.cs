@@ -169,3 +169,39 @@ public record EngagementOverviewDto(
 
 /// <summary>Shared envelope for the admin's paged tables.</summary>
 public record PagedDto<T>(int Total, int Page, int PageSize, IReadOnlyList<T> Items);
+
+// ---------- time in the application ----------
+
+public record UsageHeartbeatRequest(string? VisitorId, int Seconds);
+
+/// <summary>One day's totals, split by whether the person had an account.</summary>
+public record UsageDayDto(
+    string Date,
+    int LearnerMinutes,
+    int VisitorMinutes,
+    int Learners,
+    int Visitors);
+
+public record UsagePersonDto(
+    Guid? UserId,
+    string Name,
+    int Minutes,
+    int ActiveDays,
+    DateTimeOffset LastSeenAt);
+
+/// <summary>
+/// Time people actually had the application open, as opposed to minutes
+/// credited for completing something.
+/// </summary>
+public record UsageOverviewDto(
+    int Days,
+    int TotalMinutes,
+    int LearnerMinutes,
+    int VisitorMinutes,
+    int ActiveLearners,
+    int ActiveVisitors,
+    double AverageMinutesPerLearner,
+    double AverageMinutesPerVisitor,
+    int MinutesToday,
+    IReadOnlyList<UsageDayDto> Daily,
+    IReadOnlyList<UsagePersonDto> TopLearners);
