@@ -1,0 +1,1427 @@
+[
+  {
+    "careerSlug": "sql-database-developer",
+    "order": 1,
+    "phaseNumber": 1,
+    "title": "Phase 1 — Relational Modelling",
+    "slug": "phase-1-relational-modelling",
+    "summary": "Turning a written business description into tables that will still be correct in five years: entities and relationships, normalisation explained without the jargon, keys, constraints, and the data types that quietly ruin things when chosen badly.",
+    "estimatedHours": 30,
+    "level": "Foundational",
+    "minimumTrack": "FastTrack",
+    "outcomes": [
+      "Derive entities, attributes and relationships from a written brief",
+      "Normalise to third normal form and explain why each step helps",
+      "Choose between natural and surrogate keys with a reason",
+      "Enforce integrity with constraints rather than application code",
+      "Pick correct types for money, dates and text, and say what goes wrong otherwise"
+    ],
+    "skillSlugs": [
+      "database-design",
+      "sql",
+      "data-governance"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "From Business Description to Tables",
+        "summary": "The first and most consequential step: deciding what the things are.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Entities, Attributes and Relationships",
+            "slug": "entities-attributes-and-relationships",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Start with the nouns, then interrogate them\n\nRead the brief and list the nouns: customer, order, product, invoice, warehouse. Those are candidate entities — things the business needs to remember individually.\n\nThen test each one. If you would never need to look it up on its own, it is probably an attribute of something else rather than an entity. \"Customer address\" is usually an attribute of customer. It becomes an entity the moment the business says a customer can have several.\n\n## Attributes describe exactly one entity\n\nEvery column should be a fact about the thing the table is named after, and nothing else. A `customer` table holding `last_order_date` is holding a fact about orders. It will go stale, and something will have to remember to update it.\n\n## Relationships have a direction and a cardinality\n\nFor each pair, ask two questions in both directions:\n\n- Can one customer have many orders? Yes.\n- Can one order belong to many customers? No.\n\nThat is one-to-many, and it is by far the commonest. When the answer is yes in both directions you have many-to-many, which needs a table of its own.\n\n## Optionality is a separate question\n\n*Must* an order have a customer, or may it be anonymous? This decides whether the foreign key is nullable, and it is a business question, not a technical one. Ask it explicitly — guessing produces either nulls nobody expected or rejected inserts nobody understands.\n\n## Draw it before you type it\n\nAn entity relationship diagram takes ten minutes and shows a business person something they can correct. They cannot correct a `CREATE TABLE` script, and they are the only people who know whether an order can have two customers.\n\n## Name things the way the business does\n\nIf they say \"policy\", the table is `policy`, not `insurance_contract`. Translation layers between business vocabulary and schema vocabulary cause misunderstandings for as long as the system lives.",
+            "codeExample": "-- Read the brief, then write the questions you still need answered.\n--\n-- BRIEF: \"Customers place orders. Each order has one or more products with a\n--         quantity. We need to know what was charged at the time, because\n--         prices change. Customers can have several delivery addresses.\"\n\n-- Question 1: can an order exist without a customer?      -> No (business says no)\n-- Question 2: can an order have zero lines?               -> No\n-- Question 3: must a product belong to a category?        -> Yes, exactly one\n-- Question 4: can a customer have zero addresses?         -> Yes, until they order\n\nCREATE TABLE customer (\n    customer_id   BIGINT       GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    email         VARCHAR(320) NOT NULL UNIQUE,      -- the natural key\n    display_name  VARCHAR(200) NOT NULL,\n    created_at    TIMESTAMPTZ  NOT NULL DEFAULT now()\n    -- NOT here: last_order_date. That is a fact about orders, and storing it\n    -- means something must remember to keep it current. Derive it instead.\n);\n\nCREATE TABLE address (\n    address_id    BIGINT      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    -- A customer can have several, so address is its own entity, not columns\n    -- on customer. NOT NULL because an address with no customer is meaningless.\n    customer_id   BIGINT      NOT NULL REFERENCES customer (customer_id),\n    line1         VARCHAR(200) NOT NULL,\n    postcode      VARCHAR(20)  NOT NULL,\n    country_code  CHAR(2)      NOT NULL\n);\n\nCREATE TABLE orders (        -- \"order\" is a reserved word; plural avoids quoting\n    order_id      BIGINT      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    customer_id   BIGINT      NOT NULL REFERENCES customer (customer_id),\n    placed_at     TIMESTAMPTZ NOT NULL DEFAULT now()\n);",
+            "codeLanguage": "sql",
+            "diagramMermaid": "erDiagram\n  CUSTOMER ||--o{ ORDERS : places\n  ORDERS ||--|{ ORDER_LINE : contains\n  PRODUCT ||--o{ ORDER_LINE : \"appears in\"\n  CATEGORY ||--o{ PRODUCT : groups\n  CUSTOMER ||--o{ ADDRESS : has",
+            "keyTakeaways": [
+              "Nouns are candidate entities; if it is never looked up alone, it is an attribute",
+              "Every column should be a fact about the table's own subject",
+              "Ask cardinality in both directions; yes-yes means a join table",
+              "Optionality is a business question that decides nullability",
+              "Diagram it and have the business correct it, using their vocabulary"
+            ],
+            "quiz": {
+              "title": "Entities and relationships",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "A brief says a customer can have several delivery addresses. What does that imply?",
+                  "explanation": "Several of something per parent means it is its own entity with a foreign key back, not a set of repeated columns.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Address becomes its own table with a foreign key to customer",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Customer gains address1, address2 and address3 columns",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Addresses are stored as a delimited string on customer",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Customer and address form a many-to-many relationship",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why avoid a `last_order_date` column on the customer table?",
+                  "explanation": "It is a fact about orders, not about the customer. Stored, it can go stale; derived, it cannot be wrong.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It is a fact about orders and will go stale unless something maintains it",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Dates cannot be stored on a customer table",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It would violate the primary key",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It makes the table too wide to index",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Normalisation Without the Jargon",
+            "slug": "normalisation-without-the-jargon",
+            "type": "Concept",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The one idea\n\nStore every fact exactly once. Almost everything else follows.\n\nWhen a fact is stored twice, the two copies can disagree, and eventually they will. Normalisation is a procedure for finding duplicated facts and giving each one a single home.\n\n## First normal form: one value per cell\n\nNo comma-separated lists, no `phone1`, `phone2`, `phone3`. If a thing can have several of something, that something needs its own table.\n\nThe test: could you write a `WHERE` clause against it easily? Searching inside a delimited string is a sign you failed this.\n\n## Second normal form: the whole key\n\nEvery non-key column must depend on the *whole* primary key, not part of it.\n\nThis only bites with composite keys. In an order line keyed by (order_id, product_id), a `product_name` column depends only on product_id — so it belongs on the product table. Otherwise renaming a product means updating every order line that ever referenced it.\n\n## Third normal form: nothing but the key\n\nNo column should depend on another non-key column.\n\nIf `orders` holds `customer_id`, `customer_email` and `customer_city`, then email and city depend on the customer, not the order. Change a customer's email and you must update every order they have ever placed — and if you miss one, which copy is true?\n\n## The informal summary\n\nEvery non-key column depends on **the key, the whole key, and nothing but the key**.\n\n## The one deliberate exception\n\nHistorical facts that must not change. An order line stores `unit_price_at_purchase` even though the product has a current price — because that is not a copy of the product's price, it is a different fact: what this customer was actually charged.\n\nThe test for whether duplication is legitimate: *if the source changes, should this change too?* If no, it is not duplication. It is history.",
+            "codeExample": "-- ---------- UNNORMALISED: the spreadsheet made into a table ----------\nCREATE TABLE bad_orders (\n    order_id        BIGINT PRIMARY KEY,\n    customer_email  VARCHAR(320),   -- 3NF violation: depends on the customer\n    customer_city   VARCHAR(100),   -- 3NF violation: same\n    product_names   TEXT,           -- 1NF violation: \"Widget, Gadget, Doohickey\"\n    product_prices  TEXT            -- 1NF violation, and positionally coupled\n);\n-- Problems: change an email and every past order is stale. Find all orders\n-- containing \"Widget\" and you are searching inside a string. Delete the only\n-- order for a customer and their city is gone.\n\n\n-- ---------- NORMALISED ----------\nCREATE TABLE customer (\n    customer_id  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    email        VARCHAR(320) NOT NULL UNIQUE,\n    city         VARCHAR(100) NOT NULL\n);      -- the email lives in exactly one row\n\nCREATE TABLE product (\n    product_id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    sku           VARCHAR(64)   NOT NULL UNIQUE,\n    name          VARCHAR(200)  NOT NULL,\n    current_price NUMERIC(12,2) NOT NULL CHECK (current_price >= 0)\n);\n\nCREATE TABLE orders (\n    order_id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    customer_id BIGINT NOT NULL REFERENCES customer (customer_id),\n    placed_at   TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE order_line (\n    order_id    BIGINT NOT NULL REFERENCES orders (order_id) ON DELETE CASCADE,\n    product_id  BIGINT NOT NULL REFERENCES product (product_id),\n    quantity    INTEGER NOT NULL CHECK (quantity > 0),\n\n    -- NOT a 3NF violation. This is a DIFFERENT FACT from product.current_price:\n    -- it is what this customer was actually charged. If the product price\n    -- changes tomorrow, this must NOT change. That test — \"should it change\n    -- when the source changes?\" — distinguishes history from duplication.\n    unit_price_at_purchase NUMERIC(12,2) NOT NULL CHECK (unit_price_at_purchase >= 0),\n\n    PRIMARY KEY (order_id, product_id)\n);\n\n-- product_name is absent from order_line: it depends on product_id alone, which\n-- is only part of this composite key. That is the 2NF rule.",
+            "codeLanguage": "sql",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Store every fact exactly once; two copies eventually disagree",
+              "1NF: one value per cell — no lists, no numbered columns",
+              "2NF: non-key columns depend on the whole composite key",
+              "3NF: no column depends on another non-key column",
+              "Historical values like price-at-purchase are a different fact, not duplication"
+            ],
+            "quiz": {
+              "title": "Normalisation",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "An `orders` table contains `customer_email`. Which rule does this break and why does it matter?",
+                  "explanation": "Email depends on the customer, not the order — a third normal form violation. Changing it requires updating every order, and a missed row makes the data contradict itself.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Third normal form — a change to the email must be applied to every order row",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "First normal form — email is a composite value",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Second normal form — it depends on part of the key",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "No rule; caching the email is always correct",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why is storing `unit_price_at_purchase` on an order line not a normalisation violation?",
+                  "explanation": "It records what was charged, which is a different fact from the product's current price. It must not change when the product price changes.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It is a different fact — what was charged — and must not change when the product price does",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Prices are exempt from normalisation rules",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is denormalisation accepted purely for performance",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Composite keys are exempt from third normal form",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "Keys and Constraints",
+        "summary": "Making the database refuse data that should not exist.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Primary Keys, Foreign Keys and Natural versus Surrogate",
+            "slug": "primary-keys-foreign-keys-and-natural-versus-surrogate",
+            "type": "Architecture",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## A primary key identifies exactly one row\n\nIt must be unique and never null. Beyond that you have a choice.\n\n## Natural keys come from the data\n\nAn ISBN, an email address, a national insurance number. Appealing, because they carry meaning and avoid an extra column.\n\nThe problem is that business identifiers change. Email addresses change. Companies reissue product codes. Countries reform their identifier schemes. When a primary key changes, every foreign key referencing it must change too.\n\n## Surrogate keys are meaningless by design\n\nA generated integer or UUID that exists only to identify the row. Never changes, because it never meant anything.\n\nThe usual recommendation: **surrogate primary key, plus a unique constraint on the natural key**. You get stability for the relationships and the database still enforces that no two customers share an email.\n\n## Integer or UUID\n\nGenerated integers are compact, index well and sort in insertion order. They also reveal how many rows you have when exposed in a URL, and they require the database to allocate them.\n\nUUIDs can be generated anywhere, which matters for distributed systems and offline clients. They are larger, and random UUIDs scatter index writes. Use a time-ordered UUID variant if you need one at scale.\n\nFor most applications, start with a generated integer.\n\n## Foreign keys are not optional\n\nA foreign key is the database refusing to let an order reference a customer who does not exist. Without it, you will eventually have orphans — and finding them afterwards is archaeology.\n\n\"The application enforces it\" is not enough. The application is not the only thing that writes to the database: there are migration scripts, admin fixes and the next application.\n\n## Choose the delete behaviour deliberately\n\n`CASCADE` deletes children with the parent — right for order lines. `RESTRICT` refuses while children exist — right for a customer with orders. `SET NULL` orphans them deliberately.\n\nThe default varies by database. State it explicitly.",
+            "codeExample": "-- The usual arrangement: stable surrogate key, natural key still enforced.\nCREATE TABLE customer (\n    customer_id BIGINT       GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    email       VARCHAR(320) NOT NULL,\n    name        VARCHAR(200) NOT NULL,\n\n    -- The natural key is still guaranteed unique — you lose nothing — but it\n    -- is not what other tables reference, so a customer can change their email\n    -- without touching a single order row.\n    CONSTRAINT uq_customer_email UNIQUE (email)\n);\n\nCREATE TABLE orders (\n    order_id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n\n    -- RESTRICT: refuse to delete a customer who has orders. Deleting the\n    -- customer would destroy financial history we are probably required to keep.\n    customer_id BIGINT NOT NULL\n        REFERENCES customer (customer_id) ON DELETE RESTRICT,\n\n    placed_at   TIMESTAMPTZ NOT NULL DEFAULT now()\n);\n\nCREATE TABLE order_line (\n    order_id   BIGINT NOT NULL\n        -- CASCADE: a line cannot exist without its order, so deleting the\n        -- order should take the lines with it.\n        REFERENCES orders (order_id) ON DELETE CASCADE,\n\n    product_id BIGINT NOT NULL\n        -- RESTRICT: never delete a product that appears in order history.\n        REFERENCES product (product_id) ON DELETE RESTRICT,\n\n    quantity   INTEGER NOT NULL CHECK (quantity > 0),\n    PRIMARY KEY (order_id, product_id)\n);\n\n-- Foreign key columns are NOT automatically indexed in most databases. Without\n-- this index, every \"orders for this customer\" query scans the whole table,\n-- and every delete of a customer scans it too.\nCREATE INDEX ix_orders_customer ON orders (customer_id);",
+            "codeLanguage": "sql",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "A primary key is unique and never null; beyond that the choice is yours",
+              "Natural keys change, and a changing primary key propagates to every reference",
+              "Surrogate primary key plus a unique constraint on the natural key is the usual answer",
+              "Integers are compact and ordered; UUIDs are generatable anywhere but scatter writes",
+              "Foreign keys belong in the database — the application is not its only writer"
+            ],
+            "quiz": {
+              "title": "Keys",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why is an email address a poor primary key even when it is unique?",
+                  "explanation": "It is a business value that changes. When a primary key changes, every foreign key referencing it must change with it.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It can change, and a changing primary key propagates to every referencing row",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Email addresses are not guaranteed unique",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Text keys cannot be indexed",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Databases do not allow variable-length primary keys",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why not rely on the application to enforce referential integrity?",
+                  "explanation": "The application is not the only writer. Migrations, admin scripts and future services all touch the database, and orphaned rows are discovered long after the fact.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Migrations, admin fixes and other applications also write to the database",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Application checks are always slower",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Foreign keys make queries faster in every case",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Application code cannot compare identifiers reliably",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Data Types, Constraints and Getting Money Right",
+            "slug": "data-types-constraints-and-getting-money-right",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The type is your first constraint\n\nChoosing `VARCHAR(10)` for a date means storing `\"tomorrow\"` is possible. Choosing `DATE` means it is not. Every correctly chosen type is validation you never have to write, never forget, and cannot bypass.\n\n## Never store money in a floating-point type\n\n`FLOAT` and `REAL` are binary approximations. `0.1 + 0.2` is not exactly `0.3`, and after a few thousand transactions your totals drift by amounts that are small, real and impossible to explain to an auditor.\n\nUse `NUMERIC`/`DECIMAL` with explicit precision and scale: `NUMERIC(12,2)`. Exact decimal arithmetic, no drift.\n\nSome teams store minor units as integers — pence rather than pounds. Also correct. What is never correct is a float.\n\n## Store timestamps with a time zone, in UTC\n\n`TIMESTAMPTZ` and UTC storage. Convert to local time for display only.\n\nStoring local time without an offset produces an ambiguous hour every autumn when clocks go back, and a nonexistent hour every spring. Those rows cannot be ordered correctly, and no later fix recovers the information.\n\nUse `DATE` for genuine dates — a birthday is not a moment in time.\n\n## Length limits are a decision\n\n`VARCHAR(50)` for a name will reject someone's real name. `VARCHAR(320)` is the maximum length of an email address. Look up the actual bound rather than choosing a round number, because the round number will be wrong for someone.\n\n## CHECK constraints encode the rules\n\nQuantity greater than zero. End date after start date. Status among a known set. Each one is a rule that cannot be violated by any code path, including the one written next year by someone who has not read yours.\n\n## NOT NULL is the most useful constraint\n\nEvery nullable column is a case every query must handle. Make columns `NOT NULL` unless absence is genuinely meaningful, and give a default where one makes sense.\n\nBeing asked \"what should this be when it is missing?\" during design is far better than discovering the answer in a report three months later.",
+            "codeExample": "CREATE TABLE invoice (\n    invoice_id     BIGINT      GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    customer_id    BIGINT      NOT NULL REFERENCES customer (customer_id),\n\n    -- MONEY. Exact decimal arithmetic. A FLOAT here drifts by small amounts\n    -- that accumulate and cannot be explained to an auditor.\n    net_amount     NUMERIC(12,2) NOT NULL CHECK (net_amount >= 0),\n    tax_amount     NUMERIC(12,2) NOT NULL CHECK (tax_amount >= 0),\n    -- Derived, so it can never disagree with its parts.\n    gross_amount   NUMERIC(12,2) GENERATED ALWAYS AS (net_amount + tax_amount) STORED,\n\n    currency_code  CHAR(3)     NOT NULL CHECK (currency_code ~ '^[A-Z]{3}$'),\n\n    -- UTC with a time zone. Local time without an offset produces an ambiguous\n    -- hour each autumn whose rows cannot be correctly ordered, ever.\n    issued_at      TIMESTAMPTZ NOT NULL DEFAULT now(),\n\n    -- A genuine date, not a moment: the due date is the same date everywhere.\n    due_on         DATE        NOT NULL,\n\n    status         VARCHAR(20) NOT NULL DEFAULT 'Draft'\n        CHECK (status IN ('Draft','Issued','Paid','Cancelled')),\n\n    paid_at        TIMESTAMPTZ,       -- genuinely nullable: unpaid invoices exist\n\n    -- Cross-column rules the application cannot bypass, whoever writes it.\n    CONSTRAINT ck_due_after_issue CHECK (due_on >= issued_at::date),\n    CONSTRAINT ck_paid_consistency CHECK (\n        (status = 'Paid'  AND paid_at IS NOT NULL) OR\n        (status <> 'Paid' AND paid_at IS NULL)\n    )\n);\n\n-- Demonstrating why float is wrong for money:\n--   SELECT 0.1::float8 + 0.2::float8 = 0.3::float8;    -> false\n--   SELECT 0.1::numeric + 0.2::numeric = 0.3::numeric; -> true",
+            "codeLanguage": "sql",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "The right type is validation you cannot forget or bypass",
+              "Never store money in a float — use NUMERIC with explicit precision",
+              "Store timestamps as UTC with a time zone; local time creates unorderable rows",
+              "Set length limits from the real bound, not a round number",
+              "CHECK and NOT NULL encode rules no future code path can violate"
+            ],
+            "quiz": {
+              "title": "Types and constraints",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why must monetary values not be stored as FLOAT?",
+                  "explanation": "Floats are binary approximations of decimal values. Errors accumulate across transactions, producing totals that are wrong by small, unexplainable amounts.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Binary floating point cannot represent decimal values exactly, so totals drift",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "FLOAT columns cannot be indexed",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "FLOAT has insufficient range for currency",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "FLOAT cannot store negative numbers",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why store timestamps as UTC with a time zone rather than local time?",
+                  "explanation": "Local time without an offset is ambiguous during a daylight-saving transition. Those rows cannot be correctly ordered and the information is unrecoverable.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Local time is ambiguous across daylight-saving transitions, making rows unorderable",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "UTC values take less storage",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Local time cannot be indexed",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Databases cannot compare local timestamps",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Modelling Decisions",
+        "summary": "Many-to-many, and the denormalisation you must earn.",
+        "estimatedHours": 1.3,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "One-to-Many, Many-to-Many and the Join Table",
+            "slug": "one-to-many-many-to-many-and-the-join-table",
+            "type": "Architecture",
+            "estimatedMinutes": 40,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## One-to-many needs no extra table\n\nThe foreign key goes on the *many* side. An order has many lines, so `order_line` holds `order_id`. Putting a list of line ids on the order would break first normal form and be unqueryable.\n\nThis is the most common relationship and the simplest.\n\n## Many-to-many needs a table of its own\n\nA student takes many courses; a course has many students. Neither side can hold the foreign key, so a third table holds pairs:\n\n```sql\nCREATE TABLE enrolment (\n    student_id BIGINT NOT NULL REFERENCES student (student_id),\n    course_id  BIGINT NOT NULL REFERENCES course (course_id),\n    PRIMARY KEY (student_id, course_id)\n);\n```\n\nThe composite primary key does real work: it makes enrolling twice impossible.\n\n## Join tables often grow attributes\n\nThe moment you ask \"when did they enrol?\" or \"what grade did they get?\", the join table has become an entity in its own right with its own facts. That is normal and expected — name it after what it is (`enrolment`, not `student_course`) and let it have its own surrogate key if it acquires its own relationships.\n\n## One-to-one is usually one table\n\nIf every row of A has exactly one row of B, they are usually the same entity. Two legitimate reasons to split: optional detail that is mostly absent, and columns with different security requirements that you want to grant separately.\n\n## Self-references model hierarchies\n\nAn employee has a manager, who is an employee. A nullable foreign key to the same table handles this. Recursive queries traverse it.\n\nBe aware that arbitrary-depth hierarchies get slow, and that nothing stops a cycle unless you prevent it.\n\n## Model what the business does, not what is convenient\n\nIf an order can genuinely have two customers — a payer and a recipient — model both. Squeezing that into one column because it is usually one customer produces a workaround within a year.",
+            "codeExample": "-- ---------- one-to-many: foreign key on the many side ----------\nCREATE TABLE orders (\n    order_id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    customer_id BIGINT NOT NULL REFERENCES customer (customer_id)\n);\n\n-- ---------- many-to-many: a table of pairs ----------\nCREATE TABLE student (\n    student_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    name       VARCHAR(200) NOT NULL\n);\n\nCREATE TABLE course (\n    course_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    title     VARCHAR(200) NOT NULL\n);\n\n-- Named after what it IS, because it has its own facts.\nCREATE TABLE enrolment (\n    student_id  BIGINT NOT NULL REFERENCES student (student_id) ON DELETE CASCADE,\n    course_id   BIGINT NOT NULL REFERENCES course  (course_id)  ON DELETE RESTRICT,\n\n    -- The join table grew attributes, which is normal.\n    enrolled_on DATE   NOT NULL DEFAULT CURRENT_DATE,\n    grade       CHAR(1) CHECK (grade IN ('A','B','C','D','E','F')),\n\n    -- Enrolling twice is now impossible, enforced by the database.\n    PRIMARY KEY (student_id, course_id)\n);\n\n-- Both directions need an index: \"courses for this student\" uses the primary\n-- key's leading column, but \"students on this course\" does not.\nCREATE INDEX ix_enrolment_course ON enrolment (course_id);\n\n-- ---------- self-reference: a hierarchy ----------\nCREATE TABLE employee (\n    employee_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    name        VARCHAR(200) NOT NULL,\n    -- Nullable: the chief executive reports to nobody.\n    manager_id  BIGINT REFERENCES employee (employee_id),\n    CONSTRAINT ck_not_own_manager CHECK (manager_id <> employee_id)\n    -- Note: this blocks direct self-management but NOT a longer cycle\n    -- (A -> B -> A). Preventing those needs a trigger or application check.\n);\n\n-- Walking the hierarchy with a recursive CTE.\nWITH RECURSIVE chain AS (\n    SELECT employee_id, name, manager_id, 1 AS depth\n    FROM   employee WHERE employee_id = 42\n    UNION ALL\n    SELECT e.employee_id, e.name, e.manager_id, c.depth + 1\n    FROM   employee e JOIN chain c ON e.employee_id = c.manager_id\n    WHERE  c.depth < 20                 -- a guard against cycles\n)\nSELECT * FROM chain;",
+            "codeLanguage": "sql",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "One-to-many: the foreign key goes on the many side",
+              "Many-to-many needs a join table, whose composite key prevents duplicates",
+              "Join tables commonly grow their own attributes and become real entities",
+              "One-to-one usually means one table, unless optionality or security says otherwise",
+              "Model the relationship the business actually has, not the convenient simplification"
+            ],
+            "quiz": {
+              "title": "Relationships",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What does the composite primary key on a join table accomplish?",
+                  "explanation": "It makes the pairing unique, so the same student cannot be enrolled on the same course twice — enforced by the database rather than by application code.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It prevents the same pair being recorded twice",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It makes joins faster in all directions",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is required before foreign keys can be added",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It allows the table to be queried without joins",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why add `CREATE INDEX ix_enrolment_course ON enrolment (course_id)` when the primary key is `(student_id, course_id)`?",
+                  "explanation": "A composite index serves queries using its leading column. Filtering by course_id alone cannot use it, so that direction needs its own index.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The composite key only helps queries leading with student_id",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Primary keys are not indexed automatically",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Foreign keys require a matching index to be valid",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is needed for the CASCADE delete to work",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "When to Denormalise, and How to Justify It",
+            "slug": "when-to-denormalise-and-how-to-justify-it",
+            "type": "Architecture",
+            "estimatedMinutes": 40,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Normalise first, always\n\nA normalised schema is correct by construction. Denormalisation trades that guarantee for speed, and it is a trade you should only make when you can state what you are buying.\n\n\"It might be slow\" is not a reason. A measurement is.\n\n## What denormalisation actually costs\n\nEvery duplicated fact needs something to keep the copies in agreement, forever. That something is a trigger, a scheduled job or application code, and it will have a bug.\n\nWhen it does, two parts of your database disagree and nobody can say which is right. That is a materially worse problem than a slow query.\n\n## Earn it with a measurement\n\nBefore duplicating anything:\n\n1. Write the slow query.\n2. Measure it on realistic data volume.\n3. Try an index. Try rewriting it. Most \"we need to denormalise\" cases are a missing index.\n4. If it is still too slow, denormalise — and write down the measurement in a comment.\n\nThe comment matters. Someone in two years needs to know whether this is still necessary.\n\n## Prefer derived columns the database maintains\n\nA generated column recomputes automatically and cannot drift. A materialised view is a maintained snapshot with an explicit, visible refresh.\n\nBoth are far safer than a column your application remembers to update, because neither depends on anybody remembering.\n\n## Counter caches are the classic case\n\n`post.comment_count` avoids counting on every page load. It is also the classic source of counts that are subtly wrong after a failed delete.\n\nIf you do it, maintain it in a trigger or in the same transaction as the change — never in a separate call that can fail independently.\n\n## Read models are the cleaner answer at scale\n\nRather than corrupting the transactional schema, build a separate denormalised structure for reads and populate it from the normalised source. Reporting tables and search indexes are this pattern. The source of truth stays clean.",
+            "codeExample": "-- ---------- step 1: measure before assuming ----------\nEXPLAIN ANALYZE\nSELECT o.order_id, SUM(l.quantity * l.unit_price_at_purchase) AS total\nFROM   orders o JOIN order_line l ON l.order_id = o.order_id\nWHERE  o.customer_id = 42\nGROUP  BY o.order_id;\n-- Seq Scan on order_line ... actual time=412ms\n-- The problem is a missing index, not the schema.\n\nCREATE INDEX ix_order_line_order ON order_line (order_id);\n-- Re-measure: actual time=3ms. No denormalisation needed. This is the\n-- outcome in most cases where someone proposes denormalising.\n\n\n-- ---------- when it genuinely is not enough ----------\n\n-- Option A (safest): a generated column. The database maintains it, so it\n-- cannot drift, and no application code has to remember anything.\nALTER TABLE order_line\n    ADD COLUMN line_total NUMERIC(12,2)\n    GENERATED ALWAYS AS (quantity * unit_price_at_purchase) STORED;\n\n-- Option B: a materialised view. A maintained snapshot with a visible,\n-- explicit refresh, so staleness is a known quantity rather than a surprise.\nCREATE MATERIALIZED VIEW customer_revenue AS\nSELECT o.customer_id,\n       COUNT(DISTINCT o.order_id)                        AS order_count,\n       SUM(l.quantity * l.unit_price_at_purchase)        AS lifetime_value,\n       MAX(o.placed_at)                                  AS last_order_at\nFROM   orders o JOIN order_line l ON l.order_id = o.order_id\nGROUP  BY o.customer_id;\n\nCREATE UNIQUE INDEX ix_customer_revenue ON customer_revenue (customer_id);\n-- REFRESH MATERIALIZED VIEW CONCURRENTLY customer_revenue;   -- nightly\n\n-- Option C (last resort): a maintained counter on the parent row.\n--\n-- DENORMALISED 2026-09-20. The dashboard query below took 2.4s at 4M order\n-- lines; indexing brought it to 900ms, still over the 200ms budget. Maintained\n-- by trigger, NOT by application code, so a failed application path cannot\n-- leave it wrong. Re-evaluate if the dashboard changes.\nALTER TABLE customer ADD COLUMN order_count INTEGER NOT NULL DEFAULT 0;\n\nCREATE OR REPLACE FUNCTION bump_order_count() RETURNS TRIGGER AS $$\nBEGIN\n    IF TG_OP = 'INSERT' THEN\n        UPDATE customer SET order_count = order_count + 1 WHERE customer_id = NEW.customer_id;\n    ELSIF TG_OP = 'DELETE' THEN\n        UPDATE customer SET order_count = order_count - 1 WHERE customer_id = OLD.customer_id;\n    END IF;\n    RETURN NULL;\nEND; $$ LANGUAGE plpgsql;\n\nCREATE TRIGGER trg_order_count\nAFTER INSERT OR DELETE ON orders\nFOR EACH ROW EXECUTE FUNCTION bump_order_count();",
+            "codeLanguage": "sql",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Normalise first; denormalisation trades correctness for speed",
+              "Every duplicated fact needs a maintainer forever, and it will have a bug",
+              "Measure and try indexing before duplicating; most cases are a missing index",
+              "Prefer generated columns and materialised views over application-maintained copies",
+              "At scale, build a separate read model rather than corrupting the transactional schema"
+            ],
+            "quiz": {
+              "title": "Denormalisation",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What should you try before denormalising a slow query?",
+                  "explanation": "Most proposals to denormalise are really a missing index. Measure on realistic volume, index, and rewrite before duplicating any fact.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Measure on realistic data, add an appropriate index, and try rewriting the query",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Add a caching layer in the application",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Increase the database server's memory",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Split the table across two databases",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why is a generated column safer than a value the application updates?",
+                  "explanation": "The database maintains it as part of the write, so it cannot drift. An application-maintained copy depends on every code path remembering, and one will not.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The database maintains it, so it cannot drift out of agreement",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Generated columns use less storage",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Application updates cannot be transactional",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Generated columns are automatically indexed",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "careerSlug": "sql-database-developer",
+    "order": 2,
+    "phaseNumber": 2,
+    "title": "Phase 2 — Querying with SQL",
+    "slug": "phase-2-querying-with-sql",
+    "summary": "Writing SQL that is correct before it is clever: how a query is really evaluated, joins that behave as you expect, aggregation that counts the right things, window functions, and the three-valued logic of NULL that catches everybody at least once.",
+    "estimatedHours": 30,
+    "level": "Foundational",
+    "minimumTrack": "FastTrack",
+    "outcomes": [
+      "Predict a query's result from how SQL actually evaluates it",
+      "Choose the right join and recognise when one silently drops rows",
+      "Aggregate correctly, including counting distinct things across joins",
+      "Use window functions for ranking and running totals",
+      "Handle NULL deliberately rather than being surprised by it"
+    ],
+    "skillSlugs": [
+      "sql",
+      "database-design"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "Selecting and Joining",
+        "summary": "The evaluation order nobody teaches, and joins that do what you meant.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "SELECT, WHERE and the Order Things Actually Happen",
+            "slug": "select-where-and-the-order-things-actually-happen",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## You write it in one order and it runs in another\n\nA query is written `SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY ... LIMIT`.\n\nIt is evaluated roughly:\n\n1. `FROM` and joins — assemble the rows\n2. `WHERE` — discard rows\n3. `GROUP BY` — collapse into groups\n4. `HAVING` — discard groups\n5. `SELECT` — compute the output columns\n6. `ORDER BY` — sort\n7. `LIMIT` — take the first n\n\nKnowing this explains most beginner errors in one step.\n\n## Why you cannot use an alias in WHERE\n\n`SELECT price * 1.2 AS gross FROM product WHERE gross > 100` fails, because `WHERE` runs before `SELECT` and `gross` does not exist yet.\n\n`ORDER BY gross` works, because sorting happens after the columns are computed. That asymmetry is not arbitrary — it falls straight out of the evaluation order.\n\n## WHERE filters rows, HAVING filters groups\n\n`WHERE` runs before grouping and cannot see aggregates. `HAVING` runs after and can.\n\nFilter in `WHERE` whenever you can. Discarding rows before grouping is cheaper than grouping them and discarding the result.\n\n## LIMIT without ORDER BY is not deterministic\n\n\"Give me ten rows\" with no ordering gives you ten rows the database found convenient. That can differ between runs, after an update, or after an index is added.\n\nIf order matters, say so — and make the ordering unique. Sorting only by a non-unique column leaves ties in arbitrary order, which breaks pagination subtly: a row can appear on two pages, or none.\n\n## DISTINCT is often a symptom\n\nReaching for `DISTINCT` to remove duplicates usually means a join is producing rows you did not intend. Fix the join. `DISTINCT` hides the problem and makes the query slower.",
+            "codeExample": "-- Written order vs evaluation order:\n--   written:    SELECT -> FROM -> WHERE -> GROUP BY -> HAVING -> ORDER BY -> LIMIT\n--   evaluated:  FROM   -> WHERE -> GROUP BY -> HAVING -> SELECT -> ORDER BY -> LIMIT\n\n-- FAILS: `gross` does not exist when WHERE runs.\nSELECT name, price * 1.2 AS gross\nFROM   product\nWHERE  gross > 100;                      -- ERROR: column \"gross\" does not exist\n\n-- Works: repeat the expression, or wrap the query.\nSELECT name, price * 1.2 AS gross\nFROM   product\nWHERE  price * 1.2 > 100\nORDER  BY gross DESC;                    -- alias IS allowed here: SELECT ran first\n\n-- WHERE before grouping, HAVING after. Both here, doing different jobs.\nSELECT   c.country_code,\n         COUNT(*)      AS order_count,\n         SUM(o.total)  AS revenue\nFROM     orders o\nJOIN     customer c ON c.customer_id = o.customer_id\nWHERE    o.placed_at >= DATE '2026-01-01'    -- discards ROWS, before grouping\nGROUP BY c.country_code\nHAVING   SUM(o.total) > 100000               -- discards GROUPS, after\nORDER BY revenue DESC;\n\n-- Non-deterministic: which ten rows is up to the database.\nSELECT * FROM orders LIMIT 10;\n\n-- Still subtly wrong: placed_at is not unique, so ties order arbitrarily and a\n-- row can appear on page 1 and page 2, or on neither.\nSELECT * FROM orders ORDER BY placed_at DESC LIMIT 10 OFFSET 10;\n\n-- Correct: a tiebreaker makes the ordering total.\nSELECT * FROM orders\nORDER BY placed_at DESC, order_id DESC\nLIMIT 10 OFFSET 10;",
+            "codeLanguage": "sql",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Evaluation order is FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY, LIMIT",
+              "Aliases work in ORDER BY but not WHERE, because SELECT runs later",
+              "WHERE filters rows before grouping; HAVING filters groups after",
+              "LIMIT without a unique ORDER BY is non-deterministic and breaks pagination",
+              "A DISTINCT added to remove duplicates usually means the join is wrong"
+            ],
+            "quiz": {
+              "title": "Query evaluation",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why can a SELECT alias be used in ORDER BY but not in WHERE?",
+                  "explanation": "WHERE is evaluated before SELECT, so the alias does not exist yet. ORDER BY runs after SELECT, by which point it does.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "WHERE runs before SELECT computes the columns; ORDER BY runs after",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "ORDER BY re-evaluates the whole query",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Aliases are only valid in clauses that do not filter",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is an arbitrary restriction of the SQL standard",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why is `ORDER BY placed_at DESC LIMIT 10 OFFSET 10` unreliable for pagination?",
+                  "explanation": "placed_at is not unique, so rows with equal values can be ordered differently between queries, causing a row to appear twice or be skipped.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Ties are ordered arbitrarily, so a row can appear on two pages or none",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "OFFSET is not supported with ORDER BY",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "DESC ordering cannot use an index",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "LIMIT must come before OFFSET",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Joins: Inner, Left and the Ones That Surprise You",
+            "slug": "joins-inner-left-and-the-ones-that-surprise-you",
+            "type": "Coding",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Inner join keeps only matches\n\nThe default. A row appears only if it has a partner on both sides. This is what you want most of the time, and it is also how rows disappear without warning.\n\nCount your results. If an inner join between orders and customers returns fewer rows than there are orders, some orders have no matching customer — which is itself worth knowing.\n\n## Left join keeps everything from the left\n\nRows with no match still appear, with the right-hand columns null. Use it for \"all customers, with their order count including zero\".\n\n## The left join trap\n\nPut a condition on the right-hand table in `WHERE` and you have silently converted it back to an inner join — because the unmatched rows have null there, and null fails the comparison.\n\n```sql\n-- Not what you meant: customers with no orders are eliminated\nFROM customer c LEFT JOIN orders o ON o.customer_id = c.customer_id\nWHERE o.placed_at > '2026-01-01'\n\n-- What you meant: condition belongs in the ON clause\nFROM customer c LEFT JOIN orders o\n  ON o.customer_id = c.customer_id AND o.placed_at > '2026-01-01'\n```\n\nThis is the single most common join bug, and it produces a plausible-looking result.\n\n## Joins multiply rows\n\nJoin an order to its three lines and you get three rows, with the order's columns repeated. Then `SUM(o.total)` counts the order total three times.\n\nThis is the origin of most wrong aggregate figures. Aggregate before joining, or count distinct.\n\n## Always qualify and alias\n\nPrefix every column with its table alias. Unqualified columns in a multi-table query are ambiguous to readers even when the parser accepts them, and they break the moment someone adds a column with the same name.\n\n## Cross join on purpose only\n\nA missing join condition produces every combination of both tables. On two tables of ten thousand rows that is a hundred million rows and a query that never returns.",
+            "codeExample": "-- ---------- the left join trap ----------\n\n-- WRONG: looks like a left join, behaves like an inner join. Customers with no\n-- orders have NULL in o.placed_at, NULL > date is NULL, and WHERE discards them.\nSELECT c.name, o.order_id\nFROM   customer c\nLEFT   JOIN orders o ON o.customer_id = c.customer_id\nWHERE  o.placed_at >= DATE '2026-01-01';\n\n-- RIGHT: the condition belongs in ON, so unmatched customers survive.\nSELECT c.name, o.order_id\nFROM   customer c\nLEFT   JOIN orders o\n       ON o.customer_id = c.customer_id\n      AND o.placed_at >= DATE '2026-01-01';\n\n-- Finding rows with NO match is a deliberate use of the same behaviour.\nSELECT c.name\nFROM   customer c\nLEFT   JOIN orders o ON o.customer_id = c.customer_id\nWHERE  o.order_id IS NULL;              -- customers who have never ordered\n\n\n-- ---------- joins multiply rows, and break aggregates ----------\n\n-- WRONG: one row per order LINE, so o.total is counted once per line.\nSELECT   c.customer_id, SUM(o.total) AS revenue\nFROM     customer c\nJOIN     orders o     ON o.customer_id = c.customer_id\nJOIN     order_line l ON l.order_id = o.order_id     -- fans rows out\nGROUP BY c.customer_id;\n\n-- RIGHT (option 1): do not join what you do not need.\nSELECT   c.customer_id, SUM(o.total) AS revenue\nFROM     customer c\nJOIN     orders o ON o.customer_id = c.customer_id\nGROUP BY c.customer_id;\n\n-- RIGHT (option 2): aggregate first, then join the already-collapsed result.\nSELECT c.customer_id, c.name, r.revenue, r.line_count\nFROM   customer c\nJOIN   (SELECT o.customer_id,\n               SUM(l.quantity * l.unit_price_at_purchase) AS revenue,\n               COUNT(*)                                    AS line_count\n        FROM   orders o JOIN order_line l ON l.order_id = o.order_id\n        GROUP  BY o.customer_id) r\n       ON r.customer_id = c.customer_id;",
+            "codeLanguage": "sql",
+            "diagramMermaid": "flowchart LR\n  subgraph Inner[\"INNER JOIN\"]\n    A1[\"Only rows matching<br/>on both sides\"]\n  end\n  subgraph Left[\"LEFT JOIN\"]\n    B1[\"All left rows<br/>+ matches, or NULL\"]\n  end\n  subgraph Trap[\"LEFT JOIN + WHERE on right\"]\n    C1[\"NULL fails the comparison<br/>= INNER JOIN again\"]\n  end",
+            "keyTakeaways": [
+              "Inner join drops unmatched rows on both sides — check your counts",
+              "Left join keeps unmatched left rows with nulls on the right",
+              "A right-table condition in WHERE silently turns a left join into an inner join",
+              "Joins multiply rows, which is how aggregate totals come out wrong",
+              "Always qualify columns with an alias; a missing join condition is a cross join"
+            ],
+            "quiz": {
+              "title": "Joins",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why does adding `WHERE o.status = 'Paid'` to a LEFT JOIN eliminate unmatched rows?",
+                  "explanation": "Unmatched left rows have NULL in the right-hand columns. `NULL = 'Paid'` is NULL, not true, so WHERE discards them — making it an inner join.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Unmatched rows have NULL there, and a NULL comparison is not true, so WHERE discards them",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "WHERE is evaluated before the join",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "LEFT JOIN only supports conditions in the ON clause syntactically",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The optimiser rewrites all LEFT JOINs as INNER JOINs",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "An aggregate over orders joined to order lines produces totals that are too high. Why?",
+                  "explanation": "The join produces one row per line, repeating the order's columns. Summing the order total then counts it once per line.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The join multiplies rows, so the order total is summed once per line",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "SUM ignores NULL values",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "GROUP BY was applied to the wrong column",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The join should have been a LEFT JOIN",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "Aggregation and Windows",
+        "summary": "Counting the right things, and computing across rows without collapsing them.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "GROUP BY, HAVING and Counting Correctly",
+            "slug": "group-by-having-and-counting-correctly",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## GROUP BY collapses rows into groups\n\nEvery column in the `SELECT` must either appear in `GROUP BY` or be inside an aggregate. Otherwise the database cannot know which of several values to show.\n\nMost databases reject this. MySQL historically allowed it and returned an arbitrary value, which produced quietly wrong reports for years.\n\n## COUNT has three distinct forms\n\n- `COUNT(*)` — rows in the group, nulls included.\n- `COUNT(column)` — rows where that column is **not null**.\n- `COUNT(DISTINCT column)` — distinct non-null values.\n\nThe middle one surprises people. `COUNT(paid_at)` counts paid invoices, not all invoices, because unpaid ones are null there. Sometimes that is exactly what you want; make sure it is deliberate.\n\n## Counting across a join needs DISTINCT\n\nJoin customers to order lines and `COUNT(o.order_id)` counts lines, not orders. `COUNT(DISTINCT o.order_id)` counts orders.\n\n## Aggregates skip NULL, except COUNT(*)\n\n`SUM`, `AVG`, `MIN` and `MAX` ignore nulls. That means `AVG` divides by the number of non-null values, not by the row count — which is usually right, but not always what a business person means by \"average\".\n\nIf nulls should count as zero, say so: `AVG(COALESCE(amount, 0))`.\n\n## Zero rows aggregate to NULL, not zero\n\n`SUM` over no rows returns NULL, not 0. A dashboard showing an empty cell instead of \"0\" for a region with no sales is this. Wrap it: `COALESCE(SUM(amount), 0)`.\n\n## FILTER for conditional aggregates\n\n`COUNT(*) FILTER (WHERE status = 'Paid')` computes several conditional aggregates in one pass over the data, instead of joining the table to itself once per condition.",
+            "codeExample": "-- ---------- the three COUNTs are three different questions ----------\nSELECT COUNT(*)                  AS all_invoices,      -- every row\n       COUNT(paid_at)            AS paid_invoices,     -- rows where paid_at IS NOT NULL\n       COUNT(DISTINCT customer_id) AS distinct_customers\nFROM   invoice;\n\n-- ---------- counting across a join ----------\n-- WRONG: the join produced one row per line, so this counts lines.\nSELECT   c.name, COUNT(o.order_id) AS orders\nFROM     customer c\nJOIN     orders o     ON o.customer_id = c.customer_id\nJOIN     order_line l ON l.order_id = o.order_id\nGROUP BY c.customer_id, c.name;\n\n-- RIGHT:\nSELECT   c.name,\n         COUNT(DISTINCT o.order_id) AS orders,\n         COUNT(*)                   AS lines_total\nFROM     customer c\nJOIN     orders o     ON o.customer_id = c.customer_id\nJOIN     order_line l ON l.order_id = o.order_id\nGROUP BY c.customer_id, c.name;\n\n-- ---------- conditional aggregates in one pass ----------\nSELECT   country_code,\n         COUNT(*)                                      AS invoices,\n         COUNT(*) FILTER (WHERE status = 'Paid')       AS paid,\n         COUNT(*) FILTER (WHERE status = 'Draft')      AS draft,\n         COUNT(*) FILTER (WHERE due_on < CURRENT_DATE\n                            AND status <> 'Paid')      AS overdue,\n         -- COALESCE so a country with no paid invoices shows 0, not an empty cell\n         COALESCE(SUM(net_amount) FILTER (WHERE status = 'Paid'), 0) AS paid_revenue\nFROM     invoice\nGROUP BY country_code\nORDER BY paid_revenue DESC;\n\n-- ---------- AVG and NULL ----------\n-- Divides by the count of NON-NULL discounts, which is usually not what a\n-- business person means by \"average discount across all orders\".\nSELECT AVG(discount) FROM orders;\n\n-- Treats a missing discount as zero, which usually is what they meant.\nSELECT AVG(COALESCE(discount, 0)) FROM orders;",
+            "codeLanguage": "sql",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Every selected column must be grouped or aggregated",
+              "`COUNT(*)` counts rows, `COUNT(col)` counts non-nulls, `COUNT(DISTINCT col)` counts values",
+              "Across a join, count distinct or you count the wrong thing",
+              "Aggregates skip NULL, so AVG divides by non-null count",
+              "Aggregating zero rows gives NULL — wrap in COALESCE for a dashboard"
+            ],
+            "quiz": {
+              "title": "Aggregation",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What is the difference between `COUNT(*)` and `COUNT(paid_at)`?",
+                  "explanation": "`COUNT(*)` counts rows. `COUNT(column)` counts only rows where the column is not null, so it silently becomes a conditional count.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "`COUNT(*)` counts all rows; `COUNT(paid_at)` counts only rows where paid_at is not null",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "They are identical",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "`COUNT(paid_at)` counts distinct values of paid_at",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "`COUNT(*)` is slower but otherwise the same",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "A dashboard shows an empty cell instead of 0 for a region with no sales. What is the cause?",
+                  "explanation": "SUM over zero matching rows returns NULL, not 0. COALESCE converts it to a displayable zero.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "SUM over no rows returns NULL; wrap it in COALESCE",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The GROUP BY excluded the region",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The column type does not permit zero",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "An inner join removed the region entirely",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Window Functions",
+            "slug": "window-functions",
+            "type": "Coding",
+            "estimatedMinutes": 50,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Aggregate without collapsing\n\n`GROUP BY` reduces many rows to one. A window function computes across a set of rows and returns a value **for every row**, leaving them intact.\n\nThis is the tool for running totals, rankings, comparisons to a group average, and period-over-period differences — all of which are awkward or impossible with `GROUP BY`.\n\n## The OVER clause defines the window\n\n- `PARTITION BY` splits rows into groups, like `GROUP BY` but without collapsing.\n- `ORDER BY` orders rows within each partition, which matters for anything cumulative.\n- A frame clause narrows which rows in the partition are considered.\n\n## The ones worth knowing\n\n- `ROW_NUMBER()` — 1, 2, 3 with no ties.\n- `RANK()` — ties share a rank and the next value skips (1, 1, 3).\n- `DENSE_RANK()` — ties share a rank and nothing is skipped (1, 1, 2).\n- `LAG` / `LEAD` — the previous or next row's value. Month-on-month change becomes one expression.\n- `SUM() OVER (ORDER BY ...)` — a running total.\n\n## Top-N-per-group\n\n\"The three largest orders for each customer\" is the classic window-function problem. Number the rows within each customer, then filter on that number.\n\nYou cannot filter on a window function in `WHERE`, because windows are computed after `WHERE`. Wrap the query in a subquery or CTE and filter outside.\n\n## Frames default in a way that surprises\n\nWith `ORDER BY` present, the default frame is everything from the start of the partition to the current row — which is why `SUM() OVER (ORDER BY date)` gives a running total rather than the partition total.\n\nFor a partition-wide total alongside each row, omit the `ORDER BY`.\n\n## They are not free\n\nA window function usually requires a sort. On large result sets an index matching the partition and order columns matters.",
+            "codeExample": "-- ---------- running total, and share of a partition ----------\nSELECT order_id,\n       placed_at,\n       total,\n       -- ORDER BY present: default frame is start-of-partition..current row,\n       -- which is exactly a running total.\n       SUM(total) OVER (PARTITION BY customer_id ORDER BY placed_at, order_id)\n           AS running_total,\n       -- No ORDER BY: the frame is the WHOLE partition.\n       SUM(total) OVER (PARTITION BY customer_id) AS customer_lifetime,\n       ROUND(100.0 * total / SUM(total) OVER (PARTITION BY customer_id), 1)\n           AS pct_of_customer\nFROM   orders;\n\n-- ---------- ranking, and how ties behave ----------\nSELECT product_id, revenue,\n       ROW_NUMBER() OVER (ORDER BY revenue DESC) AS row_num,    -- 1,2,3,4 always\n       RANK()       OVER (ORDER BY revenue DESC) AS rank_,      -- 1,1,3,4 on a tie\n       DENSE_RANK() OVER (ORDER BY revenue DESC) AS dense_rank_ -- 1,1,2,3 on a tie\nFROM   product_revenue;\n\n-- ---------- top N per group ----------\n-- A window function cannot be filtered in WHERE: windows are computed after\n-- WHERE runs. Wrap it.\nWITH ranked AS (\n    SELECT o.*,\n           ROW_NUMBER() OVER (PARTITION BY customer_id\n                              ORDER BY total DESC, order_id) AS rn\n    FROM   orders o\n)\nSELECT customer_id, order_id, total\nFROM   ranked\nWHERE  rn <= 3                    -- the three largest orders per customer\nORDER  BY customer_id, rn;\n\n-- ---------- period-over-period with LAG ----------\nSELECT month,\n       revenue,\n       LAG(revenue) OVER (ORDER BY month) AS prev_month,\n       revenue - LAG(revenue) OVER (ORDER BY month) AS change,\n       ROUND(100.0 * (revenue - LAG(revenue) OVER (ORDER BY month))\n             / NULLIF(LAG(revenue) OVER (ORDER BY month), 0), 1) AS pct_change\n       -- NULLIF guards the first row, where the previous value is NULL, and\n       -- any month where revenue was zero.\nFROM   monthly_revenue\nORDER  BY month;",
+            "codeLanguage": "sql",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Window functions compute across rows without collapsing them",
+              "`PARTITION BY` groups, `ORDER BY` sequences, the frame narrows",
+              "ROW_NUMBER, RANK and DENSE_RANK differ in how they handle ties",
+              "Top-N-per-group needs the window in a subquery, since WHERE runs first",
+              "With ORDER BY, the default frame runs to the current row — hence running totals"
+            ],
+            "quiz": {
+              "title": "Window functions",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why must a top-N-per-group query wrap the window function in a subquery or CTE?",
+                  "explanation": "Window functions are computed after WHERE, so the row number does not exist when WHERE is evaluated. Wrapping moves the filter to a later stage.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Window functions are evaluated after WHERE, so the result cannot be filtered there",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Subqueries execute faster for ranking",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ROW_NUMBER cannot appear in a SELECT list",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "PARTITION BY requires a separate query block",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What is the difference between `SUM(x) OVER (PARTITION BY c ORDER BY d)` and `SUM(x) OVER (PARTITION BY c)`?",
+                  "explanation": "With ORDER BY, the default frame runs from the start of the partition to the current row, giving a running total. Without it, the frame is the whole partition.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The first is a running total; the second is the whole partition total on every row",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "They are equivalent",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The first sorts the output; the second does not",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The second is invalid without an ORDER BY",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Composing Queries",
+        "summary": "Structure that keeps complex SQL readable, and the logic of NULL.",
+        "estimatedHours": 1.4,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Subqueries, CTEs and Readability",
+            "slug": "subqueries-ctes-and-readability",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## CTEs give the steps names\n\nA common table expression — `WITH name AS (...)` — lets you name an intermediate result and use it below. A five-step calculation becomes five named steps instead of four levels of nesting read inside out.\n\nReadability is the main argument, and it is a strong one. SQL that has to be read from the middle outwards is SQL nobody will safely change.\n\n## EXISTS over IN for correlated checks\n\n`WHERE EXISTS (SELECT 1 FROM ... WHERE ...)` stops at the first match. It also behaves correctly with nulls, which `IN` does not.\n\n`NOT IN` with a subquery that can return NULL returns no rows at all — because `x NOT IN (1, NULL)` is never true, only false or unknown. This is a genuinely nasty bug: the query looks right and returns nothing.\n\nUse `NOT EXISTS`, which handles nulls the way you expect.\n\n## Scalar subqueries in SELECT are usually a join\n\nA subquery in the `SELECT` list runs once per output row. For a thousand rows that is a thousand executions. A join computes it once.\n\nOptimisers sometimes rewrite this and sometimes do not. Write the join.\n\n## Recursive CTEs traverse hierarchies\n\n`WITH RECURSIVE` walks a tree or graph: an anchor query for the starting rows, then a query that joins back to the CTE.\n\nAlways bound the depth. A cycle in the data produces a query that never finishes.\n\n## CTEs may or may not be optimisation fences\n\nIn older Postgres, a CTE was always materialised, which could be much slower than the equivalent subquery. Modern versions inline them unless told otherwise, and other databases differ.\n\nIf a CTE-based query is slow, this is worth checking.",
+            "codeExample": "-- ---------- the NOT IN / NULL trap ----------\n-- If ANY cancelled order has a NULL customer_id, this returns ZERO rows.\n-- `x NOT IN (1, NULL)` is never true — only false or unknown.\nSELECT * FROM customer\nWHERE  customer_id NOT IN (SELECT customer_id FROM orders WHERE status = 'Cancelled');\n\n-- Correct, and usually faster: handles NULLs the way you expect.\nSELECT c.* FROM customer c\nWHERE  NOT EXISTS (SELECT 1 FROM orders o\n                   WHERE o.customer_id = c.customer_id AND o.status = 'Cancelled');\n\n\n-- ---------- nested and unreadable ----------\nSELECT * FROM (\n    SELECT customer_id, revenue, RANK() OVER (ORDER BY revenue DESC) AS r\n    FROM (\n        SELECT o.customer_id, SUM(l.quantity * l.unit_price_at_purchase) AS revenue\n        FROM orders o JOIN order_line l ON l.order_id = o.order_id\n        WHERE o.placed_at >= DATE '2026-01-01'\n        GROUP BY o.customer_id\n    ) totals\n) ranked\nWHERE r <= 10;\n\n-- ---------- the same thing, as named steps ----------\nWITH order_totals AS (\n    SELECT o.customer_id,\n           SUM(l.quantity * l.unit_price_at_purchase) AS revenue\n    FROM   orders o\n    JOIN   order_line l ON l.order_id = o.order_id\n    WHERE  o.placed_at >= DATE '2026-01-01'\n    GROUP  BY o.customer_id\n),\nranked AS (\n    SELECT customer_id, revenue,\n           RANK() OVER (ORDER BY revenue DESC) AS revenue_rank\n    FROM   order_totals\n)\nSELECT c.name, r.revenue, r.revenue_rank\nFROM   ranked r\nJOIN   customer c ON c.customer_id = r.customer_id\nWHERE  r.revenue_rank <= 10\nORDER  BY r.revenue_rank;\n\n\n-- ---------- scalar subquery vs join ----------\n-- Runs the inner query ONCE PER ROW of customer.\nSELECT c.name,\n       (SELECT COUNT(*) FROM orders o WHERE o.customer_id = c.customer_id) AS orders\nFROM   customer c;\n\n-- Computes it once.\nSELECT   c.name, COALESCE(o.order_count, 0) AS orders\nFROM     customer c\nLEFT     JOIN (SELECT customer_id, COUNT(*) AS order_count\n               FROM orders GROUP BY customer_id) o\n         ON o.customer_id = c.customer_id;",
+            "codeLanguage": "sql",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "CTEs name the steps, turning nested SQL into readable sequence",
+              "`NOT IN` with a nullable subquery returns nothing — use `NOT EXISTS`",
+              "A scalar subquery in SELECT runs per row; a join runs once",
+              "Recursive CTEs walk hierarchies and must be depth-bounded",
+              "CTE materialisation behaviour differs by database and version — check if it is slow"
+            ],
+            "quiz": {
+              "title": "Composing queries",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why can `NOT IN (SELECT ...)` return zero rows unexpectedly?",
+                  "explanation": "If the subquery yields any NULL, every `NOT IN` comparison evaluates to unknown rather than true, so no row qualifies.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A NULL in the subquery makes every comparison unknown, so nothing qualifies",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "NOT IN cannot be used with subqueries",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The subquery runs once per row and times out",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "NOT IN requires an index on the subquery column",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What is the main argument for a CTE over deeply nested subqueries?",
+                  "explanation": "Named steps read top to bottom. Nested subqueries must be read from the innermost outwards, which makes them hard to change safely.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Named steps read in order rather than from the inside out",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "CTEs always execute faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "CTEs are the only way to use window functions",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Nested subqueries are deprecated",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "NULL: The Three-Valued Logic That Catches Everyone",
+            "slug": "null-the-three-valued-logic-that-catches-everyone",
+            "type": "Concept",
+            "estimatedMinutes": 40,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## NULL is not a value\n\nIt means \"unknown\". It is not zero, not an empty string, and not false. Every comparison involving it returns **unknown**, which is a third truth value alongside true and false.\n\n## Nothing equals NULL, including NULL\n\n`WHERE status = NULL` matches no rows, ever, even rows where status is null. So does `WHERE status <> NULL`.\n\nUse `IS NULL` and `IS NOT NULL`. These are the only operators that test for it.\n\n## Unknown is not true, so WHERE discards it\n\nA `WHERE` clause keeps rows where the condition is **true**. Unknown is not true, so those rows are discarded exactly as if the condition were false.\n\nThis is why `WHERE discount <> 0.1` silently excludes rows where discount is null. Those rows genuinely might not be 0.1 — but the database will not guess.\n\n## NULL propagates through arithmetic and concatenation\n\n`5 + NULL` is NULL. `'Mr ' || NULL` is NULL in standard SQL. One null column in a computed total makes the whole total null.\n\n`COALESCE(value, fallback)` is the fix, and it is worth applying deliberately at the point where the unknown becomes meaningful.\n\n## Aggregates skip it, mostly\n\n`SUM`, `AVG`, `COUNT(column)`, `MIN` and `MAX` ignore nulls. `COUNT(*)` does not, because it counts rows rather than values.\n\n## UNIQUE lets several NULLs through\n\nIn standard SQL, a unique constraint permits multiple null rows, because two unknowns are not known to be equal. If you need at most one null, you need a partial unique index or a different design.\n\n## The best answer is fewer nullable columns\n\nEvery nullable column is a case every query must consider. Make columns `NOT NULL` with a sensible default unless the absence genuinely carries meaning — and when it does, write down what it means.",
+            "codeExample": "-- ---------- nothing equals NULL ----------\nSELECT * FROM invoice WHERE paid_at =  NULL;   -- 0 rows, always\nSELECT * FROM invoice WHERE paid_at <> NULL;   -- 0 rows, always\nSELECT * FROM invoice WHERE paid_at IS NULL;   -- correct: unpaid invoices\n\n-- ---------- unknown is discarded like false ----------\n-- Silently excludes rows where discount IS NULL: those rows might not be 0.1,\n-- but the database will not assume.\nSELECT * FROM orders WHERE discount <> 0.1;\n\n-- Say what you mean about the unknown ones.\nSELECT * FROM orders WHERE discount IS DISTINCT FROM 0.1;   -- NULL counts as different\nSELECT * FROM orders WHERE discount <> 0.1 OR discount IS NULL;   -- same, explicit\n\n-- ---------- propagation through arithmetic ----------\n-- If shipping IS NULL for any row, its total is NULL — not the subtotal.\nSELECT order_id, subtotal + shipping AS total FROM orders;\n\nSELECT order_id, subtotal + COALESCE(shipping, 0) AS total FROM orders;\n\n-- ---------- UNIQUE allows several NULLs ----------\nCREATE TABLE employee (\n    employee_id BIGINT PRIMARY KEY,\n    national_id VARCHAR(20) UNIQUE     -- many rows may have NULL here\n);\n-- If at most ONE row may have no national_id, UNIQUE will not do it:\nCREATE UNIQUE INDEX ux_employee_no_national_id\n    ON employee ((national_id IS NULL)) WHERE national_id IS NULL;\n\n-- ---------- the three-valued truth table ----------\n--   TRUE  AND UNKNOWN = UNKNOWN        TRUE  OR UNKNOWN = TRUE\n--   FALSE AND UNKNOWN = FALSE          FALSE OR UNKNOWN = UNKNOWN\n--   NOT UNKNOWN       = UNKNOWN\n--\n-- FALSE AND UNKNOWN is FALSE because the result is false whatever the unknown\n-- turns out to be. TRUE OR UNKNOWN is TRUE for the same reason.",
+            "codeLanguage": "sql",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "NULL means unknown; comparisons with it yield unknown, not true or false",
+              "`= NULL` never matches — use `IS NULL` and `IS NOT NULL`",
+              "WHERE keeps only true rows, so unknown rows are discarded like false ones",
+              "NULL propagates through arithmetic and concatenation; COALESCE deliberately",
+              "UNIQUE permits several NULLs; prefer NOT NULL columns wherever absence is not meaningful"
+            ],
+            "quiz": {
+              "title": "NULL",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why does `WHERE discount <> 0.1` exclude rows where discount is NULL?",
+                  "explanation": "The comparison evaluates to unknown, and WHERE keeps only rows where the condition is true. Unknown is discarded exactly like false.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The comparison yields unknown, and WHERE keeps only true rows",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "NULL is treated as equal to 0.1",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The optimiser rewrites <> to =",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "NULL rows are excluded from all queries by default",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "A UNIQUE constraint is on a nullable column. How many NULL rows can it hold?",
+                  "explanation": "Two unknowns are not known to be equal, so standard SQL permits any number of NULL rows under a unique constraint.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Any number — NULLs are not considered equal to each other",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Exactly one",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "None — UNIQUE implies NOT NULL",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It depends on the column's data type",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "careerSlug": "sql-database-developer",
+    "order": 3,
+    "phaseNumber": 3,
+    "title": "Phase 3 — Performance, Transactions & Beyond Relational",
+    "slug": "phase-3-performance-transactions-and-beyond-relational",
+    "summary": "Making queries fast with evidence rather than instinct, understanding what a transaction actually guarantees, and knowing when a relational database is the wrong tool.",
+    "estimatedHours": 30,
+    "level": "Foundational",
+    "minimumTrack": "Balanced",
+    "outcomes": [
+      "Explain what an index costs as well as what it saves",
+      "Read an execution plan and act on what it says",
+      "Choose an isolation level knowing what each one permits",
+      "Diagnose deadlocks and lock contention",
+      "Judge when a document store fits better, and operate a database safely"
+    ],
+    "skillSlugs": [
+      "sql",
+      "database-design",
+      "nosql",
+      "data-engineering"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "Making Queries Fast",
+        "summary": "Indexes and execution plans: measurement rather than folklore.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Indexes: What They Are and What They Cost",
+            "slug": "indexes-what-they-are-and-what-they-cost",
+            "type": "Concept",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## What an index is\n\nA sorted structure mapping column values to row locations. Finding a value in it is a few steps rather than a scan of the whole table, in the way a book index beats reading every page.\n\n## What it costs\n\nEvery index must be updated on every insert, update and delete of the indexed columns. Storage grows too.\n\nA table with ten indexes writes roughly ten times the index work per row. This is how a heavily indexed table becomes slow to write, and why \"add an index\" is a trade rather than a free win.\n\n## Composite indexes work left to right\n\nAn index on `(customer_id, placed_at)` serves:\n\n- `WHERE customer_id = 1`\n- `WHERE customer_id = 1 AND placed_at > '2026-01-01'`\n\nIt does **not** serve `WHERE placed_at > '2026-01-01'` alone. The leading column is the entry point.\n\nColumn order is therefore a design decision, not an arbitrary one. Put equality columns before range columns.\n\n## Making a column non-searchable\n\nWrapping an indexed column in a function usually prevents the index being used:\n\n```sql\nWHERE LOWER(email) = 'a@b.com'     -- index on email unused\nWHERE YEAR(placed_at) = 2026       -- index on placed_at unused\n```\n\nRewrite as a range, or create an index on the expression itself.\n\n## A leading wildcard cannot be indexed\n\n`LIKE 'smith%'` can use an index. `LIKE '%smith'` cannot, because the index is sorted by the start of the value. For that, use full-text search or a trigram index.\n\n## Index the foreign keys\n\nMost databases do not index a foreign key column automatically. Without one, every join on it and every parent delete scans the child table.\n\nThis is among the most common missing indexes in real schemas.\n\n## Covering indexes avoid the table entirely\n\nIf an index contains every column a query needs, the database answers from the index alone. This can be dramatically faster, at the cost of a larger index.",
+            "codeExample": "-- Composite index: column ORDER determines what it can serve.\nCREATE INDEX ix_orders_customer_placed ON orders (customer_id, placed_at);\n\nSELECT * FROM orders WHERE customer_id = 42;                        -- uses it\nSELECT * FROM orders WHERE customer_id = 42 AND placed_at > '2026-01-01';  -- uses it\nSELECT * FROM orders WHERE placed_at > '2026-01-01';                -- CANNOT use it\n                                                                    -- (no leading column)\n\n-- Rule of thumb: equality columns first, then the range column.\n\n\n-- ---------- functions disable the index ----------\nCREATE INDEX ix_customer_email ON customer (email);\n\nSELECT * FROM customer WHERE LOWER(email) = 'a@b.com';     -- index NOT used\n-- Fix A: index the expression instead.\nCREATE INDEX ix_customer_email_lower ON customer (LOWER(email));\n-- Fix B: store it normalised on write, so no function is needed on read.\n\nSELECT * FROM orders WHERE EXTRACT(YEAR FROM placed_at) = 2026;   -- NOT used\n-- Fix: express it as a range, which the index can seek.\nSELECT * FROM orders\nWHERE  placed_at >= DATE '2026-01-01' AND placed_at < DATE '2027-01-01';\n\n\n-- ---------- wildcards ----------\nSELECT * FROM customer WHERE name LIKE 'Smith%';   -- can use the index\nSELECT * FROM customer WHERE name LIKE '%Smith';   -- cannot: index is sorted by\n                                                   -- the START of the value\n\n\n-- ---------- foreign keys are not indexed for you ----------\nCREATE INDEX ix_order_line_order   ON order_line (order_id);\nCREATE INDEX ix_order_line_product ON order_line (product_id);\n-- Without these, every join and every parent delete scans order_line.\n\n\n-- ---------- covering index: answered without touching the table ----------\nCREATE INDEX ix_orders_cover ON orders (customer_id, placed_at) INCLUDE (total, status);\n\nSELECT placed_at, total, status FROM orders WHERE customer_id = 42;\n-- Every column needed is in the index, so the table is never read.\n\n\n-- ---------- find indexes nobody uses (Postgres) ----------\nSELECT relname AS table_name, indexrelname AS index_name, idx_scan AS times_used\nFROM   pg_stat_user_indexes\nWHERE  idx_scan = 0\nORDER  BY pg_relation_size(indexrelid) DESC;\n-- An index with zero scans is pure write cost. Drop it.",
+            "codeLanguage": "sql",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "An index makes reads fast and every write slower; it is a trade",
+              "Composite indexes are usable left to right — the leading column is the entry point",
+              "A function on an indexed column usually disables the index",
+              "A leading wildcard cannot use a normal index",
+              "Index your foreign keys; most databases do not do it for you"
+            ],
+            "quiz": {
+              "title": "Indexes",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "You have an index on `(customer_id, placed_at)`. Which query cannot use it?",
+                  "explanation": "A composite index is usable from its leading column. A predicate on placed_at alone has no entry point into it.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "WHERE placed_at > '2026-01-01'",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "WHERE customer_id = 42",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "WHERE customer_id = 42 AND placed_at > '2026-01-01'",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "WHERE customer_id IN (1, 2, 3)",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why does `WHERE EXTRACT(YEAR FROM placed_at) = 2026` not use an index on placed_at?",
+                  "explanation": "The index stores the column's values, not the function's results. Rewriting as a half-open range lets the index seek.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The index stores raw values, not function results; use a date range instead",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "EXTRACT is not supported on indexed columns",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Date indexes only work with equality",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The index would be used but the optimiser chooses not to",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Reading an Execution Plan",
+            "slug": "reading-an-execution-plan",
+            "type": "Lab",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The plan is the answer\n\nEvery database can show how it intends to run a query. `EXPLAIN` shows the plan; `EXPLAIN ANALYZE` runs it and shows what actually happened.\n\nAlways use the second one when you can. Estimates are frequently wrong, and the difference between estimated and actual rows is itself the most useful diagnostic available.\n\n## Read it inside out\n\nThe plan is a tree. The innermost, most indented nodes run first and feed their parents. Start at the deepest node and work outwards.\n\n## The access methods\n\n- **Seq Scan / Table Scan** — reads every row. Correct for a small table or when returning most of it. A red flag on a large table with a selective filter.\n- **Index Scan** — uses the index, then fetches the rows.\n- **Index Only Scan** — answered from the index alone. The best case.\n- **Bitmap Heap Scan** — in between; typical when a moderate fraction of rows matches.\n\n## The join methods\n\n- **Nested Loop** — for each outer row, look up matching inner rows. Excellent when the outer side is small and the inner is indexed; catastrophic when the outer side is large.\n- **Hash Join** — builds a hash table from one side. Good for large unsorted joins.\n- **Merge Join** — both sides sorted, merged. Good when the sort is already available.\n\n## What to look for\n\n1. **Estimated versus actual rows.** A large discrepancy means the statistics are stale; run `ANALYZE`. Bad estimates cause bad plan choices, and this is the root cause of many mysterious slowdowns.\n2. **A sequential scan with a selective filter.** Usually a missing index.\n3. **A nested loop over a large outer side.** Often follows from the bad estimate above.\n4. **Sort nodes spilling to disk.** More memory or a better index.\n5. **Where the time actually goes.** The slowest node, not the one you suspected.\n\n## Change one thing and re-measure\n\nAdd the index, run `EXPLAIN ANALYZE` again, compare. Two changes at once and you learn nothing about either.",
+            "codeExample": "EXPLAIN (ANALYZE, BUFFERS)\nSELECT c.name, COUNT(*) AS orders\nFROM   customer c\nJOIN   orders o ON o.customer_id = c.customer_id\nWHERE  o.placed_at >= DATE '2026-01-01'\nGROUP  BY c.customer_id, c.name;\n\n/*\n HashAggregate  (cost=48210..48890 rows=680) (actual time=1203..1240 rows=15234)\n   ->  Hash Join  (cost=1420..44310 rows=780000) (actual time=48..980 rows=812004)\n         Hash Cond: (o.customer_id = c.customer_id)\n         ->  Seq Scan on orders o  (cost=0..38200 rows=780000) (actual rows=812004)\n               Filter: (placed_at >= '2026-01-01')\n               Rows Removed by Filter: 2187996        <-- read 3M, kept 812k\n         ->  Hash  (cost=980..980 rows=35200) (actual rows=35200)\n               ->  Seq Scan on customer c  (actual rows=35200)\n Planning Time: 0.4 ms\n Execution Time: 1265 ms\n\nREAD IT:\n1. Seq Scan on orders discarded 2,187,996 rows via the filter. The database\n   read three million rows to keep eight hundred thousand. Missing index.\n2. Estimated 780,000 rows, actual 812,004. Close enough — statistics are fine,\n   so this is not a stale-stats problem.\n3. Seq Scan on customer (35k rows, all of them needed) is fine as it is.\n*/\n\nCREATE INDEX ix_orders_placed_at ON orders (placed_at) INCLUDE (customer_id);\nANALYZE orders;\n\n/* Re-measure — one change, then compare:\n\n HashAggregate  (actual time=305..340 rows=15234)\n   ->  Hash Join  (actual time=32..250 rows=812004)\n         ->  Index Only Scan using ix_orders_placed_at on orders (actual rows=812004)\n               Index Cond: (placed_at >= '2026-01-01')\n               Heap Fetches: 0                        <-- never touched the table\n Execution Time: 351 ms                               <-- 1265ms -> 351ms\n*/\n\n-- When estimates and actuals diverge wildly, statistics are stale:\nANALYZE orders;\nSELECT last_analyze, last_autoanalyze, n_live_tup\nFROM   pg_stat_user_tables WHERE relname = 'orders';",
+            "codeLanguage": "sql",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "`EXPLAIN ANALYZE` shows what happened, not just what was planned",
+              "Read the tree inside out, from the most indented node",
+              "A sequential scan with a selective filter usually means a missing index",
+              "Estimated versus actual row counts is the most useful single diagnostic",
+              "Change one thing, re-measure, compare"
+            ],
+            "quiz": {
+              "title": "Execution plans",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "A plan shows 'Rows Removed by Filter: 2187996' under a sequential scan. What does this indicate?",
+                  "explanation": "The database read and discarded over two million rows. A selective filter doing that on a large table is the signature of a missing index.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Millions of rows were read and thrown away — an index on the filtered column is missing",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The filter condition is syntactically wrong",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Those rows were deleted by the query",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The table needs to be vacuumed",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Estimated rows is 500 but actual rows is 900,000. What is the most likely cause and fix?",
+                  "explanation": "A large estimate error usually means stale statistics, which leads the planner to choose a plan suited to a much smaller result. Running ANALYZE refreshes them.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Stale table statistics — run ANALYZE so the planner estimates correctly",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The query returned the wrong results",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The index is corrupt and must be rebuilt",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The server has insufficient memory",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "Transactions and Concurrency",
+        "summary": "What a transaction guarantees, and what it quietly does not.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "ACID, Isolation Levels and What Each Lets Through",
+            "slug": "acid-isolation-levels-and-what-each-lets-through",
+            "type": "Concept",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The four guarantees\n\n**Atomicity** — all the statements commit or none do.\n**Consistency** — constraints hold at the end.\n**Isolation** — how much concurrent transactions can see of each other. This is the one with settings.\n**Durability** — once committed, it survives a crash.\n\n## The phenomena isolation prevents\n\n- **Dirty read** — reading another transaction's uncommitted change, which may be rolled back.\n- **Non-repeatable read** — reading a row twice and getting different values, because someone committed in between.\n- **Phantom read** — running the same query twice and getting different *rows*, because someone inserted.\n\n## The levels\n\n- **Read Uncommitted** — permits all three. Almost never appropriate.\n- **Read Committed** — no dirty reads. The default in Postgres, Oracle and SQL Server. Each statement sees a fresh snapshot, so two reads in one transaction can differ.\n- **Repeatable Read** — no dirty or non-repeatable reads. The default in MySQL InnoDB.\n- **Serializable** — the result is as if transactions ran one at a time. Strongest and most expensive, and transactions may be aborted and need retrying.\n\n## Read Committed is weaker than people assume\n\nUnder the common default, a transaction that reads a row, thinks, and writes based on what it read can be working from a value someone else has already changed.\n\nThis is the lost update, and the isolation level does not prevent it. `SELECT ... FOR UPDATE` does, by locking the row when you read it.\n\n## Keep transactions short\n\nA transaction holds locks until it ends. A long one blocks others and, in databases using multi-version concurrency, prevents cleanup of old row versions.\n\nNever do slow things inside a transaction: no HTTP calls, no waiting for user input, no file uploads. Do the slow work first, then open the transaction.\n\n## Handle the retry\n\nAt Serializable, and at Repeatable Read in some databases, a transaction can be aborted for a serialisation failure. That is normal, not a bug — but your code must catch it and retry, or the operation is simply lost.",
+            "codeExample": "-- ---------- the lost update, under the default isolation level ----------\n-- Session A                          | Session B\nBEGIN;                                | BEGIN;\nSELECT balance FROM account           | SELECT balance FROM account\nWHERE id = 1;          -- 100         | WHERE id = 1;          -- 100\n                                      |\nUPDATE account SET balance = 100 - 30 | UPDATE account SET balance = 100 - 50\nWHERE id = 1;          -- 70          | WHERE id = 1;          -- 50\nCOMMIT;                               | COMMIT;\n-- Final balance: 50. The 30 withdrawal vanished. No error was raised anywhere.\n\n\n-- ---------- fix 1: lock the row when you read it ----------\nBEGIN;\nSELECT balance FROM account WHERE id = 1 FOR UPDATE;   -- B now WAITS here\nUPDATE account SET balance = balance - 30 WHERE id = 1;\nCOMMIT;                                                 -- B proceeds, reads 70\n\n\n-- ---------- fix 2: compute in the database, never read-then-write ----------\n-- Atomic on its own. No read-modify-write window exists.\nUPDATE account SET balance = balance - 30\nWHERE  id = 1 AND balance >= 30;\n-- Check the affected row count: zero means insufficient funds.\n\n\n-- ---------- fix 3: serializable, with a retry ----------\nBEGIN ISOLATION LEVEL SERIALIZABLE;\nSELECT balance FROM account WHERE id = 1;\nUPDATE account SET balance = balance - 30 WHERE id = 1;\nCOMMIT;\n-- May fail with a serialization_failure (SQLSTATE 40001). That is EXPECTED,\n-- not a bug — but the application must catch it and retry, or the operation\n-- is silently lost.\n\n\n-- ---------- keep transactions short ----------\n-- WRONG: holds locks across a network call of unknown duration.\nBEGIN;\nUPDATE orders SET status = 'Paid' WHERE order_id = 1;\n-- ... application calls the payment provider here ...\nCOMMIT;\n\n-- RIGHT: do the slow work first, then open a short transaction.\n-- (payment provider called BEFORE this block)\nBEGIN;\nUPDATE orders SET status = 'Paid', payment_ref = 'pay_123' WHERE order_id = 1;\nINSERT INTO payment_audit (order_id, provider_ref) VALUES (1, 'pay_123');\nCOMMIT;",
+            "codeLanguage": "sql",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Atomicity, Consistency, Isolation, Durability — isolation is the configurable one",
+              "Dirty, non-repeatable and phantom reads are what the levels prevent",
+              "Read Committed is the common default and allows lost updates",
+              "`SELECT ... FOR UPDATE` locks the row at read time and prevents them",
+              "Keep transactions short and retry serialisation failures"
+            ],
+            "quiz": {
+              "title": "Transactions",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Under Read Committed, two transactions read a balance of 100 and each subtract a different amount. What happens?",
+                  "explanation": "Read Committed prevents dirty reads but not lost updates. The second write overwrites the first, and no error is raised.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "One update is silently lost; the isolation level does not prevent this",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The second transaction is aborted with a serialisation error",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The database merges both updates",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A deadlock is detected and reported",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why should a payment provider API call not happen inside a transaction?",
+                  "explanation": "The transaction holds its locks for the duration of the call, blocking other work for an unpredictable time and risking a timeout with locks held.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It holds locks for an unpredictable duration, blocking other transactions",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Network calls cannot be rolled back, so the syntax is invalid",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Transactions cannot exceed one second",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The API response cannot be stored inside a transaction",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Deadlocks and Lock Contention",
+            "slug": "deadlocks-and-lock-contention",
+            "type": "Concept",
+            "estimatedMinutes": 40,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## What a deadlock is\n\nTwo transactions each hold a lock the other needs. Neither can proceed and neither will give up. The database detects the cycle and kills one, which receives a deadlock error.\n\n## The classic cause is inconsistent ordering\n\nTransaction A locks row 1 then row 2. Transaction B locks row 2 then row 1. If they interleave, both wait forever.\n\n## The fix is an ordering rule\n\nAlways acquire locks in a consistent order — for example, always by ascending primary key. If every transaction follows the same order, a cycle cannot form.\n\nThis is a convention your team must actually follow, so write it down and apply it in code that updates multiple rows.\n\n## Other reliable causes\n\n- **Long transactions** — more time holding locks is more opportunity to collide.\n- **Lock escalation** — some databases convert many row locks into a table lock, dramatically widening the conflict.\n- **Missing indexes** — an update without an index may lock far more rows than it changes, because it cannot identify them precisely. Adding the index often removes the deadlock entirely, which surprises people.\n\n## Deadlocks are normal; handle them\n\nUnder concurrency, some deadlocks are unavoidable. The application should catch the deadlock error and retry the whole transaction, with a short randomised delay.\n\nRetry the transaction, not the failed statement — by that point the transaction has been rolled back.\n\n## Contention without deadlock\n\nMore common than deadlocks, and harder to see: everything works, just slowly, because transactions queue behind each other on the same hot row.\n\nA single counter row updated by every request is the classic example. The answer is usually to stop making one row hot — append events and aggregate later rather than incrementing a shared counter.\n\n## Look at what the database tells you\n\nEvery database logs deadlocks with both transactions and the locks involved. Postgres has `pg_locks` and `pg_stat_activity` for live contention. That is faster than reasoning about it.",
+            "codeExample": "-- ---------- a deadlock, step by step ----------\n-- Session A                             | Session B\nBEGIN;                                   | BEGIN;\nUPDATE account SET balance = balance - 10|\nWHERE id = 1;        -- locks row 1      | UPDATE account SET balance = balance - 20\n                                         | WHERE id = 2;        -- locks row 2\nUPDATE account SET balance = balance + 10|\nWHERE id = 2;        -- WAITS for B      | UPDATE account SET balance = balance + 20\n                                         | WHERE id = 1;        -- WAITS for A\n-- Cycle. The database kills one with SQLSTATE 40P01.\n\n\n-- ---------- the fix: a consistent lock order ----------\n-- Every transaction touching several accounts locks them in ascending id order,\n-- so a cycle cannot form. Both sessions now queue instead of deadlocking.\nBEGIN;\nSELECT * FROM account WHERE id IN (1, 2) ORDER BY id FOR UPDATE;\nUPDATE account SET balance = balance - 10 WHERE id = 1;\nUPDATE account SET balance = balance + 10 WHERE id = 2;\nCOMMIT;\n\n\n-- ---------- a missing index causing deadlocks ----------\n-- Without an index on status, this update may lock far more rows than it\n-- changes, because the database cannot identify them precisely.\nUPDATE orders SET priority = 'High' WHERE status = 'Pending';\n\nCREATE INDEX ix_orders_status ON orders (status);\n-- The deadlocks often disappear entirely. This surprises people.\n\n\n-- ---------- contention without deadlock: the hot row ----------\n-- Every request updates the SAME row. No deadlock, but everything queues.\nUPDATE counters SET total = total + 1 WHERE name = 'page_views';\n\n-- Better: append, and aggregate on read or on a schedule.\nINSERT INTO counter_event (name, occurred_at) VALUES ('page_views', now());\n-- SELECT COUNT(*) FROM counter_event WHERE name = 'page_views';\n\n\n-- ---------- see live contention (Postgres) ----------\nSELECT blocked.pid          AS blocked_pid,\n       blocked.query        AS blocked_query,\n       blocking.pid         AS blocking_pid,\n       blocking.query       AS blocking_query,\n       now() - blocked.query_start AS blocked_for\nFROM   pg_stat_activity blocked\nJOIN   pg_stat_activity blocking\n       ON blocking.pid = ANY(pg_blocking_pids(blocked.pid))\nWHERE  cardinality(pg_blocking_pids(blocked.pid)) > 0;",
+            "codeLanguage": "sql",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "A deadlock is a lock cycle; the database kills one transaction to break it",
+              "Inconsistent lock ordering is the classic cause — fix it with an ordering rule",
+              "A missing index can cause deadlocks by locking more rows than necessary",
+              "Catch the deadlock error and retry the whole transaction with a randomised delay",
+              "Contention without deadlock is commoner: avoid a single hot row"
+            ],
+            "quiz": {
+              "title": "Deadlocks",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What is the standard structural fix for deadlocks caused by two transactions updating the same rows?",
+                  "explanation": "If every transaction acquires locks in the same order — by ascending primary key, for instance — a waiting cycle cannot form.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Acquire locks in a consistent order, such as ascending primary key",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Increase the lock timeout",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Use a lower isolation level",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Split each transaction into separate connections",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why can adding an index remove deadlocks?",
+                  "explanation": "Without an index the database cannot identify the target rows precisely and may lock many more than it changes, widening the window for a conflict.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Without it the update locks far more rows than it modifies",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Indexes disable row locking",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Indexed tables use optimistic locking automatically",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Indexes reduce the isolation level of the query",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Beyond Relational and Operating a Database",
+        "summary": "When a different store fits better, and the operational work that keeps data safe.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "NoSQL: When a Document Store Is the Right Answer",
+            "slug": "nosql-when-a-document-store-is-the-right-answer",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Different shapes, different trade-offs\n\n- **Document stores** (MongoDB, DynamoDB) — JSON-like documents, flexible schema, retrieved whole.\n- **Key-value stores** (Redis) — fast lookup by key, often in memory.\n- **Wide-column** (Cassandra) — built for enormous write volume across many machines.\n- **Graph** (Neo4j) — relationships as first-class, for deeply connected traversal.\n\nEach trades something a relational database gives you for something it does not.\n\n## Where a document store genuinely fits\n\n**The data is naturally one document.** A product with wildly varying attributes by category, always read whole. Modelling it relationally means many joins or a sparse table.\n\n**Genuine schema variation.** Event payloads whose shape differs per event type.\n\n**Sharded scale with a natural partition key.** When the data must span many machines and queries always include the partition key.\n\n## Where it is usually the wrong answer\n\n**Avoiding schema design.** Flexible schema does not mean no schema — it means the schema is implicit, undocumented and enforced nowhere. Every reader must handle every historical shape, forever.\n\n**Data with many relationships.** No joins means doing them in application code, which is slower and loses referential integrity.\n\n**Reporting.** Ad hoc analytical queries are what SQL is for.\n\n## Be honest about consistency\n\nMany distributed stores offer eventual consistency by default: a write may not be visible to the next read. That is a legitimate trade for availability at scale. It is a serious problem if your application assumes read-your-writes and nobody checked.\n\n## Postgres has JSON columns\n\nModern Postgres supports `JSONB` with indexing and querying. You can keep the relational core — constraints, joins, transactions — and put the genuinely variable part in a JSON column.\n\nFor most applications this is a better answer than a second database, and it avoids operating two systems.\n\n## Choose for a reason you can state\n\n\"We might need to scale\" is not a reason; it is an anxiety. Model relationally, measure, and move the specific part that genuinely does not fit.",
+            "codeExample": "-- Keep the relational core; put the genuinely variable part in JSONB.\nCREATE TABLE product (\n    product_id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    sku           VARCHAR(64)   NOT NULL UNIQUE,\n    name          VARCHAR(200)  NOT NULL,\n    category_id   BIGINT        NOT NULL REFERENCES category (category_id),\n    current_price NUMERIC(12,2) NOT NULL CHECK (current_price >= 0),\n\n    -- The part that genuinely varies: a laptop has a screen size and a CPU,\n    -- a t-shirt has a size and a colour. Columns for both would be sparse.\n    attributes    JSONB         NOT NULL DEFAULT '{}'::jsonb\n);\n\n-- Everything relational still applies: the price is constrained, the category\n-- is a real foreign key, transactions and joins work normally.\n\n-- JSONB can be indexed and queried.\nCREATE INDEX ix_product_attributes ON product USING GIN (attributes);\n\nSELECT sku, name, attributes->>'screen_size' AS screen\nFROM   product\nWHERE  attributes @> '{\"cpu\": \"M3\"}';               -- uses the GIN index\n\n-- An expression index for a specific hot key.\nCREATE INDEX ix_product_colour ON product ((attributes->>'colour'));\n\n-- Even \"flexible\" data usually deserves SOME rules. Flexible schema does not\n-- mean no schema — it means the schema is implicit unless you state it.\nALTER TABLE product ADD CONSTRAINT ck_attributes_object\n    CHECK (jsonb_typeof(attributes) = 'object');\n\n-- Decision record worth keeping in the repository:\n--\n-- Considered MongoDB for the product catalogue. Rejected: the catalogue has\n-- real relationships (category, supplier, stock) and the reporting team needs\n-- ad hoc SQL. Only the per-category attributes genuinely vary, and JSONB\n-- handles that inside the database we already operate.\n-- Revisit if attribute-only queries exceed ~60% of catalogue traffic.",
+            "codeLanguage": "sql",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Each non-relational store trades something relational for something else",
+              "Document stores fit natural documents, real schema variation and sharded scale",
+              "Flexible schema means an implicit, unenforced schema every reader must handle",
+              "Eventual consistency is a real trade, dangerous if assumed away",
+              "A JSONB column in Postgres often beats operating a second database"
+            ],
+            "quiz": {
+              "title": "Beyond relational",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What does “flexible schema” actually mean in practice?",
+                  "explanation": "The schema still exists — it is just implicit, undocumented and unenforced, so every reader must cope with every historical shape indefinitely.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The schema is implicit and unenforced, so readers must handle every historical shape",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "There is genuinely no schema to consider",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The database validates documents against a registered schema",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Schema changes are applied automatically to existing documents",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "When is a JSONB column in Postgres preferable to adopting a document database?",
+                  "explanation": "When only part of the data genuinely varies and the rest has real relationships and reporting needs, JSONB keeps constraints, joins and transactions while avoiding a second system to operate.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "When only part of the data varies and you still need joins, constraints and SQL reporting",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Whenever any JSON is involved",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Only for data under a fixed size limit",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "When the data will never be queried",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Migrations, Backups and Operating a Database",
+            "slug": "migrations-backups-and-operating-a-database",
+            "type": "Lab",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Schema changes are versioned code\n\nEvery change is a numbered, committed script. Tools like Flyway and Liquibase apply them in order and record what has run.\n\nNever change a schema by hand in an environment you care about. Environments drift, nobody can say what production actually looks like, and the next deployment fails for reasons nobody can reconstruct.\n\n## Make migrations backward compatible\n\nDuring a deployment, old and new application versions run at once. A migration that drops a column the old version still reads breaks it.\n\nUse the expand-and-contract pattern:\n\n1. **Expand** — add the new column, nullable. Deploy code that writes both and reads the old.\n2. **Migrate** — backfill.\n3. **Switch** — deploy code that reads the new.\n4. **Contract** — drop the old column, in a later release.\n\nFour steps instead of one, and no downtime.\n\n## Beware the locking migration\n\n`ALTER TABLE` can lock the table while it rewrites. On a large table under load, adding a `NOT NULL` column with a default has taken down production for many teams.\n\nKnow what your database rewrites and what it does not. Add nullable, backfill in batches, then add the constraint.\n\nBuild indexes concurrently where supported, so writes continue during the build.\n\n## An untested backup is not a backup\n\nThe only thing that proves a backup works is restoring it. Do that on a schedule, into a scratch environment, and time it.\n\nThat timing is your real recovery objective, and it is usually longer than anyone assumed.\n\n## Know your two objectives\n\n**Recovery point** — how much data you can afford to lose. Decides backup frequency.\n**Recovery time** — how long you can be down. Decides the restore approach.\n\nBoth are business decisions. Get them stated rather than assumed.\n\n## Keep an eye on a few things\n\nSlow queries, connection count, replication lag, disk headroom and the age of the last successful backup. That last one is the alert people forget, and the one that matters most on the worst day.",
+            "codeExample": "-- ---------- V1: expand ----------\n-- Nullable, no default: fast, no table rewrite, no lock held.\nALTER TABLE customer ADD COLUMN email_normalised VARCHAR(320);\n-- Deploy: application writes BOTH columns, still reads the old one.\n\n\n-- ---------- V2: migrate, in batches ----------\n-- One big UPDATE would lock millions of rows and bloat the transaction log.\nDO $$\nDECLARE updated INTEGER;\nBEGIN\n  LOOP\n    UPDATE customer SET email_normalised = LOWER(TRIM(email))\n    WHERE  customer_id IN (\n        SELECT customer_id FROM customer\n        WHERE  email_normalised IS NULL\n        LIMIT  10000\n    );\n    GET DIAGNOSTICS updated = ROW_COUNT;\n    EXIT WHEN updated = 0;\n    COMMIT;                  -- release locks between batches\n  END LOOP;\nEND $$;\n\n\n-- ---------- V3: switch ----------\n-- Deploy: application now READS the new column. Old version is gone.\n-- Built concurrently so writes continue during the build.\nCREATE UNIQUE INDEX CONCURRENTLY ux_customer_email_normalised\n    ON customer (email_normalised);\n\n-- Validated separately, so the table is not locked while it is checked.\nALTER TABLE customer ADD CONSTRAINT ck_email_normalised_present\n    CHECK (email_normalised IS NOT NULL) NOT VALID;\nALTER TABLE customer VALIDATE CONSTRAINT ck_email_normalised_present;\n\n\n-- ---------- V4: contract, in a LATER release ----------\nALTER TABLE customer DROP COLUMN email;\n\n\n-- ---------- the operational checks that matter ----------\n-- Age of the last successful backup. The alert people forget, and the one\n-- that matters most on the worst day.\nSELECT now() - MAX(completed_at) AS since_last_backup FROM backup_log\nWHERE  status = 'Success';\n\n-- Disk headroom.\nSELECT pg_size_pretty(pg_database_size(current_database())) AS db_size;\n\n-- Replication lag.\nSELECT client_addr, state,\n       pg_wal_lsn_diff(sent_lsn, replay_lsn) AS bytes_behind\nFROM   pg_stat_replication;\n\n-- Long-running transactions: they hold locks and prevent cleanup.\nSELECT pid, now() - xact_start AS duration, state, query\nFROM   pg_stat_activity\nWHERE  xact_start < now() - INTERVAL '5 minutes'\nORDER  BY xact_start;",
+            "codeLanguage": "sql",
+            "diagramMermaid": "flowchart LR\n  A[\"V1 Expand<br/>add nullable column\"] --> B[\"Deploy: write both,<br/>read old\"]\n  B --> C[\"V2 Migrate<br/>backfill in batches\"]\n  C --> D[\"V3 Switch<br/>deploy: read new\"]\n  D --> E[\"V4 Contract<br/>drop old column\"]",
+            "keyTakeaways": [
+              "Schema changes are versioned scripts in the repository, never manual edits",
+              "Expand, migrate, switch, contract — so old and new code can run together",
+              "Know which ALTER statements rewrite and lock the table; batch and build concurrently",
+              "A backup is not a backup until you have restored it and timed the restore",
+              "Alert on the age of the last successful backup, not only on query performance"
+            ],
+            "quiz": {
+              "title": "Operating a database",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why is the expand-and-contract pattern used for schema changes?",
+                  "explanation": "During a rolling deployment both application versions run simultaneously. Expanding first and contracting in a later release means neither version ever sees a schema it cannot handle.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Old and new application versions run simultaneously during deployment",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It makes migrations run faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is required by migration tools",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It avoids the need for backups",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What makes a backup strategy actually trustworthy?",
+                  "explanation": "Only a completed restore proves the backup is usable, and timing it establishes the real recovery time, which is usually longer than assumed.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Regularly restoring it into a scratch environment and timing the restore",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Taking backups more frequently",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Storing backups in three separate regions",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Verifying the backup file's checksum",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

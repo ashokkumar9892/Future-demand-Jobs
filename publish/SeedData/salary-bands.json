@@ -24,7 +24,21 @@
       { "careerSlug": "cybersecurity-engineer",               "salaryMin": 2500000, "salaryMax": 4500000, "seniorSalaryMin": 4200000, "seniorSalaryMax": 6500000 },
       { "careerSlug": "full-stack-ai-engineer",               "salaryMin": 2400000, "salaryMax": 4200000, "seniorSalaryMin": 3800000, "seniorSalaryMax": 6000000 },
       { "careerSlug": "robotics-autonomous-systems-engineer", "salaryMin": 2500000, "salaryMax": 4500000, "seniorSalaryMin": 4200000, "seniorSalaryMax": 7000000 },
-      { "careerSlug": "iot-edge-architect",                   "salaryMin": 2800000, "salaryMax": 4800000, "seniorSalaryMin": 4500000, "seniorSalaryMax": 7000000 }
+      { "careerSlug": "iot-edge-architect",                   "salaryMin": 2800000, "salaryMax": 4800000, "seniorSalaryMin": 4500000, "seniorSalaryMax": 7000000 },
+
+      // Forward Deployed Engineer. India hiring for this title is almost
+      // entirely at AI product vendors, GCCs and the larger consultancies,
+      // which pay well above the general engineering band for it.
+      { "careerSlug": "forward-deployed-engineer",         "salaryMin": 3200000, "salaryMax": 5500000, "seniorSalaryMin": 5000000, "seniorSalaryMax": 8000000 },
+
+      // Foundations. Entry-level metro figures for 0–2 years — what a first
+      // job actually pays, not the aspirational number. The senior figures
+      // are where the same path reaches after roughly 5–8 years.
+      { "careerSlug": "java-developer",                    "salaryMin":  450000, "salaryMax": 1000000, "seniorSalaryMin": 1800000, "seniorSalaryMax": 3200000 },
+      { "careerSlug": "csharp-dotnet-developer",           "salaryMin":  420000, "salaryMax":  950000, "seniorSalaryMin": 1700000, "seniorSalaryMax": 3000000 },
+      { "careerSlug": "python-developer",                  "salaryMin":  450000, "salaryMax": 1000000, "seniorSalaryMin": 1800000, "seniorSalaryMax": 3300000 },
+      { "careerSlug": "sql-database-developer",            "salaryMin":  400000, "salaryMax":  900000, "seniorSalaryMin": 1600000, "seniorSalaryMax": 2800000 },
+      { "careerSlug": "frontend-web-developer",            "salaryMin":  380000, "salaryMax":  850000, "seniorSalaryMin": 1500000, "seniorSalaryMax": 2600000 }
     ]
   }
 ]

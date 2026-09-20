@@ -1,0 +1,1301 @@
+[
+  {
+    "careerSlug": "java-developer",
+    "order": 1,
+    "phaseNumber": 1,
+    "title": "Phase 1 — Java Language Foundations",
+    "slug": "phase-1-java-language-foundations",
+    "summary": "The language and the JVM underneath it: types and references, the equals/hashCode contract that quietly breaks collections, exceptions, and the modern features that removed most of Java's old verbosity.",
+    "estimatedHours": 40,
+    "level": "Foundational",
+    "minimumTrack": "FastTrack",
+    "outcomes": [
+      "Read Java and predict what it does, including reference behaviour",
+      "Implement equals and hashCode correctly, and know what breaks without them",
+      "Choose between checked and unchecked exceptions with a reason",
+      "Use records, var, switch expressions and text blocks instead of legacy boilerplate",
+      "Explain what the JVM does between your source and the running program"
+    ],
+    "skillSlugs": [
+      "java",
+      "oop",
+      "git"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "The Language and the JVM",
+        "summary": "How Java runs, and the reference semantics behind most beginner confusion.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "From Source to JVM: What Actually Runs",
+            "slug": "from-source-to-jvm-what-actually-runs",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Compiled twice\n\n`javac` turns your `.java` files into bytecode in `.class` files. The JVM then executes that bytecode, compiling the hot paths to machine code as it runs.\n\nThis two-stage arrangement is why the same jar runs on Windows, Linux and macOS, and why a long-running Java service gets faster in the first minutes of its life — the just-in-time compiler is still optimising what turns out to be hot.\n\n## Everything lives in a class, mostly\n\nHistorically every line of Java had to sit inside a class. Modern Java has relaxed this for simple programs, but real projects still organise code into packages and classes, and you should expect to see the traditional form everywhere.\n\n## Primitives and objects are different things\n\n`int`, `long`, `double`, `boolean` and `char` are primitives. They hold their value directly and cannot be null.\n\nEverything else is an object, accessed through a reference. `Integer` is the object wrapper around `int`, and it *can* be null.\n\n## Autoboxing is convenient and occasionally sharp\n\nJava converts between `int` and `Integer` automatically. That is usually invisible and occasionally painful: unboxing a null `Integer` throws a `NullPointerException` at a line that looks like simple arithmetic.\n\nIt also means `==` on two `Integer` objects compares references, not values. For anything outside a small cached range, two equal `Integer`s can be `!=`. Use `.equals()` for object comparison and primitives where you can.\n\n## Garbage collection, briefly\n\nYou do not free memory; the JVM reclaims objects nothing references. You mostly ignore this, but it explains two things: why holding a reference in a long-lived collection is how Java leaks memory, and why pauses occasionally appear in latency graphs.",
+            "codeExample": "public class Basics {\n    public static void main(String[] args) {\n        // Primitives: hold the value, cannot be null.\n        int count = 3;\n        double rate = 0.15;\n\n        // Objects: hold a reference, can be null.\n        Integer boxed = 3;\n        Integer nothing = null;\n\n        // Autoboxing hides an unboxing call that throws on null.\n        // int broken = nothing + 1;      // NullPointerException on a line that\n                                          // looks like plain arithmetic\n\n        // == on objects compares REFERENCES, not values.\n        Integer a = 1000, b = 1000;\n        System.out.println(a == b);        // false — two distinct objects\n        System.out.println(a.equals(b));   // true  — compares values\n\n        // Small integers are cached, so this prints true. Relying on it is a bug\n        // waiting for the day a value exceeds 127.\n        Integer small1 = 100, small2 = 100;\n        System.out.println(small1 == small2);   // true — do not depend on this\n\n        // Modern Java removed most of the old verbosity.\n        var names = List.of(\"Ada\", \"Grace\", \"Alan\");        // var: inferred, still static\n        var greeting = switch (names.size()) {              // switch as an expression\n            case 0 -> \"nobody\";\n            case 1 -> \"one person\";\n            default -> names.size() + \" people\";\n        };\n        System.out.println(greeting);\n\n        // Text blocks: multi-line strings without escape soup.\n        var json = \"\"\"\n            {\n              \"count\": %d,\n              \"rate\": %.2f\n            }\"\"\".formatted(count, rate);\n        System.out.println(json);\n    }\n}",
+            "codeLanguage": "java",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Source compiles to bytecode, which the JVM runs and progressively optimises",
+              "Primitives hold values and cannot be null; everything else is a reference",
+              "Autoboxing can throw a NullPointerException on a line that looks like arithmetic",
+              "`==` compares references for objects — use `.equals()` for value comparison",
+              "Memory leaks in Java are references held too long, usually in a long-lived collection"
+            ],
+            "resources": [
+              {
+                "title": "Java language documentation",
+                "url": "https://docs.oracle.com/en/java/javase/21/",
+                "kind": "Documentation"
+              }
+            ],
+            "quiz": {
+              "title": "The language and the JVM",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why can `Integer a = 1000, b = 1000; a == b` be false?",
+                  "explanation": "`==` on objects compares references. Two separately created Integer objects outside the small cached range are distinct, so reference comparison fails despite equal values.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "`==` compares references, and these are two distinct objects",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Integer values above 999 lose precision",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "`==` is not defined for Integer",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The values are stored as doubles internally",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What is the risk of autoboxing?",
+                  "explanation": "Unboxing a null wrapper throws a NullPointerException at a line containing only what looks like arithmetic, which makes it hard to spot.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Unboxing a null wrapper throws a NullPointerException on an innocuous-looking line",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It silently truncates large values",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It prevents the use of generics",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It disables garbage collection for that object",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "equals, hashCode and Why Collections Break Without Them",
+            "slug": "equals-hashcode-and-why-collections-break-without-them",
+            "type": "Concept",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The contract\n\nTwo methods, inherited by every object, with a contract between them:\n\n- If `a.equals(b)` is true, then `a.hashCode() == b.hashCode()` **must** be true.\n- Equal hash codes do not imply equality — collisions are allowed.\n\nBreak the first rule and hash-based collections stop working, silently.\n\n## Why it breaks silently\n\nA `HashMap` finds a key by computing its hash code, going to that bucket, and comparing with `equals`. If you override `equals` but not `hashCode`, two equal objects get different hash codes, land in different buckets, and the map never finds the one you stored.\n\nYou put a value in with a key and get `null` back with an equal key. No exception, no warning — just a wrong answer. The same applies to `HashSet`, which will happily hold duplicates.\n\n## Default behaviour is identity\n\nInherited `equals` compares references and inherited `hashCode` is derived from identity. For a value-like class — a customer id, a money amount, a coordinate — that is almost never what you want.\n\n## Records do it for you\n\nA `record` generates `equals`, `hashCode` and `toString` from its components. For data carriers, that removes the entire problem and is the right default in modern Java.\n\nWrite them by hand only when you need something the record cannot express, such as equality on a subset of fields.\n\n## If you write them by hand, use the helpers\n\n`Objects.equals` handles nulls and `Objects.hash` combines fields. There is no reason to hand-roll either.\n\n## Mutable keys are a trap\n\nIf you put an object in a `HashSet` and then change a field that `hashCode` uses, its hash changes but its bucket does not. The object is now in the wrong place and the set cannot find it — including when you ask whether it contains it. Keys should be effectively immutable.",
+            "codeExample": "import java.util.*;\n\n// --- broken: equals overridden, hashCode forgotten ------------------------\nclass BadSku {\n    final String code;\n    BadSku(String code) { this.code = code; }\n\n    @Override public boolean equals(Object o) {\n        return o instanceof BadSku other && code.equals(other.code);\n    }\n    // No hashCode. Inherited identity hash is used instead.\n}\n\n// --- correct, by hand ------------------------------------------------------\nfinal class Sku {\n    private final String code;\n    Sku(String code) { this.code = Objects.requireNonNull(code); }\n\n    @Override public boolean equals(Object o) {\n        return o instanceof Sku other && code.equals(other.code);\n    }\n    @Override public int hashCode() { return Objects.hash(code); }\n    @Override public String toString() { return \"Sku[\" + code + \"]\"; }\n}\n\n// --- correct, and free -----------------------------------------------------\nrecord SkuRecord(String code) { }   // equals, hashCode, toString all generated\n\npublic class Demo {\n    public static void main(String[] args) {\n        Map<BadSku, Integer> broken = new HashMap<>();\n        broken.put(new BadSku(\"A-1\"), 10);\n        System.out.println(broken.get(new BadSku(\"A-1\")));   // null — silently wrong\n\n        Map<Sku, Integer> works = new HashMap<>();\n        works.put(new Sku(\"A-1\"), 10);\n        System.out.println(works.get(new Sku(\"A-1\")));       // 10\n\n        Set<BadSku> set = new HashSet<>();\n        set.add(new BadSku(\"A-1\"));\n        set.add(new BadSku(\"A-1\"));\n        System.out.println(set.size());                      // 2 — duplicates, silently\n\n        System.out.println(new SkuRecord(\"A-1\").equals(new SkuRecord(\"A-1\")));  // true\n    }\n}",
+            "codeLanguage": "java",
+            "diagramMermaid": "flowchart TB\n  A[\"map.get(key)\"] --> B[\"hashCode() -> bucket\"]\n  B --> C{Bucket found?}\n  C -->|\"no: hashCode differs\"| D[\"returns null<br/>SILENTLY WRONG\"]\n  C -->|yes| E[\"equals() within bucket\"]\n  E --> F[Value returned]",
+            "keyTakeaways": [
+              "Equal objects must have equal hash codes; the reverse is not required",
+              "Overriding equals without hashCode makes HashMap and HashSet silently fail",
+              "Default equality is identity, which is wrong for value-like classes",
+              "Records generate equals, hashCode and toString — the right default for data",
+              "Never mutate a field used by hashCode while the object is a key in a hash collection"
+            ],
+            "quiz": {
+              "title": "equals and hashCode",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "You override `equals` but not `hashCode` and use the class as a HashMap key. What happens?",
+                  "explanation": "Equal objects produce different hash codes, so they land in different buckets. The lookup never reaches the equals comparison and returns null.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Lookups return null for keys that are equal, with no error",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The map throws an IllegalStateException",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The map falls back to equals and works correctly but slowly",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The compiler refuses to build",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why must a field used by `hashCode` not be mutated while the object is a key in a HashSet?",
+                  "explanation": "The object stays in the bucket chosen by its original hash. After mutation the set looks in a different bucket and cannot find it.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The object stays in its original bucket and becomes unfindable",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The set automatically rehashes and the operation is slow",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It throws a ConcurrentModificationException",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Nothing — HashSet recomputes hashes on every access",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "Collections, Generics and Streams",
+        "summary": "The standard library you will use every day, and the type safety behind it.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Collections and Generics",
+            "slug": "collections-and-generics",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Program to the interface\n\nDeclare variables as `List`, `Map` or `Set`, and choose the implementation at construction:\n\n```java\nList<String> names = new ArrayList<>();\n```\n\nCallers depend only on the interface, so you can change `ArrayList` to `LinkedList` without touching them.\n\n## Choosing an implementation\n\n- **`ArrayList`** — the default. Fast indexed access, fast iteration.\n- **`LinkedList`** — rarely the right answer. Its theoretical insert advantage is usually lost to poor cache behaviour.\n- **`HashMap`** — the default map. No ordering guarantee.\n- **`LinkedHashMap`** — preserves insertion order, which matters more often than people expect.\n- **`TreeMap`** — sorted by key, at a cost.\n- **`HashSet`** — membership and uniqueness.\n\n## Generics are compile-time only\n\n`List<String>` prevents you inserting an `Integer` at compile time. At runtime the type parameter is erased and it is just a `List`.\n\nThis *erasure* explains several limitations: you cannot write `new T[]`, you cannot test `instanceof List<String>`, and you cannot overload two methods that differ only by type parameter.\n\n## Immutable collections for constants\n\n`List.of(...)` and `Map.of(...)` create immutable collections. Use them for anything that should not change — a caller cannot accidentally modify your constant, and the intent is visible.\n\nNote they reject nulls, which is usually a feature.\n\n## Watch for accidental exposure\n\nReturning your internal `ArrayList` lets callers modify your object's state directly. Return `List.copyOf(internal)` or `Collections.unmodifiableList(internal)` when the caller should only read.",
+            "codeExample": "import java.util.*;\n\npublic class Collections1 {\n\n    // Program to the interface: callers do not know or care it is an ArrayList.\n    private final List<String> internal = new ArrayList<>();\n\n    // Returning `internal` would let callers mutate our state behind our back.\n    public List<String> items() { return List.copyOf(internal); }\n\n    public void add(String item) { internal.add(item); }\n\n    public static void main(String[] args) {\n        // HashMap gives no ordering guarantee.\n        Map<String, Integer> counts = new HashMap<>();\n        counts.put(\"b\", 2); counts.put(\"a\", 1); counts.put(\"c\", 3);\n\n        // LinkedHashMap preserves insertion order — needed more often than expected,\n        // for example when building a response the user reads top to bottom.\n        Map<String, Integer> ordered = new LinkedHashMap<>();\n        ordered.put(\"b\", 2); ordered.put(\"a\", 1); ordered.put(\"c\", 3);\n        System.out.println(ordered.keySet());     // [b, a, c] — guaranteed\n\n        // Useful map methods that replace clumsy get/null-check/put sequences.\n        Map<String, List<String>> byRegion = new HashMap<>();\n        byRegion.computeIfAbsent(\"EMEA\", k -> new ArrayList<>()).add(\"Acme\");\n        byRegion.computeIfAbsent(\"EMEA\", k -> new ArrayList<>()).add(\"Contoso\");\n\n        Map<String, Integer> tally = new HashMap<>();\n        tally.merge(\"errors\", 1, Integer::sum);   // insert 1, or add 1 if present\n        tally.merge(\"errors\", 1, Integer::sum);\n        System.out.println(tally);                 // {errors=2}\n\n        // Immutable, and rejects nulls.\n        List<String> regions = List.of(\"EMEA\", \"NA\", \"APAC\");\n        // regions.add(\"LATAM\");                   // UnsupportedOperationException\n\n        // Erasure: this is why you cannot test the type parameter at runtime.\n        // if (regions instanceof List<String>) { }   // does not compile\n    }\n}",
+            "codeLanguage": "java",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Declare the interface, construct the implementation",
+              "ArrayList and HashMap are the defaults; LinkedHashMap when order matters",
+              "Generics are erased at runtime, which explains several odd limitations",
+              "`List.of` and `Map.of` create immutable collections and reject nulls",
+              "Never return your internal mutable collection directly"
+            ],
+            "quiz": {
+              "title": "Collections and generics",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What does type erasure mean for generics in Java?",
+                  "explanation": "Type parameters exist for the compiler and are removed from the runtime representation, which is why `new T[]` and `instanceof List<String>` are not possible.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Type parameters are checked at compile time and removed at runtime",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Generic types are checked at runtime via reflection",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Generics are converted to Object with automatic casts that can fail silently",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Each type parameter generates a separate compiled class",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why return `List.copyOf(internal)` rather than the internal list itself?",
+                  "explanation": "Handing out the internal list lets any caller mutate the object's state directly, bypassing every rule the class enforces.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It prevents callers mutating the object's internal state",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It is faster than returning the reference",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The internal list cannot be serialised",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It converts the list to an array internally",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Streams, Lambdas and Optional",
+            "slug": "streams-lambdas-and-optional",
+            "type": "Coding",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Streams express the what\n\nA stream pipeline has a source, zero or more intermediate operations (`filter`, `map`, `sorted`), and one terminal operation (`collect`, `count`, `findFirst`) that makes it run.\n\nNothing happens until the terminal operation. Intermediate operations only build the pipeline.\n\n## Lambdas and method references\n\n`c -> c.getRegion()` is a lambda. `Customer::getRegion` is a method reference doing the same thing more briefly. Use the method reference when it reads clearly.\n\n## Collectors do the grouping\n\n`Collectors.groupingBy` is the one to know. It turns a flat stream into a map, and combined with a downstream collector it produces exactly the aggregate you want in one expression.\n\n## Optional is a return type, not a field\n\n`Optional<T>` exists so a method can say \"there may be no result\" in its signature instead of returning null and hoping.\n\nUse it as a return type. Do not use it for fields or method parameters — it adds allocation and awkwardness without adding clarity.\n\nAnd never call `.get()` without checking. `orElse`, `orElseThrow` and `map` are the point; `.get()` reintroduces exactly the failure Optional was meant to remove.\n\n## Do not reach for parallel streams\n\n`parallelStream()` looks like free speed and rarely is. It uses a shared thread pool, helps only with large CPU-bound work, and behaves badly with I/O. Measure before using it, and assume the answer is no.\n\n## Keep pipelines readable\n\nA pipeline nobody can read is worse than the loop it replaced. If it exceeds a handful of operations, extract a named method for part of it.",
+            "codeExample": "import java.util.*;\nimport java.util.stream.*;\n\nrecord Order(String reference, String region, double total, boolean paid) { }\n\npublic class Streams1 {\n    public static void main(String[] args) {\n        List<Order> orders = loadOrders();\n\n        // Filter, sort, project — runs only at collect().\n        List<String> largeUnpaid = orders.stream()\n            .filter(o -> !o.paid())\n            .filter(o -> o.total() > 1_000)\n            .sorted(Comparator.comparingDouble(Order::total).reversed())\n            .map(Order::reference)                       // method reference\n            .toList();\n\n        // Grouping with a downstream collector: revenue per region in one expression.\n        Map<String, Double> revenueByRegion = orders.stream()\n            .collect(Collectors.groupingBy(Order::region,\n                     Collectors.summingDouble(Order::total)));\n\n        // Counting per region, preserving a useful order.\n        Map<String, Long> countByRegion = orders.stream()\n            .collect(Collectors.groupingBy(Order::region,\n                     TreeMap::new,                        // sorted keys\n                     Collectors.counting()));\n\n        // --- Optional as a return type ------------------------------------\n        Optional<Order> largest = orders.stream().max(Comparator.comparingDouble(Order::total));\n\n        // Good: the absent case is handled explicitly.\n        String label = largest.map(Order::reference).orElse(\"no orders\");\n\n        // Also good: absence is genuinely a bug here, so fail loudly with context.\n        Order mustExist = largest.orElseThrow(\n            () -> new IllegalStateException(\"no orders loaded\"));\n\n        // Bad: reintroduces exactly the failure Optional exists to prevent.\n        // Order bad = largest.get();\n\n        System.out.println(label + \" \" + revenueByRegion + \" \" + countByRegion);\n    }\n\n    static List<Order> loadOrders() {\n        return List.of(new Order(\"A-1\", \"EMEA\", 1500, false),\n                       new Order(\"A-2\", \"EMEA\",  300, true),\n                       new Order(\"A-3\", \"NA\",   2400, false));\n    }\n}",
+            "codeLanguage": "java",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "A stream does nothing until its terminal operation runs",
+              "Method references are shorter than lambdas where they read clearly",
+              "`Collectors.groupingBy` with a downstream collector produces aggregates in one expression",
+              "Optional is for return types; `.get()` without checking defeats its purpose",
+              "Parallel streams are rarely a win — measure, and expect the answer to be no"
+            ],
+            "quiz": {
+              "title": "Streams and Optional",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "When does a stream pipeline actually execute?",
+                  "explanation": "Intermediate operations are lazy and only build the pipeline. The terminal operation drives execution.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "When the terminal operation runs",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "As each intermediate operation is written",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "When the stream is created from the source",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "At compile time",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What is the recommended use of `Optional`?",
+                  "explanation": "Optional communicates possible absence in a return signature. As a field or parameter it adds allocation and awkwardness without clarity, and `.get()` defeats it entirely.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "As a method return type, consumed with map, orElse or orElseThrow",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "As a field type to avoid null fields",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "As a method parameter to make arguments optional",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "As a replacement for exceptions in all error cases",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Errors and Modern Java",
+        "summary": "Exception design, and the features that removed Java's reputation for verbosity.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Checked and Unchecked Exceptions",
+            "slug": "checked-and-unchecked-exceptions",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Java's unusual choice\n\nJava has two kinds. **Checked** exceptions (extending `Exception`) must be declared or caught — the compiler enforces it. **Unchecked** exceptions (extending `RuntimeException`) need neither.\n\nNo other mainstream language does this, and opinion on whether it was a good idea remains divided. What matters is knowing how to use each.\n\n## When each is appropriate\n\nUse a **checked** exception when the caller can plausibly recover: a file that might not exist, a network call that might time out. The compiler forces them to think about it.\n\nUse an **unchecked** exception for programming errors and unrecoverable conditions: a null argument that should never be null, an invalid state, a configuration value that is missing at startup.\n\n## Never swallow one\n\n```java\ntry { risky(); } catch (Exception e) { }\n```\n\nThis is the worst construct in Java. A failure becomes a silently wrong result and the log says nothing. If you genuinely cannot handle it, do not catch it.\n\n## Do not declare `throws Exception`\n\nIt tells the caller nothing and forces them into the same broad catch. Declare the specific exceptions you actually throw.\n\n## Wrap, preserving the cause\n\nWhen crossing a layer boundary, wrap a low-level exception in a domain one — and always pass the original as the cause. Losing the cause means losing the stack trace that says what really happened.\n\n## try-with-resources for anything closeable\n\nIt closes resources even when an exception is thrown, and unlike a `finally` block it cannot be got wrong. Use it for every stream, connection and reader.",
+            "codeExample": "import java.io.*;\nimport java.nio.file.*;\n\npublic class Exceptions1 {\n\n    // Unchecked: a null id is a programming error, not a recoverable condition.\n    static void validate(String customerId) {\n        if (customerId == null || customerId.isBlank())\n            throw new IllegalArgumentException(\"customerId must not be blank\");\n    }\n\n    // Checked and SPECIFIC. `throws Exception` would tell the caller nothing.\n    static String readContract(Path path) throws IOException {\n        // try-with-resources closes the reader even if an exception is thrown,\n        // and cannot be got wrong the way a finally block can.\n        try (var reader = Files.newBufferedReader(path)) {\n            return reader.lines().reduce(\"\", (a, b) -> a + \"\\n\" + b);\n        }\n    }\n\n    // Wrapping across a layer boundary — with the cause preserved.\n    static String loadContract(String customerId) {\n        validate(customerId);\n        try {\n            return readContract(Path.of(\"contracts\", customerId + \".txt\"));\n        } catch (NoSuchFileException e) {\n            // Specific, and genuinely recoverable: no contract on file is a real state.\n            throw new ContractNotFoundException(\"No contract for \" + customerId, e);\n        } catch (IOException e) {\n            // `e` as the cause keeps the original stack trace. Dropping it is\n            // how a production failure becomes undiagnosable.\n            throw new ContractReadException(\"Could not read contract for \" + customerId, e);\n        }\n    }\n\n    public static void main(String[] args) {\n        // The construct to never write:\n        // try { loadContract(\"C-1\"); } catch (Exception e) { }\n        //   -> a failure becomes a silently wrong result and the log says nothing.\n        System.out.println(loadContract(\"C-1\"));\n    }\n}\n\nclass ContractNotFoundException extends RuntimeException {\n    ContractNotFoundException(String message, Throwable cause) { super(message, cause); }\n}\nclass ContractReadException extends RuntimeException {\n    ContractReadException(String message, Throwable cause) { super(message, cause); }\n}",
+            "codeLanguage": "java",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Checked exceptions must be declared or caught; unchecked ones need neither",
+              "Checked for recoverable conditions, unchecked for programming errors",
+              "An empty catch block turns a failure into a silently wrong result",
+              "Declare specific exceptions, never `throws Exception`",
+              "Wrap across layers but always pass the cause; use try-with-resources for closeables"
+            ],
+            "quiz": {
+              "title": "Exceptions",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "When is a checked exception the appropriate choice?",
+                  "explanation": "Checked exceptions force the caller to consider a condition they can plausibly recover from. Programming errors should be unchecked.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "When the caller can plausibly recover, such as a missing file or a timeout",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "For any error that must not be ignored, including programming bugs",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Whenever the method performs I/O of any kind",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "For errors originating in third-party libraries",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why pass the original exception as the cause when wrapping?",
+                  "explanation": "The cause carries the original stack trace. Dropping it leaves you with a domain exception and no information about what actually failed.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It preserves the original stack trace, without which the failure is undiagnosable",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It is required by the compiler",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It converts the exception to unchecked",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It allows the exception to be caught twice",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Records, Sealed Types and Pattern Matching",
+            "slug": "records-sealed-types-and-pattern-matching",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Java stopped being verbose\n\nMuch of Java's reputation came from features that are now obsolete. A data class that took forty lines takes one. Type checks that needed a cast on the next line no longer do.\n\nIf you learned Java before version 17 — or from older tutorials — a large amount of what you were taught is now the long way round.\n\n## Records replace the data class\n\n```java\nrecord Customer(String id, String name, String region) { }\n```\n\nThat gives you a constructor, accessors, `equals`, `hashCode` and `toString`. Records are immutable, which makes them safe to share and easy to reason about.\n\nAdd validation in a compact constructor when the record has rules.\n\n## Sealed types close the set\n\n`sealed interface` names exactly which types may implement it. Two things follow: nobody can add a case you did not anticipate, and the compiler knows the full set, so a `switch` over it can be checked for exhaustiveness.\n\nThat combination — a closed set of cases plus a switch the compiler verifies — is how you model \"one of these outcomes\" so that adding a new outcome produces a compile error everywhere it must be handled.\n\n## Pattern matching removes the cast\n\n`if (o instanceof Customer c)` tests and binds in one step. Switch patterns extend this to a full dispatch, and with records you can destructure the components directly in the pattern.\n\n## Prefer immutability\n\nRecords are immutable by default and that is the right default. An immutable object cannot be corrupted by another thread, cannot change under a caller who is iterating, and can be shared freely.\n\nReach for mutability when you have a measured reason, not by habit.",
+            "codeExample": "import java.util.List;\n\n// One line replaces a forty-line data class.\nrecord Customer(String id, String name, String region) {\n    // Compact constructor: validation runs before the fields are assigned.\n    Customer {\n        if (id == null || id.isBlank())\n            throw new IllegalArgumentException(\"id is required\");\n        region = region == null ? \"UNKNOWN\" : region.toUpperCase();   // normalise\n    }\n}\n\n// A closed set of outcomes. Nobody outside this file can add a case.\nsealed interface BorrowResult permits Borrowed, AlreadyOnLoan, BookNotFound { }\n\nrecord Borrowed(String loanId, java.time.LocalDate dueOn) implements BorrowResult { }\nrecord AlreadyOnLoan(java.time.LocalDate dueBack)         implements BorrowResult { }\nrecord BookNotFound(String bookId)                        implements BorrowResult { }\n\npublic class Modern {\n\n    // The compiler checks this switch is exhaustive. Adding a fourth\n    // BorrowResult makes every switch like this one fail to compile — which\n    // is exactly what you want.\n    static String describe(BorrowResult result) {\n        return switch (result) {\n            case Borrowed(String id, var due)  -> \"Borrowed \" + id + \", due \" + due;\n            case AlreadyOnLoan(var dueBack)    -> \"Already on loan until \" + dueBack;\n            case BookNotFound(String bookId)   -> \"No such book: \" + bookId;\n        };\n        // No `default` needed, and adding one would DISABLE the exhaustiveness\n        // check — the compiler would stop telling you about the missing case.\n    }\n\n    public static void main(String[] args) {\n        // Pattern matching: test and bind in one step, no cast on the next line.\n        Object o = new Customer(\"C-1\", \"Acme\", \"emea\");\n        if (o instanceof Customer c && c.region().equals(\"EMEA\"))\n            System.out.println(c.name() + \" is in EMEA\");\n\n        List<BorrowResult> results = List.of(\n            new Borrowed(\"L-1\", java.time.LocalDate.now().plusDays(14)),\n            new BookNotFound(\"B-9\"));\n\n        results.forEach(r -> System.out.println(describe(r)));\n    }\n}",
+            "codeLanguage": "java",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "A record generates constructor, accessors, equals, hashCode and toString",
+              "Compact constructors let a record validate its own components",
+              "Sealed types close the set of implementations and enable exhaustive switches",
+              "Pattern matching tests and binds in one step, and can destructure records",
+              "Immutability by default: safe to share, cannot change under a caller"
+            ],
+            "quiz": {
+              "title": "Modern Java",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What does a `sealed` interface combined with a switch give you?",
+                  "explanation": "The compiler knows every permitted implementation, so it can verify the switch handles all of them. Adding a case then breaks the build where it must be handled.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Compile-time exhaustiveness checking, so a new case breaks the build where it must be handled",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Faster dispatch at runtime",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Automatic serialisation of all implementations",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Prevention of null values",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why does adding a `default` branch to a switch over a sealed type reduce safety?",
+                  "explanation": "The default absorbs unhandled cases, so the compiler stops reporting them. A new subtype then silently falls into default instead of failing the build.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It disables exhaustiveness checking, so new cases fall through silently",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It makes the switch slower",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is a compile error on sealed types",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It prevents record destructuring in the other branches",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "careerSlug": "java-developer",
+    "order": 2,
+    "phaseNumber": 2,
+    "title": "Phase 2 — Spring Boot & REST Services",
+    "slug": "phase-2-spring-boot-and-rest-services",
+    "summary": "The framework that dominates Java backend work: dependency injection, building REST endpoints, validating input, returning honest status codes, and configuring an application across environments.",
+    "estimatedHours": 35,
+    "level": "Foundational",
+    "minimumTrack": "FastTrack",
+    "outcomes": [
+      "Explain what Spring does at startup and why injection matters",
+      "Build REST endpoints with clear request and response models",
+      "Validate input declaratively and return field-level errors",
+      "Choose the right status code, including 404 and 409",
+      "Configure profiles and keep secrets out of the repository"
+    ],
+    "skillSlugs": [
+      "spring-boot",
+      "java",
+      "rest-api",
+      "architecture"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "Spring and Dependency Injection",
+        "summary": "What the container does, and why your classes should not construct their own dependencies.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "What Spring Actually Does at Startup",
+            "slug": "what-spring-actually-does-at-startup",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The container builds your object graph\n\nAt startup Spring scans for annotated classes, works out what each one needs from its constructor, and instantiates them in dependency order. Those objects are *beans*, and Spring hands them to whatever asks.\n\nThe problem being solved is the same as in any language: a class that constructs its own dependencies cannot be tested, cannot be reconfigured, and has decided something it had no business deciding.\n\n## Constructor injection, always\n\nDeclare dependencies as constructor parameters and mark the fields `final`. Spring supplies them.\n\nAvoid field injection with `@Autowired` on a field. It hides the dependencies from anyone reading the constructor, prevents `final`, and makes the class impossible to instantiate in a plain unit test without reflection.\n\nConstructor injection makes an over-dependent class visibly uncomfortable — six parameters is a design signal you want to see.\n\n## The stereotype annotations\n\n`@Component` is the general case. `@Service`, `@Repository` and `@Controller` are the same thing with intent attached, and a little extra behaviour in the case of `@Repository`, which translates persistence exceptions.\n\nUse the specific one; it documents the layer.\n\n## Auto-configuration\n\nSpring Boot inspects your classpath and configures what it finds. A JDBC driver present means a `DataSource` is configured from your properties. This is why a Boot application needs so little setup — and why understanding it matters when it configures something you did not want.\n\n`--debug` prints the auto-configuration report, which is the fastest way to answer \"why is this bean here?\"\n\n## Beans are singletons by default\n\nOne instance, shared by everything. That makes shared mutable state in a bean a concurrency bug affecting every request at once. Keep beans stateless.",
+            "codeExample": "import org.springframework.stereotype.Service;\nimport org.springframework.web.bind.annotation.*;\n\n// Constructor injection: the dependencies are visible in the signature and\n// final, and a unit test can construct this with `new` and two fakes.\n@Service\npublic class InventoryService {\n\n    private final StockRepository stock;\n    private final MovementRepository movements;\n\n    public InventoryService(StockRepository stock, MovementRepository movements) {\n        this.stock = stock;\n        this.movements = movements;\n    }\n\n    // Stateless. A field mutated here would be shared by every concurrent\n    // request, because this bean is a singleton.\n    public StockLevel currentLevel(String sku) {\n        return stock.findBySku(sku)\n                    .orElseThrow(() -> new SkuNotFoundException(sku));\n    }\n}\n\n// What NOT to do:\n//\n// @Service\n// public class BadService {\n//     @Autowired private StockRepository stock;   // hidden from the constructor,\n//                                                 // cannot be final, needs\n//                                                 // reflection to test\n//     private int requestCount;                   // shared mutable state in a\n//                                                 // singleton: a race condition\n// }\n\n@RestController\n@RequestMapping(\"/api/stock\")\npublic class StockController {\n\n    private final InventoryService inventory;\n\n    public StockController(InventoryService inventory) {   // same pattern everywhere\n        this.inventory = inventory;\n    }\n\n    @GetMapping(\"/{sku}\")\n    public StockLevel get(@PathVariable String sku) {\n        return inventory.currentLevel(sku);\n    }\n}",
+            "codeLanguage": "java",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Spring builds the object graph from constructor parameters at startup",
+              "Use constructor injection with final fields; field injection hides dependencies",
+              "Many constructor parameters is a visible design signal worth keeping",
+              "Auto-configuration reacts to the classpath; `--debug` explains what it chose",
+              "Beans are singletons — mutable state in one is a concurrency bug for every request"
+            ],
+            "resources": [
+              {
+                "title": "Spring Boot reference",
+                "url": "https://docs.spring.io/spring-boot/index.html",
+                "kind": "Documentation"
+              }
+            ],
+            "quiz": {
+              "title": "Spring and injection",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why is constructor injection preferred over field injection?",
+                  "explanation": "Constructor injection makes dependencies visible and final, allows plain instantiation in tests, and makes an over-dependent class visibly uncomfortable.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Dependencies are visible and final, and the class can be instantiated in a test without reflection",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It is faster at startup",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Field injection is deprecated and will be removed",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It allows circular dependencies to be resolved",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why is mutable state in a Spring bean usually a bug?",
+                  "explanation": "Beans default to singleton scope, so one instance serves every concurrent request and any mutable field becomes shared state.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Beans are singletons by default, so the state is shared across all concurrent requests",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Spring forbids non-final fields in beans",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It prevents the bean from being proxied",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It causes the bean to be recreated on each request",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Building REST Endpoints That Behave",
+            "slug": "building-rest-endpoints-that-behave",
+            "type": "Coding",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Controllers stay thin\n\nA controller binds the request, calls a service and maps the result. Business rules in a controller cannot be tested without the web layer and cannot be reused.\n\n## Never expose your JPA entities\n\nAn entity carries persistence concerns, lazy-loading proxies and fields the caller should not see. Serialising one directly couples your public API to your database schema, and triggers lazy-loading exceptions outside a transaction.\n\nDefine request and response records. The mapping is a few lines and it buys you a stable contract.\n\n## Validate declaratively\n\nAnnotate the request record with `@NotBlank`, `@Positive`, `@Size` and mark the parameter `@Valid`. A violation produces a 400 before your method runs.\n\nAdd a handler so the body names the offending fields — the default is not especially helpful to a client developer.\n\n## Status codes carry meaning\n\n- **201** with a `Location` header when you create something.\n- **204** for a successful delete.\n- **404** when the resource does not exist.\n- **409** when the request is valid but conflicts with current state — a movement that would make stock negative.\n- **400** when the request itself is wrong.\n\nThe 400-versus-409 distinction matters to callers: a 409 may succeed later, a 400 will not.\n\n## Handle exceptions in one place\n\n`@RestControllerAdvice` maps domain exceptions to responses centrally, so every controller returns the same error shape and no controller repeats the mapping.\n\n## Do not leak internals\n\nNever return a stack trace. Log it with a request id and return the id.",
+            "codeExample": "import jakarta.validation.Valid;\nimport jakarta.validation.constraints.*;\nimport org.springframework.http.*;\nimport org.springframework.web.bind.annotation.*;\nimport java.net.URI;\n\n// The public contract — deliberately not the JPA entity.\nrecord MovementRequest(\n    @NotBlank(message = \"sku is required\") String sku,\n    @Positive(message = \"quantity must be greater than zero\") int quantity,\n    @NotNull MovementType type) { }\n\nrecord StockResponse(String sku, int onHand, String lastMovementId) { }\n\n@RestController\n@RequestMapping(\"/api/movements\")\nclass MovementController {\n\n    private final InventoryService inventory;\n    MovementController(InventoryService inventory) { this.inventory = inventory; }\n\n    @PostMapping\n    ResponseEntity<StockResponse> record(@Valid @RequestBody MovementRequest request) {\n        // @Valid means a blank sku or a zero quantity never reaches this line;\n        // the client already has a 400 naming the field.\n        var result = inventory.record(request.sku(), request.quantity(), request.type());\n\n        return ResponseEntity\n            .created(URI.create(\"/api/stock/\" + result.sku()))    // 201 + Location\n            .body(new StockResponse(result.sku(), result.onHand(), result.movementId()));\n    }\n}\n\n// One place for error mapping, so every controller answers the same shape.\n@RestControllerAdvice\nclass ApiExceptionHandler {\n\n    @ExceptionHandler(SkuNotFoundException.class)\n    ProblemDetail notFound(SkuNotFoundException e) {\n        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());\n    }\n\n    // 409, not 400: the request is valid, the world is not in the right state.\n    // A caller can retry this once stock arrives; retrying a 400 is pointless.\n    @ExceptionHandler(InsufficientStockException.class)\n    ProblemDetail conflict(InsufficientStockException e) {\n        var problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());\n        problem.setTitle(\"Insufficient stock\");\n        problem.setProperty(\"sku\", e.sku());\n        problem.setProperty(\"available\", e.available());\n        return problem;\n    }\n\n    @ExceptionHandler(MethodArgumentNotValidException.class)\n    ProblemDetail invalid(MethodArgumentNotValidException e) {\n        var problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);\n        problem.setTitle(\"Validation failed\");\n        // Name the offending fields; the default body is not much use to a client.\n        problem.setProperty(\"errors\", e.getBindingResult().getFieldErrors().stream()\n            .collect(java.util.stream.Collectors.toMap(\n                org.springframework.validation.FieldError::getField,\n                f -> f.getDefaultMessage() == null ? \"invalid\" : f.getDefaultMessage(),\n                (a, b) -> a)));\n        return problem;\n    }\n}",
+            "codeLanguage": "java",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Controllers bind, delegate and map — rules belong in the service",
+              "Never serialise JPA entities; define request and response records",
+              "Validate with annotations plus `@Valid`, and return field-level errors",
+              "409 for a state conflict, 400 for a malformed request — only one is retryable",
+              "Map exceptions centrally with `@RestControllerAdvice`; never return stack traces"
+            ],
+            "quiz": {
+              "title": "REST endpoints",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why should JPA entities not be returned directly from a controller?",
+                  "explanation": "Entities carry lazy proxies and persistence concerns, and returning them couples the public API to the database schema so a migration silently changes the contract.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "They couple the API to the database schema and can trigger lazy-loading failures",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "They cannot be converted to JSON",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "They are always slower to serialise",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Spring forbids it at compile time",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "A movement request is well-formed but would make stock negative. Which status code?",
+                  "explanation": "The request is valid; the current state conflicts. That is 409, and it may succeed later once stock arrives.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "409 Conflict",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "400 Bad Request",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "422 Unprocessable Entity, which is the only correct option",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "500 Internal Server Error",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "Configuration and Profiles",
+        "summary": "Running one build in several environments without editing it.",
+        "estimatedHours": 1.3,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Properties, Profiles and Keeping Secrets Out",
+            "slug": "properties-profiles-and-keeping-secrets-out",
+            "type": "Lab",
+            "estimatedMinutes": 40,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Layered configuration\n\n`application.yml` holds defaults. `application-{profile}.yml` overrides per environment. Environment variables override both, and command-line arguments override everything.\n\nOne artifact, three environments, no recompilation.\n\n## Profiles\n\nActivate with `SPRING_PROFILES_ACTIVE=prod`. Beans can be annotated `@Profile(\"dev\")` so development-only components never load in production.\n\nResist letting profiles multiply. Two or three is manageable; eight interacting profiles is a configuration nobody can reason about.\n\n## Type-safe configuration\n\n`@ConfigurationProperties` binds a section to a record and validates it. Better than scattering `@Value(\"${...}\")` strings: the names are checked at compile time, and a missing required value fails at startup with a clear message rather than injecting null.\n\nStartup validation is the point. A misconfigured deployment should refuse to start, not fail at 2 a.m. on the first request that touches the missing value.\n\n## Secrets never go in the repository\n\nPasswords, API keys and certificates stay out of `application.yml` — the file is in Git, and Git keeps history forever. A committed key is leaked even after you delete it; it must be rotated.\n\nUse environment variables locally and a secret manager in production. The `${VAR}` placeholder syntax reads them.\n\n## Actuator, but not all of it\n\nSpring Boot Actuator exposes health, metrics and environment endpoints. Health and metrics are genuinely useful. Expose only those — `/actuator/env` will happily print your configuration to anyone who can reach it.",
+            "codeExample": "# application.yml — defaults only, no secrets\nspring:\n  application:\n    name: inventory-service\n  jpa:\n    open-in-view: false        # default true; leaves a transaction open for the\n                               # whole request and hides lazy-loading mistakes\n\ninventory:\n  low-stock-threshold: 10\n  allow-negative: false\n\nmanagement:\n  endpoints:\n    web:\n      exposure:\n        include: health,metrics,info    # NOT \"*\" — /actuator/env prints config\n\n---\n# application-prod.yml — overrides for production\nspring:\n  config:\n    activate:\n      on-profile: prod\n  datasource:\n    url: ${DB_URL}              # from the environment, never from this file\n    username: ${DB_USER}\n    password: ${DB_PASSWORD}\n  jpa:\n    hibernate:\n      ddl-auto: validate        # NEVER update or create-drop in production;\n                                # validate fails fast if migrations did not run\n\ninventory:\n  low-stock-threshold: 25",
+            "codeLanguage": "yaml",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Configuration layers: yml, profile yml, environment variables, command line",
+              "Profiles switch environments and can exclude beans; keep the number small",
+              "`@ConfigurationProperties` gives checked names and startup validation",
+              "Never commit a secret — Git history means it is leaked, not removed",
+              "Expose only the actuator endpoints you need; `/actuator/env` leaks configuration"
+            ],
+            "quiz": {
+              "title": "Configuration",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why prefer `@ConfigurationProperties` over scattered `@Value` annotations?",
+                  "explanation": "Binding to a type gives compile-checked names and lets validation run at startup, so a misconfigured deployment fails immediately rather than at 2 a.m.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Names are compile-checked and validation can fail the application at startup",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "`@Value` does not support environment variables",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is required for profiles to work",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It reduces memory usage",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why set `ddl-auto: validate` rather than `update` in production?",
+                  "explanation": "`update` lets Hibernate alter the live schema by inference. `validate` fails fast when the schema does not match, which catches a migration that did not run.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It fails fast when the schema does not match, instead of letting Hibernate alter it by inference",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "`update` is not supported in production profiles",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "`validate` creates the schema if missing",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It makes startup faster",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Layering a Spring Application",
+            "slug": "layering-a-spring-application",
+            "type": "Architecture",
+            "estimatedMinutes": 40,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Three layers, one direction\n\n**Controller** handles HTTP. **Service** holds business rules and transaction boundaries. **Repository** talks to the database.\n\nDependencies point one way: controller to service to repository. A repository that calls a service, or a service that knows about `HttpServletRequest`, has broken the arrangement and you will feel it when you try to test either.\n\n## The service layer owns the rules\n\n\"Stock cannot go negative\" belongs in the service, not the controller and not the database alone. Put it in the controller and it is bypassed by any other caller; put it only in the database and the error you surface is a constraint violation nobody can read.\n\nEnforce in the service *and* constrain in the database. The service gives a good message; the constraint guarantees correctness under a race.\n\n## Transactions belong at the service boundary\n\n`@Transactional` on a service method makes the whole operation atomic. On a repository method it is too narrow — a service doing two repository calls gets two transactions and can leave half a change committed.\n\nTwo things to know: `@Transactional` works through a proxy, so calling one transactional method from another method *of the same class* bypasses it entirely. And a checked exception does not trigger rollback by default, which surprises people.\n\n## Keep entities inside\n\nEntities belong to the persistence layer. The controller sees request and response records; the service maps between them. That mapping is not overhead — it is the boundary that lets each side change independently.\n\n## Test each layer for what it is\n\nService logic with fake repositories, fast. Repositories against a real database, because that is the only way to test your actual queries. Controllers through the real HTTP pipeline. Each layer tested where its risk lives.",
+            "codeExample": "import org.springframework.stereotype.Service;\nimport org.springframework.transaction.annotation.Transactional;\n\n@Service\npublic class InventoryService {\n\n    private final StockRepository stock;\n    private final MovementRepository movements;\n\n    public InventoryService(StockRepository stock, MovementRepository movements) {\n        this.stock = stock;\n        this.movements = movements;\n    }\n\n    // At the SERVICE boundary: both writes commit together or neither does.\n    // On the repository methods instead, this would be two transactions and a\n    // failure could leave the stock updated with no movement recorded.\n    @Transactional\n    public MovementResult record(String sku, int quantity, MovementType type) {\n        var level = stock.findBySkuForUpdate(sku)          // pessimistic lock\n                         .orElseThrow(() -> new SkuNotFoundException(sku));\n\n        int delta = type == MovementType.OUT ? -quantity : quantity;\n        int updated = level.onHand() + delta;\n\n        // The rule lives HERE, so every caller gets it and the message is readable.\n        // A CHECK constraint in the database backs it up, so a race cannot bypass it —\n        // but a constraint violation is not a message you want to show a user.\n        if (updated < 0)\n            throw new InsufficientStockException(sku, level.onHand(), quantity);\n\n        stock.updateOnHand(sku, updated);\n        var movement = movements.save(new Movement(sku, quantity, type));\n        return new MovementResult(sku, updated, movement.id());\n    }\n\n    // Self-invocation trap: calling record() from here does NOT start a\n    // transaction, because the proxy is bypassed on an internal call.\n    public void recordBatchWrong(List<MovementRequest> batch) {\n        batch.forEach(r -> record(r.sku(), r.quantity(), r.type()));   // no transaction\n    }\n\n    // Correct: put @Transactional on the entry point that should be atomic.\n    @Transactional\n    public void recordBatch(List<MovementRequest> batch) {\n        batch.forEach(r -> record(r.sku(), r.quantity(), r.type()));\n    }\n}",
+            "codeLanguage": "java",
+            "diagramMermaid": "flowchart TB\n  A[Controller<br/>HTTP, request/response records] --> B[Service<br/>rules + @Transactional]\n  B --> C[Repository<br/>queries]\n  C --> D[(Database<br/>constraints back the rules)]\n  B -.->|never| A\n  C -.->|never| B",
+            "keyTakeaways": [
+              "Controller, service, repository — dependencies point one way only",
+              "Business rules live in the service; enforce there and constrain in the database too",
+              "`@Transactional` belongs at the service boundary, not on repository methods",
+              "Self-invocation bypasses `@Transactional` because it works through a proxy",
+              "Entities stay in the persistence layer; map to records at the boundary"
+            ],
+            "quiz": {
+              "title": "Layering",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why does `@Transactional` belong on a service method rather than a repository method?",
+                  "explanation": "A service operation often spans several repository calls. Transactions on each call means a failure can leave half the change committed.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A service operation spans several repository calls that must commit together",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Repositories cannot participate in transactions",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Service methods run faster inside transactions",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Spring ignores the annotation on repositories",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why does calling a `@Transactional` method from another method of the same class not start a transaction?",
+                  "explanation": "The annotation is implemented by a proxy wrapping the bean. An internal call goes direct to the target object and never passes through the proxy.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The annotation works through a proxy, which an internal call bypasses",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Nested transactions are not supported",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The method must be public, and internal calls are treated as private",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Spring caches the first call's transaction state",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Working with Data in Spring",
+        "summary": "Spring Data JPA: repositories, queries, and the traps that make them slow.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Entities, Repositories and Spring Data",
+            "slug": "entities-repositories-and-spring-data",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## JPA maps objects to tables\n\nAn `@Entity` class becomes a table, its fields become columns, and Hibernate translates between them. Spring Data adds repositories: declare an interface, get an implementation.\n\n## Derived query methods\n\n`findBySkuAndActiveTrue` is parsed from the method name and turned into a query. Convenient and readable — up to a point. When the name grows past about three conditions it becomes unreadable, and `@Query` with explicit JPQL is clearer.\n\n## Know your identifiers\n\nUse a generated id for the primary key, and place a unique constraint on the natural key. Hibernate needs a stable identifier, and a business key that might change makes a poor primary key.\n\n## Avoid `ddl-auto: update` outside development\n\nLetting Hibernate infer schema changes produces a database nobody designed, diverging between environments. Use Flyway or Liquibase: versioned, reviewable migrations committed with the code.\n\nThen `ddl-auto: validate` in production confirms the schema matches and fails fast if a migration did not run.\n\n## Fetch types matter\n\n`@ManyToOne` defaults to eager, which quietly pulls related rows on every query. `@OneToMany` defaults to lazy, which throws if you touch it outside a transaction.\n\nSet everything to lazy, and load explicitly where needed with a fetch join or an entity graph. Explicit is easier to reason about than a default you have to remember.\n\n## Turn off open-in-view\n\nSpring Boot defaults `spring.jpa.open-in-view` to true, keeping a transaction open for the whole request. It hides lazy-loading mistakes until production load makes them visible as exhausted connections.\n\nSet it to false and fix what breaks. What breaks was already broken.",
+            "codeExample": "import jakarta.persistence.*;\nimport org.springframework.data.jpa.repository.*;\nimport java.util.*;\n\n@Entity\n@Table(name = \"stock_item\",\n       uniqueConstraints = @UniqueConstraint(columnNames = \"sku\"))   // natural key\npublic class StockItem {\n\n    @Id\n    @GeneratedValue(strategy = GenerationType.IDENTITY)   // stable surrogate key\n    private Long id;\n\n    @Column(nullable = false, length = 64)\n    private String sku;\n\n    @Column(nullable = false)\n    private int onHand;\n\n    // Explicitly lazy. @ManyToOne defaults to EAGER, which silently joins this\n    // table into every query that touches a StockItem.\n    @ManyToOne(fetch = FetchType.LAZY)\n    @JoinColumn(name = \"warehouse_id\")\n    private Warehouse warehouse;\n\n    protected StockItem() { }    // JPA requires a no-arg constructor\n    // getters omitted\n}\n\npublic interface StockRepository extends JpaRepository<StockItem, Long> {\n\n    // Derived from the method name — readable at this size.\n    Optional<StockItem> findBySku(String sku);\n\n    // Past about three conditions the name stops being readable. Be explicit.\n    @Query(\"\"\"\n           select s from StockItem s\n           where s.onHand < :threshold\n             and s.warehouse.id = :warehouseId\n           order by s.onHand asc\n           \"\"\")\n    List<StockItem> findLowStock(int threshold, Long warehouseId);\n\n    // Fetch join: loads the warehouse in ONE query instead of one per item.\n    @Query(\"select s from StockItem s join fetch s.warehouse where s.onHand = 0\")\n    List<StockItem> findOutOfStockWithWarehouse();\n\n    // Pessimistic lock so two concurrent movements cannot both read the same\n    // balance and both decide there is enough stock.\n    @Lock(LockModeType.PESSIMISTIC_WRITE)\n    @Query(\"select s from StockItem s where s.sku = :sku\")\n    Optional<StockItem> findBySkuForUpdate(String sku);\n}",
+            "codeLanguage": "java",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Entities map to tables; Spring Data generates repository implementations",
+              "Derived method names work for simple queries; use `@Query` past about three conditions",
+              "Generated primary key, unique constraint on the natural key",
+              "Use Flyway or Liquibase migrations and `ddl-auto: validate` in production",
+              "Make every association lazy and fetch explicitly; turn `open-in-view` off"
+            ],
+            "quiz": {
+              "title": "Spring Data JPA",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why set `spring.jpa.open-in-view` to false?",
+                  "explanation": "The default keeps a transaction and connection open for the whole request, hiding lazy-loading mistakes until production load exhausts the connection pool.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It stops a transaction staying open for the whole request and hiding lazy-loading mistakes",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It disables lazy loading entirely",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is required for Spring Data repositories to work",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It enables second-level caching",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What is the default fetch type for `@ManyToOne`, and why change it?",
+                  "explanation": "`@ManyToOne` is eager by default, so the related row is joined into every query touching the entity. Lazy plus explicit fetch joins is easier to reason about.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Eager — change to lazy so related data is fetched only when explicitly requested",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Lazy — change to eager to avoid LazyInitializationException",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "There is no default; it must always be specified",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Eager — and it should be left that way for correctness",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "The N+1 Problem and Concurrency",
+            "slug": "the-n-plus1-problem-and-concurrency",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## N+1, the standard ORM defect\n\nLoad 100 stock items, then read `item.getWarehouse().getName()` on each. If warehouses were not fetched, Hibernate issues a query per item. One query became 101.\n\nIt is invisible with ten test rows and crippling with ten thousand production rows, which is why it so reliably reaches production.\n\n## Detecting it\n\nEnable SQL logging in development and watch the count during a normal operation. A page that issues 300 queries is not subtly slow — it is broken, and you can see it in seconds once you look.\n\nMake looking a habit rather than a debugging step.\n\n## Fixing it\n\nA **fetch join** (`join fetch`) loads the association in the same query. An **entity graph** does the same declaratively. A **projection** to a record is often best: it selects only the columns you need and removes the possibility entirely, because there is nothing lazy left.\n\nNote that `join fetch` on a collection plus pagination makes Hibernate paginate in memory — it warns about this, and the warning should be treated as an error.\n\n## Concurrency: the lost update\n\nTwo requests read stock of 1, both decide there is enough, both write 0. One unit was sold twice. No exception, no log entry, just wrong data.\n\nTwo defences:\n\n**Optimistic locking** — a `@Version` column. Each update checks the version has not changed; the loser gets an exception and can retry. Right when conflicts are rare.\n\n**Pessimistic locking** — `SELECT ... FOR UPDATE`. The second reader waits. Right when conflicts are common and retrying is awkward, as with stock movements.\n\n## Constrain in the database too\n\nApplication logic cannot guarantee an invariant under concurrency by itself. A `CHECK (on_hand >= 0)` constraint is the backstop that makes the rule actually true, whatever the application does.",
+            "codeExample": "// --- N+1 ------------------------------------------------------------------\nList<StockItem> items = repo.findAll();            // 1 query\nfor (StockItem i : items)\n    log.info(i.getWarehouse().getName());          // 1 query EACH. 100 items = 101.\n\n// Fix 1: fetch join — one query.\n@Query(\"select s from StockItem s join fetch s.warehouse\")\nList<StockItem> findAllWithWarehouse();\n\n// Fix 2: projection — usually best. Only the needed columns, and nothing\n// lazy remains, so N+1 is structurally impossible.\npublic record StockSummary(String sku, int onHand, String warehouseName) { }\n\n@Query(\"\"\"\n       select new com.example.StockSummary(s.sku, s.onHand, w.name)\n       from StockItem s join s.warehouse w\n       where s.onHand < :threshold\n       \"\"\")\nList<StockSummary> findLowStockSummaries(int threshold);\n\n\n// --- the lost update ------------------------------------------------------\n// Request A reads onHand = 1        Request B reads onHand = 1\n// A checks 1 >= 1, ok               B checks 1 >= 1, ok\n// A writes 0                        B writes 0\n// One unit sold twice. No error anywhere.\n\n// Defence 1: optimistic locking — good when conflicts are rare.\n@Entity\npublic class StockItem {\n    @Version\n    private long version;      // every update checks this has not changed;\n                               // the loser gets OptimisticLockingFailureException\n}\n\n// Defence 2: pessimistic locking — right for stock, where conflicts are common\n// and retrying is awkward. The second reader waits rather than failing.\n@Lock(LockModeType.PESSIMISTIC_WRITE)\n@Query(\"select s from StockItem s where s.sku = :sku\")\nOptional<StockItem> findBySkuForUpdate(String sku);\n\n\n-- Defence 3: the backstop. Application logic alone cannot guarantee an\n-- invariant under concurrency; this makes it true regardless.\nALTER TABLE stock_item ADD CONSTRAINT ck_stock_non_negative CHECK (on_hand >= 0);",
+            "codeLanguage": "java",
+            "diagramMermaid": "sequenceDiagram\n  participant A as Request A\n  participant DB as Database\n  participant B as Request B\n  A->>DB: read onHand = 1\n  B->>DB: read onHand = 1\n  Note over A,B: both decide there is enough\n  A->>DB: write onHand = 0\n  B->>DB: write onHand = 0\n  Note over DB: one unit sold twice<br/>no error raised",
+            "keyTakeaways": [
+              "N+1 is invisible at test scale and crippling at production scale",
+              "Log SQL in development and watch the query count during normal operations",
+              "Fix with fetch joins, entity graphs or projections; projections remove it entirely",
+              "`join fetch` on a collection with pagination paginates in memory — treat the warning as an error",
+              "Optimistic locking for rare conflicts, pessimistic for common ones, plus a database constraint"
+            ],
+            "quiz": {
+              "title": "N+1 and concurrency",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why does the N+1 problem so reliably reach production?",
+                  "explanation": "With a handful of test rows the extra queries are imperceptible. The cost scales with row count, so it only becomes visible at production scale.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It is imperceptible at test data volumes and only shows at production scale",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It only occurs with specific database drivers",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Hibernate disables lazy loading in test profiles",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It requires concurrent requests to manifest",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Two concurrent requests each read stock of 1, both pass the check, and both write 0. What prevents this?",
+                  "explanation": "Pessimistic locking makes the second reader wait, and a CHECK constraint guarantees the invariant regardless of what the application does.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A pessimistic lock on the read, plus a database CHECK constraint as a backstop",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Moving the check into the controller",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Wrapping each request in a separate transaction",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Adding a unique index on the sku column",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "careerSlug": "java-developer",
+    "order": 3,
+    "phaseNumber": 3,
+    "title": "Phase 3 — Testing, Concurrency & Production Readiness",
+    "slug": "phase-3-testing-concurrency-and-production-readiness",
+    "summary": "What separates a working Spring application from one you can operate: a test suite people trust, an honest understanding of thread safety, and the health, logging and packaging an operations team needs.",
+    "estimatedHours": 35,
+    "level": "Foundational",
+    "minimumTrack": "Balanced",
+    "outcomes": [
+      "Write JUnit tests that catch regressions rather than restate the code",
+      "Test repositories and endpoints against something real",
+      "Reason about thread safety and choose the right concurrency tool",
+      "Expose health and metrics an operator can use",
+      "Package and configure an application for deployment"
+    ],
+    "skillSlugs": [
+      "testing",
+      "java",
+      "spring-boot",
+      "observability"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "Testing a Spring Application",
+        "summary": "Fast unit tests underneath, slower tests over the real thing on top.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "JUnit 5 and Testing the Service Layer",
+            "slug": "junit-5-and-testing-the-service-layer",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Test behaviour, not implementation\n\nA good test states a rule: \"a movement that would make stock negative is rejected\". It stays true when you refactor and fails when you break the rule.\n\nA test asserting that `repository.save` was called exactly once is testing how the code is written, and breaks on every behaviour-preserving change. Enough of those and the team learns to ignore failures.\n\n## Name the test as a sentence\n\n`record_whenQuantityExceedsStock_throwsInsufficientStock`. The name is read in a CI failure list by someone who has not opened the file. It should be enough on its own.\n\n## Arrange, act, assert\n\nThree blocks, blank lines between. When there are two acts, there are two tests.\n\n## Fakes over mocks where you can\n\nA small in-memory repository tests behaviour: put stock in, take stock out, check the balance. Mockito verifying call sequences tests wiring.\n\nMockito is the right tool sometimes — particularly for something whose only observable effect is the call, such as sending an email. Reach for a fake first.\n\n## The service layer needs no Spring\n\nIf dependencies come in through the constructor, a service test is plain JUnit with `new`. No context, no `@SpringBootTest`, milliseconds per test.\n\n`@SpringBootTest` loads the whole application and belongs in a small number of integration tests, not across the suite. A suite that takes four minutes is a suite people stop running.\n\n## Test the edges\n\nZero, one, the exact boundary, the failure. The comfortable middle case is the least likely to break.",
+            "codeExample": "import org.junit.jupiter.api.*;\nimport static org.junit.jupiter.api.Assertions.*;\n\nclass InventoryServiceTest {\n\n    // A fake: a real, simple implementation. Tests outcomes, survives refactors.\n    static class FakeStockRepository implements StockRepository {\n        private final Map<String, Integer> levels = new HashMap<>();\n        void seed(String sku, int qty) { levels.put(sku, qty); }\n        public Optional<StockItem> findBySkuForUpdate(String sku) {\n            return Optional.ofNullable(levels.get(sku)).map(q -> new StockItem(sku, q));\n        }\n        public void updateOnHand(String sku, int qty) { levels.put(sku, qty); }\n        int onHand(String sku) { return levels.getOrDefault(sku, 0); }\n    }\n\n    private FakeStockRepository stock;\n    private InventoryService service;\n\n    @BeforeEach\n    void setUp() {\n        stock = new FakeStockRepository();\n        // No Spring context. Plain construction, milliseconds per test.\n        service = new InventoryService(stock, new FakeMovementRepository());\n    }\n\n    @Test\n    void record_whenStockAvailable_reducesBalance() {\n        stock.seed(\"SKU-1\", 10);\n\n        service.record(\"SKU-1\", 3, MovementType.OUT);\n\n        assertEquals(7, stock.onHand(\"SKU-1\"));    // the outcome, not the calls\n    }\n\n    @Test\n    void record_whenQuantityExceedsStock_throwsAndWritesNothing() {\n        stock.seed(\"SKU-1\", 2);\n\n        assertThrows(InsufficientStockException.class,\n                     () -> service.record(\"SKU-1\", 5, MovementType.OUT));\n\n        // The rule is not only \"it throws\" — it is also that nothing changed.\n        assertEquals(2, stock.onHand(\"SKU-1\"));\n    }\n\n    @Test\n    void record_whenQuantityExactlyMatchesStock_succeedsToZero() {\n        stock.seed(\"SKU-1\", 5);\n\n        service.record(\"SKU-1\", 5, MovementType.OUT);\n\n        assertEquals(0, stock.onHand(\"SKU-1\"));    // the boundary, easy to get wrong\n    }\n\n    @ParameterizedTest\n    @ValueSource(ints = {0, -1, -100})\n    void record_whenQuantityNotPositive_throws(int quantity) {\n        stock.seed(\"SKU-1\", 10);\n        assertThrows(IllegalArgumentException.class,\n                     () -> service.record(\"SKU-1\", quantity, MovementType.OUT));\n    }\n}",
+            "codeLanguage": "java",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Assert on behaviour, not on which methods were called",
+              "Name tests as sentences — they are read in CI failure lists",
+              "Prefer a small fake over call-verifying mocks; keep Mockito for call-is-the-effect cases",
+              "A constructor-injected service needs no Spring context to test",
+              "Test zero, one, the boundary and the failure path"
+            ],
+            "quiz": {
+              "title": "Unit testing",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why prefer asserting on the resulting stock balance rather than verifying that `save` was called?",
+                  "explanation": "Asserting the outcome survives refactoring. Verifying call sequences breaks on behaviour-preserving changes, and a suite that cries wolf gets ignored.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The outcome assertion survives refactoring; call verification breaks on harmless changes",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Mockito cannot verify repository calls",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Verification is slower",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Call verification requires a Spring context",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why avoid `@SpringBootTest` for most tests?",
+                  "explanation": "It loads the whole application context per test class. Used broadly, the suite becomes slow enough that people stop running it.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It loads the full context, making the suite too slow to run habitually",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It cannot test service classes",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It requires a running database in all cases",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is deprecated in recent Spring versions",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Integration Tests With the Real Stack",
+            "slug": "integration-tests-with-the-real-stack",
+            "type": "Lab",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## What unit tests structurally cannot catch\n\nService tests replace the repository, so they never execute your JPA queries. Controller logic tested directly never exercises routing, serialisation or validation.\n\nEvery one of these passes a green unit suite and fails on the first real request: a query with a typo in a column name, a JSON field the client does not recognise, a bean that is not registered.\n\n## Slices before the whole application\n\nSpring offers focused test slices that load only part of the context:\n\n- **`@DataJpaTest`** — the persistence layer with a real database. This is how you test that your queries actually work.\n- **`@WebMvcTest`** — the web layer with services mocked. Tests routing, binding, validation and status codes.\n- **`@SpringBootTest`** — everything. Use sparingly, for a few true end-to-end journeys.\n\nSlices start in a fraction of the time and fail more specifically.\n\n## Test against a real database\n\nAn in-memory H2 is not the database you deploy to. Its SQL dialect differs, and queries that pass against H2 fail against Postgres.\n\nTestcontainers runs a real Postgres in Docker for the test. It is slower to start and it tests the thing you actually ship, which is the entire point of an integration test.\n\n## Assert the contract\n\nStatus codes, response body shape, and the effect on stored state. Not which internal method ran — that is what unit tests are for.\n\n## Cover the failure paths\n\nThe 404 and the 409 are the least manually exercised and the most depended on by clients.\n\n## Keep the count low\n\nA handful of integration tests plus thorough unit tests underneath is the right shape. Hundreds of slow tests produce a pipeline people route around.",
+            "codeExample": "import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;\nimport org.springframework.boot.testcontainers.service.connection.ServiceConnection;\nimport org.testcontainers.containers.PostgreSQLContainer;\nimport org.testcontainers.junit.jupiter.*;\n\n// A real Postgres, not H2. H2's dialect differs enough that queries pass in\n// tests and fail in production — which defeats the purpose of the test.\n@DataJpaTest\n@Testcontainers\nclass StockRepositoryTest {\n\n    @Container\n    @ServiceConnection\n    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(\"postgres:16-alpine\");\n\n    @Autowired StockRepository repo;\n    @Autowired TestEntityManager em;\n\n    @Test\n    void findLowStock_returnsOnlyItemsBelowThreshold_orderedAscending() {\n        var warehouse = em.persist(new Warehouse(\"Main\"));\n        em.persist(new StockItem(\"SKU-1\",  2, warehouse));\n        em.persist(new StockItem(\"SKU-2\", 50, warehouse));\n        em.persist(new StockItem(\"SKU-3\",  7, warehouse));\n        em.flush();\n\n        var low = repo.findLowStock(10, warehouse.getId());\n\n        // This exercises the ACTUAL JPQL. A fake repository never would.\n        assertEquals(List.of(\"SKU-1\", \"SKU-3\"), low.stream().map(StockItem::getSku).toList());\n    }\n\n    @Test\n    void checkConstraint_rejectsNegativeStock() {\n        var warehouse = em.persist(new Warehouse(\"Main\"));\n        em.persist(new StockItem(\"SKU-1\", 5, warehouse));\n        em.flush();\n\n        // The database backstop, verified against the real database.\n        assertThrows(DataIntegrityViolationException.class, () -> {\n            repo.updateOnHand(\"SKU-1\", -1);\n            em.flush();\n        });\n    }\n}\n\n// The web layer, with the service mocked: routing, binding, validation, statuses.\n@WebMvcTest(MovementController.class)\nclass MovementControllerTest {\n\n    @Autowired MockMvc mvc;\n    @MockitoBean InventoryService inventory;\n\n    @Test\n    void record_whenStockInsufficient_returns409() throws Exception {\n        when(inventory.record(any(), anyInt(), any()))\n            .thenThrow(new InsufficientStockException(\"SKU-1\", 2, 5));\n\n        mvc.perform(post(\"/api/movements\")\n               .contentType(MediaType.APPLICATION_JSON)\n               .content(\"\"\"{\"sku\":\"SKU-1\",\"quantity\":5,\"type\":\"OUT\"}\"\"\"))\n           .andExpect(status().isConflict())\n           .andExpect(jsonPath(\"$.sku\").value(\"SKU-1\"));\n    }\n\n    @Test\n    void record_whenQuantityZero_returns400NamingTheField() throws Exception {\n        mvc.perform(post(\"/api/movements\")\n               .contentType(MediaType.APPLICATION_JSON)\n               .content(\"\"\"{\"sku\":\"SKU-1\",\"quantity\":0,\"type\":\"OUT\"}\"\"\"))\n           .andExpect(status().isBadRequest())\n           .andExpect(jsonPath(\"$.errors.quantity\").exists());\n    }\n}",
+            "codeLanguage": "java",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Unit tests never execute your real queries, routing or serialisation",
+              "Use `@DataJpaTest` and `@WebMvcTest` slices before reaching for `@SpringBootTest`",
+              "Test persistence against a real database with Testcontainers, not H2",
+              "Assert status codes, response shape and stored state — not internal calls",
+              "Keep integration tests few; a slow pipeline gets routed around"
+            ],
+            "quiz": {
+              "title": "Integration testing",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why test repositories against a real Postgres rather than an in-memory H2?",
+                  "explanation": "H2's SQL dialect differs from Postgres, so queries can pass in tests and fail in production — which defeats the purpose of the test.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "H2's dialect differs, so queries can pass in tests and fail against the real database",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "H2 does not support transactions",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Testcontainers tests run faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Spring Data does not support H2",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What does `@WebMvcTest` load?",
+                  "explanation": "It loads the web layer — routing, binding, validation, serialisation and exception handling — with services supplied as test doubles.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The web layer only, with services provided as mocks",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The whole application context",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The persistence layer with a real database",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Nothing — it is a plain JUnit test",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "Concurrency",
+        "summary": "What actually goes wrong when two threads touch the same data.",
+        "estimatedHours": 0.8,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Thread Safety Without Folklore",
+            "slug": "thread-safety-without-folklore",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Where concurrency reaches you\n\nYou may never start a thread, and you are still writing concurrent code. A Spring controller handles many requests simultaneously, and every singleton bean is shared between all of them.\n\nAny mutable field on a bean is shared mutable state across concurrent requests. That is the whole problem, and the fix is almost always to have none.\n\n## Stateless beans solve most of it\n\nA service that holds nothing between calls cannot have a race. Keep state in parameters, local variables and the database.\n\nThis is not a compromise — it is the design that scales, and it is why the framework's defaults push you towards it.\n\n## The lost update is the classic\n\nTwo threads read a value, both compute from it, both write back. One update vanishes. No exception, no log line, just a wrong number.\n\n`count++` has exactly this shape: it reads, adds and writes, and another thread can interleave. It is not atomic despite looking like a single operation.\n\n## Visibility is separate from atomicity\n\nWithout synchronisation, a write by one thread may not become visible to another for an unbounded time — the JVM and CPU are permitted to cache and reorder.\n\nThis produces the worst kind of bug: code that works on your laptop, works under light load, and fails under production load on different hardware.\n\n## Reach for the right tool\n\n- **Immutability** — no shared mutable state, no problem. Records help.\n- **`AtomicInteger` / `AtomicLong`** — lock-free atomic counters.\n- **`ConcurrentHashMap`** — a map safe for concurrent use. Note `computeIfAbsent` is atomic; a get-then-put is not.\n- **`synchronized`** — correct and simple; just keep the block small.\n- **Database locks** — the only thing that helps when the shared state is a row and there are several instances of your application.\n\n## Do not invent your own\n\nDouble-checked locking, lazy singletons, custom lock-free structures — these are extremely easy to get subtly wrong, and the failures are rare and unreproducible. Use what the standard library provides.",
+            "codeExample": "import java.util.concurrent.atomic.AtomicLong;\nimport java.util.concurrent.ConcurrentHashMap;\n\n// --- broken: shared mutable state in a singleton bean --------------------\n@Service\npublic class BadMetricsService {\n    private long requestCount;                    // shared by every request\n    private Map<String, Integer> byEndpoint = new HashMap<>();   // not thread-safe\n\n    public void record(String endpoint) {\n        requestCount++;                           // read-modify-write: updates lost\n        byEndpoint.merge(endpoint, 1, Integer::sum);  // HashMap can corrupt under\n                                                      // concurrent writes — including\n                                                      // infinite loops on resize\n    }\n}\n\n// --- correct --------------------------------------------------------------\n@Service\npublic class MetricsService {\n    private final AtomicLong requestCount = new AtomicLong();\n    private final ConcurrentHashMap<String, AtomicLong> byEndpoint = new ConcurrentHashMap<>();\n\n    public void record(String endpoint) {\n        requestCount.incrementAndGet();           // atomic, lock-free\n\n        // computeIfAbsent is atomic. A get-then-put would not be: two threads\n        // could both find null and both create a counter, losing one.\n        byEndpoint.computeIfAbsent(endpoint, k -> new AtomicLong()).incrementAndGet();\n    }\n\n    public long total() { return requestCount.get(); }\n}\n\n// --- best: no shared state at all ----------------------------------------\n@Service\npublic class StatelessInventoryService {\n    private final StockRepository stock;      // final, and itself stateless\n\n    public StatelessInventoryService(StockRepository stock) { this.stock = stock; }\n\n    // Everything this method needs is a parameter, a local, or in the database.\n    // There is nothing for two threads to contend over inside this object.\n    public int available(String sku) {\n        return stock.findBySku(sku).map(StockItem::getOnHand).orElse(0);\n    }\n}\n\n// Note what none of the above fixes: two application INSTANCES both reading the\n// same row. Only a database lock or constraint helps there.",
+            "codeLanguage": "java",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Every singleton bean is shared across concurrent requests; mutable fields are shared state",
+              "Stateless services cannot race — keep state in parameters and the database",
+              "`count++` is read-modify-write and is not atomic",
+              "Visibility is a separate problem from atomicity, and produces load-dependent bugs",
+              "Use immutability, atomics, concurrent collections, synchronized or database locks — never your own"
+            ],
+            "quiz": {
+              "title": "Thread safety",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why is `count++` on a shared field unsafe?",
+                  "explanation": "It reads, modifies and writes as three steps. Another thread can interleave between them, so one increment is silently lost.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It is a read-modify-write sequence that another thread can interleave with",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Integer overflow occurs sooner under concurrency",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The JVM forbids increment on shared fields",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It always throws ConcurrentModificationException",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "A service works on your laptop and under light load, then produces wrong results under production load on different hardware. What does this suggest?",
+                  "explanation": "Visibility problems are timing- and hardware-dependent. Unsynchronised writes may not become visible to other threads, which is exactly this failure profile.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A memory visibility problem from unsynchronised access to shared state",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Insufficient heap memory",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A database connection pool that is too small",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A compiler optimisation bug",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Production Readiness",
+        "summary": "The health, logging and packaging an operations team needs before they will own it.",
+        "estimatedHours": 0.7,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Health, Metrics and Packaging for Production",
+            "slug": "health-metrics-and-packaging-for-production",
+            "type": "Lab",
+            "estimatedMinutes": 40,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Liveness and readiness are different questions\n\n**Liveness**: is the process alive? If not, restart it.\n\n**Readiness**: can it serve traffic? Database reachable, migrations applied, caches populated.\n\nConflating them means traffic routed to an instance that is running but cannot answer, and the resulting errors look exactly like an outage during every deployment.\n\nSpring Boot Actuator exposes both, and a custom `HealthIndicator` lets you check whatever readiness actually means for your service.\n\n## Expose the endpoints you need, and no more\n\n`/actuator/health` and `/actuator/metrics` are useful. `/actuator/env` prints your configuration, and `/actuator/heapdump` hands over your memory.\n\nNever set `include: \"*\"`. List them.\n\n## Structured logging\n\nLog with placeholders, not string concatenation: `log.info(\"Recorded movement {} for sku {}\", id, sku)`. The values stay searchable fields, so \"every event for this sku\" is a query rather than a grep.\n\nAdd a correlation id to every request and put it in every log line via MDC. Then one id retrieves the whole story of a request across services.\n\n## Log levels mean something\n\nINFO for events worth seeing in production. WARN for recoverable problems a human should eventually look at. ERROR for failed operations. DEBUG for development.\n\nEverything at INFO produces a volume nobody reads, which is equivalent to no logging.\n\n## Package as one artifact\n\nA Spring Boot jar is self-contained. Build once, promote the same artifact through environments, and inject configuration at each. An artifact rebuilt per environment is an artifact you have not tested.\n\n## Layer the container image\n\nBoot supports a layered jar so dependencies — which rarely change — sit in a lower Docker layer than your code. Rebuilds then push kilobytes rather than megabytes.",
+            "codeExample": "import org.springframework.boot.actuate.health.*;\nimport org.springframework.stereotype.Component;\n\n// Readiness means something specific to this service: can it actually serve?\n@Component(\"inventoryReadiness\")\npublic class InventoryReadinessIndicator implements HealthIndicator {\n\n    private final StockRepository stock;\n    private final FlywayMigrationChecker migrations;\n\n    public InventoryReadinessIndicator(StockRepository stock, FlywayMigrationChecker migrations) {\n        this.stock = stock;\n        this.migrations = migrations;\n    }\n\n    @Override\n    public Health health() {\n        if (!migrations.allApplied())\n            // Alive, but must NOT receive traffic: the schema is not current.\n            return Health.outOfService().withDetail(\"reason\", \"pending migrations\").build();\n        try {\n            stock.count();\n            return Health.up().build();\n        } catch (Exception e) {\n            return Health.down().withDetail(\"reason\", \"database unreachable\").build();\n        }\n    }\n}\n\n// Correlation id in every log line, so one id retrieves the whole request.\n@Component\npublic class CorrelationIdFilter extends OncePerRequestFilter {\n    @Override\n    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res,\n                                    FilterChain chain) throws ServletException, IOException {\n        var id = Optional.ofNullable(req.getHeader(\"X-Correlation-Id\"))\n                         .orElseGet(() -> UUID.randomUUID().toString().substring(0, 8));\n        MDC.put(\"correlationId\", id);\n        res.setHeader(\"X-Correlation-Id\", id);     // the client can quote it back\n        try { chain.doFilter(req, res); } finally { MDC.remove(\"correlationId\"); }\n    }\n}",
+            "codeLanguage": "java",
+            "diagramMermaid": "flowchart LR\n  A[Load balancer] -->|GET /actuator/health/readiness| B{Ready?}\n  B -->|migrations pending| C[Out of service<br/>no traffic routed]\n  B -->|db reachable| D[Traffic routed]\n  E[Orchestrator] -->|GET /actuator/health/liveness| F{Alive?}\n  F -->|no| G[Restart container]",
+            "keyTakeaways": [
+              "Liveness asks if the process is alive; readiness asks if it can serve",
+              "Expose only the actuator endpoints you need — never `include: \"*\"`",
+              "Use logging placeholders and an MDC correlation id per request",
+              "Reserve INFO for what is worth reading in production",
+              "Build one artifact, promote it, inject configuration; layer the container image"
+            ],
+            "quiz": {
+              "title": "Production readiness",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why must liveness and readiness be separate checks?",
+                  "explanation": "A process can be alive but unable to serve — pending migrations, unreachable database. Routing traffic to it produces errors that look like an outage.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A process can be alive but unable to serve, and traffic sent to it produces errors",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Kubernetes requires exactly two probe endpoints",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Liveness checks are more expensive to compute",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Readiness is only used during startup",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why avoid `management.endpoints.web.exposure.include: \"*\"`?",
+                  "explanation": "It exposes everything, including `/actuator/env` which prints configuration and `/actuator/heapdump` which hands over process memory.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It exposes endpoints that leak configuration and memory contents",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It significantly slows application startup",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It disables the health endpoint",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Wildcards are not supported in that property",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

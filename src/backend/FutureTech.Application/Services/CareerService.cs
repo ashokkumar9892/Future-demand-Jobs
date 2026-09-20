@@ -42,6 +42,9 @@ public class CareerService(
         {
             "salary" => query.OrderByDescending(c => c.SalaryMaxUsd),
             "hours" => query.OrderBy(c => c.EstimatedHours),
+            // Categories first, then rank within the category: the list reads as
+            // "where do I start" rather than one flat ladder of senior roles.
+            "category" => query.OrderBy(c => c.CategoryOrder).ThenBy(c => c.Rank),
             _ => query.OrderBy(c => c.Rank)
         };
 
@@ -276,6 +279,8 @@ public class CareerService(
 
         return new CareerSummaryDto(
             c.Id, c.Rank, c.Title, c.Slug, c.Summary,
+            string.IsNullOrWhiteSpace(c.Category) ? "Other" : c.Category,
+            c.CategoryOrder,
             c.SalaryMinUsd, c.SalaryMaxUsd, c.SeniorSalaryMinUsd, c.SeniorSalaryMaxUsd,
             c.TwoHundredKPotential,
             Text.Humanize(c.DemandOutlook), c.DemandNotes,

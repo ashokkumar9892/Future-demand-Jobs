@@ -1,0 +1,1461 @@
+[
+  {
+    "careerSlug": "frontend-web-developer",
+    "order": 1,
+    "phaseNumber": 1,
+    "title": "Phase 1 — HTML, CSS & Responsive Layout",
+    "slug": "phase-1-html-css-and-responsive-layout",
+    "summary": "The platform itself, before any framework hides it: markup that carries meaning, forms that work, the box model, flexbox and grid, and accessibility treated as part of the build rather than an audit finding.",
+    "estimatedHours": 35,
+    "level": "Foundational",
+    "minimumTrack": "FastTrack",
+    "outcomes": [
+      "Write semantic markup that works with assistive technology",
+      "Build forms that are usable, labelled and validated",
+      "Explain the box model and why `border-box` is the sane default",
+      "Choose between flexbox and grid for a given layout",
+      "Build mobile-first layouts that are keyboard accessible and contrast-compliant"
+    ],
+    "skillSlugs": [
+      "html-css",
+      "git"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "Semantic HTML",
+        "summary": "Markup that describes what things are, not only how they look.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "HTML That Means Something",
+            "slug": "html-that-means-something",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Elements carry meaning, and meaning is functionality\n\nA `<button>` is focusable, activates on Enter and Space, and announces itself as a button to a screen reader. A `<div onclick>` does none of that, and you must reimplement all of it — usually incompletely.\n\nUsing the right element is not a style preference. It is the difference between something that works for everyone and something that works for people using a mouse.\n\n## The structural elements\n\n`<header>`, `<nav>`, `<main>`, `<article>`, `<section>`, `<aside>`, `<footer>`. Screen reader users navigate by these landmarks, jumping straight to the main content instead of hearing the navigation on every page.\n\nOne `<main>` per page, containing the primary content.\n\n## Headings form an outline\n\n`<h1>` through `<h6>` are a document outline, not font sizes. Skipping from `<h1>` to `<h4>` because it looked right breaks navigation for anyone moving through the page by heading.\n\nOne `<h1>`, then descend in order, and set the visual size with CSS.\n\n## Lists, tables and figures\n\nUse `<ul>` for a list so assistive technology announces \"list, five items\". Use `<table>` for tabular data with `<th>` and `scope` so cells are associated with their headers.\n\nA table used for layout is a page that reads as nonsense aloud.\n\n## Images need honest alt text\n\n`alt` describes what the image conveys in context. A decorative image takes `alt=\"\"` so it is skipped — which is correct and deliberate. Omitting `alt` entirely makes a screen reader read the filename.\n\nDo not write \"image of\"; that is already announced.\n\n## Validate\n\nThe W3C validator catches unclosed tags, duplicate ids and nesting errors in seconds. Browsers silently repair a lot of broken markup, so problems stay invisible until something depends on the structure.",
+            "codeExample": "<!-- A div pretending to be a button: not focusable, ignores Enter and Space,\n     announced as nothing useful. Everything must be reimplemented by hand. -->\n<div class=\"btn\" onclick=\"submitForm()\">Submit</div>\n\n<!-- Focusable, keyboard-operable and announced as a button. No JavaScript\n     needed for any of that. -->\n<button type=\"submit\">Submit</button>\n\n\n<!-- Landmarks let a screen reader user skip the navigation entirely. -->\n<body>\n  <header>\n    <nav aria-label=\"Main\">\n      <ul>\n        <li><a href=\"/\">Home</a></li>\n        <li><a href=\"/projects\" aria-current=\"page\">Projects</a></li>\n      </ul>\n    </nav>\n  </header>\n\n  <main>\n    <h1>Projects</h1>                      <!-- exactly one h1 -->\n\n    <article>\n      <h2>Renewal Copilot</h2>             <!-- h2, not h4 \"because it looked right\" -->\n      <p>A tool that ranks accounts by renewal risk.</p>\n\n      <!-- Conveys information, so it needs a description. -->\n      <img src=\"architecture.png\"\n           alt=\"Data flows from the CRM export into a scoring service, then to a review dashboard\">\n\n      <!-- Purely decorative: alt=\"\" makes it skipped, which is deliberate.\n           Omitting alt entirely would make the filename be read aloud. -->\n      <img src=\"divider.svg\" alt=\"\">\n\n      <h3>Stack</h3>\n      <ul>                                  <!-- announced as \"list, 3 items\" -->\n        <li>TypeScript</li>\n        <li>FastAPI</li>\n        <li>PostgreSQL</li>\n      </ul>\n    </article>\n\n    <!-- Real tabular data: scope associates each cell with its header, so a\n         screen reader can announce \"Hits, /home, 4,120\". -->\n    <table>\n      <caption>Traffic by path, last 24 hours</caption>\n      <thead>\n        <tr><th scope=\"col\">Path</th><th scope=\"col\">Hits</th></tr>\n      </thead>\n      <tbody>\n        <tr><th scope=\"row\">/home</th><td>4,120</td></tr>\n        <tr><th scope=\"row\">/api/orders</th><td>1,884</td></tr>\n      </tbody>\n    </table>\n  </main>\n\n  <footer><p>&copy; 2026</p></footer>\n</body>",
+            "codeLanguage": "html",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "The right element brings focus, keyboard handling and announcement for free",
+              "Landmark elements let screen reader users skip straight to the content",
+              "Headings are an outline, not sizes — never skip a level",
+              "Use lists and tables for what they are; layout tables read as nonsense",
+              "`alt` describes the meaning; `alt=\"\"` for decorative images is correct"
+            ],
+            "resources": [
+              {
+                "title": "MDN: HTML elements reference",
+                "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element",
+                "kind": "Documentation"
+              }
+            ],
+            "quiz": {
+              "title": "Semantic HTML",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What do you lose by using `<div onclick>` instead of `<button>`?",
+                  "explanation": "A button is focusable, responds to Enter and Space, and announces its role. A div has none of that and each piece must be reimplemented.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Keyboard focus, Enter/Space activation, and the announced button role",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Only the default visual styling",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Nothing, provided a click handler is attached",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The ability to submit a form, but nothing else",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "When is `alt=\"\"` the correct choice on an image?",
+                  "explanation": "An empty alt marks the image as decorative so assistive technology skips it. Omitting alt entirely causes the filename to be announced.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "When the image is decorative and conveys no information",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Never — every image needs descriptive text",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "When the description appears in nearby text",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "When the image fails to load",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Forms, Labels and Input That Works",
+            "slug": "forms-labels-and-input-that-works",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Every input needs a label\n\nA `<label>` with a `for` matching the input's `id` does three things: it announces the field to a screen reader, it makes the label text a click target that focuses the input, and it makes the form's purpose readable.\n\nPlaceholder text is not a label. It disappears the moment someone types, leaving no indication of what the field was, and its contrast is usually too low to read.\n\n## The input type matters\n\n`type=\"email\"`, `type=\"tel\"`, `type=\"number\"`, `type=\"date\"`. On a phone these change the keyboard that appears — an email field that shows an email keyboard saves real effort.\n\nThey also bring free validation and, for dates, a native picker.\n\n## Use the browser's validation, then check on the server\n\n`required`, `minlength`, `pattern` and `type` give immediate feedback with no JavaScript.\n\nNone of it is security. Anyone can bypass it entirely. Validate again on the server, always — client validation is a convenience for honest users.\n\n## Autocomplete is an accessibility feature\n\n`autocomplete=\"email\"`, `\"name\"`, `\"street-address\"`. It lets the browser fill fields correctly, which matters enormously for anyone who finds typing difficult.\n\nUse the standard token names; a made-up value does nothing.\n\n## Errors must be associated, not just coloured\n\nColour alone excludes colour-blind users and conveys nothing to a screen reader. Put the error in text, link it with `aria-describedby`, and set `aria-invalid`.\n\nThen the error is announced when the field is focused, rather than being an invisible red border.\n\n## Group related controls\n\nA set of radio buttons belongs in a `<fieldset>` with a `<legend>`. Without it, each option is announced with no indication of the question being answered.\n\n## Submit buttons say what they do\n\n\"Submit\" is vague. \"Create account\" tells the user what is about to happen, which matters most for anyone who cannot see the surrounding context.",
+            "codeExample": "<form method=\"post\" action=\"/signup\" novalidate>\n  <h1>Create your account</h1>\n\n  <div class=\"field\">\n    <!-- for/id pairing: announced correctly, and clicking the text focuses\n         the input. A placeholder does neither. -->\n    <label for=\"name\">Full name</label>\n    <input id=\"name\" name=\"name\" type=\"text\"\n           autocomplete=\"name\" required maxlength=\"200\">\n  </div>\n\n  <div class=\"field\">\n    <label for=\"email\">Email address</label>\n    <input id=\"email\" name=\"email\" type=\"email\"\n           autocomplete=\"email\" required\n           aria-describedby=\"email-hint email-error\"\n           aria-invalid=\"true\">\n    <!-- type=\"email\" shows an email keyboard on a phone and validates for free -->\n    <p id=\"email-hint\" class=\"hint\">We will only use this to sign you in.</p>\n\n    <!-- The error is TEXT, linked to the input, and announced on focus.\n         A red border alone conveys nothing to a screen reader and nothing\n         to a colour-blind user. -->\n    <p id=\"email-error\" class=\"error\" role=\"alert\">\n      Enter an email address in the format name@example.com\n    </p>\n  </div>\n\n  <div class=\"field\">\n    <label for=\"password\">Password</label>\n    <input id=\"password\" name=\"password\" type=\"password\"\n           autocomplete=\"new-password\" required minlength=\"12\"\n           aria-describedby=\"password-hint\">\n    <p id=\"password-hint\" class=\"hint\">At least 12 characters.</p>\n  </div>\n\n  <!-- Radio buttons need a fieldset: without the legend, each option is\n       announced with no indication of what question it answers. -->\n  <fieldset>\n    <legend>How did you hear about us?</legend>\n    <div><input id=\"src-search\" type=\"radio\" name=\"source\" value=\"search\">\n         <label for=\"src-search\">Search engine</label></div>\n    <div><input id=\"src-friend\" type=\"radio\" name=\"source\" value=\"friend\">\n         <label for=\"src-friend\">From a friend</label></div>\n  </fieldset>\n\n  <!-- Says what will happen, not \"Submit\". -->\n  <button type=\"submit\">Create account</button>\n</form>\n\n<!-- Client-side validation is a convenience for honest users. It is trivially\n     bypassed with dev tools or curl, so the server validates everything again. -->",
+            "codeLanguage": "html",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "A `<label>` with `for` announces the field and enlarges the click target",
+              "Placeholders are not labels — they vanish on typing and have poor contrast",
+              "Input types change the mobile keyboard and bring free validation",
+              "Client validation is convenience; the server must validate again",
+              "Associate errors with `aria-describedby` and `aria-invalid`, never colour alone"
+            ],
+            "quiz": {
+              "title": "Forms",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why is placeholder text not an acceptable substitute for a label?",
+                  "explanation": "It disappears as soon as the user types, leaving no indication of the field's purpose, and its contrast is typically too low to read comfortably.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It vanishes on typing and usually has insufficient contrast",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It cannot be styled with CSS",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is not supported on mobile browsers",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It prevents autocomplete from working",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Client-side validation with `required` and `pattern` is in place. What else is needed?",
+                  "explanation": "Client validation is a convenience and is trivially bypassed with dev tools or a direct request. The server must validate everything independently.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Server-side validation, because the client checks can be bypassed entirely",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Nothing further — HTML validation is enforced by the browser",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "JavaScript validation as well, to cover older browsers",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A CAPTCHA",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "CSS Layout",
+        "summary": "The box model and the two layout systems that replaced everything before them.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "The Box Model and Why Everything Is Off by a Bit",
+            "slug": "the-box-model-and-why-everything-is-off-by-a-bit",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Four layers\n\nEvery element is content, surrounded by padding, then a border, then margin. Understanding which of those the `width` property refers to explains most layout confusion.\n\n## The default is unhelpful\n\nBy default, `width: 300px` sets the **content** width. Add 20px of padding and a 1px border and the element occupies 342px.\n\nSo two boxes set to `width: 50%` with any padding overflow their container, and the layout breaks for a reason that is invisible in the CSS.\n\n## `border-box` fixes it\n\n`box-sizing: border-box` makes `width` include padding and border. `width: 300px` means the element is 300px wide, which is what everyone expects.\n\nApply it to everything, once, at the top of the stylesheet. Every CSS framework does this and so should you.\n\n## Margins collapse vertically\n\nTwo stacked elements with 20px bottom and 30px top margins have 30px between them, not 50px. Only the larger applies.\n\nThis surprises people, and it only happens vertically, and only outside flex and grid containers — which is one more reason modern layout is less confusing than what came before.\n\n## `display` decides the rules\n\n`block` takes full width and stacks. `inline` flows in text and ignores width and vertical margins. `inline-block` flows but accepts dimensions. `flex` and `grid` make the element a layout container for its children.\n\nTrying to set the height of an `inline` element is a common early frustration with a one-word fix.\n\n## Use logical properties\n\n`margin-inline`, `padding-block`, `inset`. They adapt to writing direction, so a layout works in a right-to-left language without a separate stylesheet.\n\nSlightly unfamiliar, no harder, and it removes a whole category of internationalisation work.",
+            "codeExample": "/* Apply border-box once, to everything. Every framework does this. */\n*, *::before, *::after {\n  box-sizing: border-box;\n}\n\n/* Without it:\n   .card { width: 300px; padding: 20px; border: 1px solid; }\n   -> content 300 + padding 40 + border 2 = 342px on screen.\n   Two of these at width: 50% overflow their container, and nothing in the\n   CSS shows you why. */\n\n:root {\n  --gap: 1rem;\n  --surface: #ffffff;\n  --ink: #1a1a1a;\n  --line: #e2e2e2;\n}\n\n@media (prefers-color-scheme: dark) {\n  :root:not([data-theme=\"light\"]) {\n    --surface: #161616;\n    --ink: #f0f0f0;\n    --line: #333333;\n  }\n}\n\nbody {\n  margin: 0;\n  background: var(--surface);          /* always set an explicit background */\n  color: var(--ink);\n  font: 16px/1.6 system-ui, sans-serif;\n}\n\n.card {\n  width: 300px;              /* with border-box, this IS 300px on screen */\n  padding: var(--gap);\n  border: 1px solid var(--line);\n  border-radius: 8px;\n\n  /* Logical properties: adapt to writing direction, so a right-to-left\n     language needs no separate stylesheet. */\n  margin-inline: auto;       /* left and right in LTR, mirrored in RTL */\n  margin-block-end: var(--gap);\n}\n\n/* display changes which rules apply. */\n.inline-thing {\n  display: inline;\n  width: 200px;              /* IGNORED: inline elements size to their content */\n  height: 50px;              /* also ignored */\n  padding-block: 20px;       /* applied, but does NOT push neighbours apart */\n}\n\n.fixed-thing {\n  display: inline-block;     /* the one-word fix: flows inline, accepts size */\n  width: 200px;\n  height: 50px;\n}",
+            "codeLanguage": "css",
+            "diagramMermaid": "flowchart TB\n  M[\"margin — outside, collapses vertically\"] --> B[\"border\"]\n  B --> P[\"padding\"]\n  P --> C[\"content — what width refers to by DEFAULT\"]\n  C --> N[\"box-sizing: border-box makes<br/>width cover content + padding + border\"]",
+            "keyTakeaways": [
+              "Content, padding, border, margin — `width` refers to content by default",
+              "`box-sizing: border-box` makes width mean what people expect; apply it globally",
+              "Vertical margins collapse to the larger of the two, outside flex and grid",
+              "`display` determines which layout rules apply; inline ignores width and height",
+              "Logical properties adapt to writing direction for free"
+            ],
+            "quiz": {
+              "title": "The box model",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "With the default `box-sizing`, how wide is an element with `width: 300px; padding: 20px; border: 1px`?",
+                  "explanation": "The default `content-box` applies width to the content only, so padding and border are added on top: 300 + 40 + 2.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "342px",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "300px",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "340px",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "322px",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Two stacked elements have a 20px bottom margin and a 30px top margin. What is the gap?",
+                  "explanation": "Vertical margins collapse to the larger of the two outside flex and grid containers.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "30px — the margins collapse to the larger value",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "50px — the margins are added together",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "20px — the first element's margin wins",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "25px — the average of the two",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Flexbox and Grid: Choosing Between Them",
+            "slug": "flexbox-and-grid-choosing-between-them",
+            "type": "Coding",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## One axis or two\n\n**Flexbox** lays out along a single axis — a row or a column. Use it for a navigation bar, a toolbar, a card's internal stack, anything centred.\n\n**Grid** lays out in two dimensions at once — rows and columns together. Use it for page layout and anything where items must align across both axes.\n\nThe instinct to reach for flexbox for everything produces nested flex containers faking a grid. When items need to align in both directions, use grid.\n\n## Flexbox essentials\n\n`display: flex` makes the children flex items. `justify-content` distributes along the main axis, `align-items` across it. `gap` spaces them without margins.\n\n`flex: 1` makes an item take the remaining space. `flex-wrap: wrap` lets items move onto a new line rather than squashing.\n\n## Grid essentials\n\n`grid-template-columns` defines the tracks. `repeat(3, 1fr)` gives three equal columns; `1fr` means one share of the free space.\n\nThe pattern worth memorising:\n\n```css\ngrid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n```\n\nThat is a responsive grid with no media query at all. Columns are at least 250px, as many fit, and they share the leftover space. On a phone it becomes one column by itself.\n\n## Centring, finally solved\n\n`display: grid; place-items: center` centres a child horizontally and vertically in two lines. This used to be a famously awkward problem.\n\n## `gap` instead of margins\n\nBoth layouts support `gap`, which spaces children without adding margin to the outer edges. No more `:last-child { margin-right: 0 }`.\n\n## Named grid areas for page layout\n\n`grid-template-areas` lets you draw the layout in the stylesheet as text. It is unusually readable, and rearranging the page for a different screen size is a matter of rewriting the picture.",
+            "codeExample": "/* ---------- flexbox: one axis ---------- */\n.toolbar {\n  display: flex;\n  align-items: center;        /* vertical centring across the cross axis */\n  gap: 0.75rem;               /* no margins, no :last-child exception */\n  flex-wrap: wrap;            /* move to a new line rather than squash */\n}\n\n.toolbar .spacer { flex: 1; } /* absorbs the remaining space, pushing the rest right */\n\n.card {\n  display: flex;\n  flex-direction: column;\n  gap: 0.5rem;\n}\n.card .body { flex: 1; }      /* footers align across cards of differing height */\n\n\n/* ---------- grid: two axes ---------- */\n\n/* A responsive grid with NO media query. Columns are at least 250px, as many\n   fit as will, and they share the leftover space. One column on a phone,\n   four on a desktop, automatically. */\n.card-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n  gap: 1rem;\n}\n\n/* Page layout drawn as text: unusually readable, and rearranging it for a\n   phone means rewriting the picture. */\n.page {\n  display: grid;\n  min-height: 100dvh;                    /* dvh: correct with mobile browser chrome */\n  grid-template-areas:\n    \"header header\"\n    \"sidebar main\"\n    \"footer footer\";\n  grid-template-columns: 240px 1fr;\n  grid-template-rows: auto 1fr auto;\n  gap: 1rem;\n}\n\n.page > header  { grid-area: header; }\n.page > nav     { grid-area: sidebar; }\n.page > main    { grid-area: main; }\n.page > footer  { grid-area: footer; }\n\n@media (max-width: 40rem) {\n  .page {\n    grid-template-areas:                 /* the same picture, restacked */\n      \"header\"\n      \"main\"\n      \"sidebar\"\n      \"footer\";\n    grid-template-columns: 1fr;\n  }\n}\n\n/* ---------- centring, in two lines ---------- */\n.centre {\n  display: grid;\n  place-items: center;\n}",
+            "codeLanguage": "css",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Flexbox for one axis, grid for two — nested flex faking a grid is the smell",
+              "`gap` spaces children without edge margins in both systems",
+              "`repeat(auto-fit, minmax(250px, 1fr))` is a responsive grid with no media query",
+              "`display: grid; place-items: center` centres in two lines",
+              "`grid-template-areas` draws the page layout as readable text"
+            ],
+            "quiz": {
+              "title": "Flexbox and grid",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "When should you use grid rather than flexbox?",
+                  "explanation": "Grid controls rows and columns simultaneously. Flexbox handles one axis, so two-dimensional alignment ends up as nested flex containers imitating a grid.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "When items must align across two dimensions at once",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Whenever there is more than one child element",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Only for full-page layout, never for components",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "When the layout must work on mobile",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What does `repeat(auto-fit, minmax(250px, 1fr))` achieve?",
+                  "explanation": "It fits as many columns of at least 250px as will fit and shares the remaining space between them, adapting from one column to many with no media query.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A responsive column count with no media query, each column at least 250px",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Exactly 250px-wide columns with the remainder left empty",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A fixed grid of four columns",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Columns that scroll horizontally when they do not fit",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Responsive and Accessible",
+        "summary": "Working at phone width, and working for everybody.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Responsive Design, Mobile First",
+            "slug": "responsive-design-mobile-first",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Start narrow\n\nWrite the phone layout as the base, then add complexity at wider breakpoints with `min-width` queries. The alternative — designing wide and stripping down — means the mobile experience is a series of overrides and always feels like an afterthought.\n\nMost of your users are on a phone. Build for them first.\n\n## The viewport meta tag is mandatory\n\nWithout it, a phone renders your page at desktop width and scales it down, making everything unreadable. It is one line and every responsive page needs it.\n\n## Breakpoints come from the content\n\nDo not copy a list of device widths; devices change every year. Widen the browser until the layout looks wrong, and put a breakpoint there.\n\nUse `rem` rather than `px` so breakpoints respect the user's font size setting.\n\n## Prefer intrinsic sizing to breakpoints\n\n`minmax()`, `clamp()`, `auto-fit` and `flex-wrap` adapt continuously. Layouts built from them need far fewer media queries and behave sensibly at sizes you never tested.\n\n`clamp(1rem, 2.5vw, 1.5rem)` scales type smoothly between a floor and a ceiling.\n\n## Never cause horizontal scrolling\n\nThe commonest mobile bug. Usually an element with a fixed width wider than the screen, a long unbroken string, or an image without `max-width: 100%`.\n\nTest at 375px. If the page scrolls sideways, it is broken.\n\n## Images need sizing attributes\n\nSet `width` and `height` on every `<img>`. The browser reserves the space before the image loads, preventing the content jumping as images arrive — which is both annoying and a measured ranking factor.\n\n`loading=\"lazy\"` on below-the-fold images defers them.\n\n## Respect user preferences\n\n`prefers-reduced-motion` for people who find animation uncomfortable or nauseating. `prefers-color-scheme` for dark mode. Both are two lines and ignoring them makes your site unusable for some people.",
+            "codeExample": "<!-- Without this, a phone renders at ~980px and scales down. Everything\n     becomes unreadable and no amount of CSS fixes it. -->\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\n<!-- width and height reserve the space before the image loads, so content\n     does not jump as images arrive. -->\n<img src=\"hero.jpg\" alt=\"\" width=\"1200\" height=\"600\" loading=\"lazy\">\n\n<style>\n/* ---------- mobile first: this is the BASE, not an override ---------- */\n.layout {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 1rem;\n  padding-inline: 1rem;        /* the 16px side gutter phones need */\n}\n\n/* Intrinsic sizing: adapts continuously, at sizes you never tested. */\nh1 {\n  font-size: clamp(1.5rem, 5vw, 3rem);   /* floor, preferred, ceiling */\n}\n\n/* Nothing may exceed the viewport width — the commonest mobile bug. */\nimg, video, table, pre {\n  max-width: 100%;\n  height: auto;\n}\n\n/* A long URL or token with no spaces will push the page wider otherwise. */\np, li, td {\n  overflow-wrap: break-word;\n}\n\n/* ---------- add complexity as space allows ---------- */\n/* rem, not px: respects the user's font size setting. Chosen because the\n   content breaks here, not because a device is this wide. */\n@media (min-width: 45rem) {\n  .layout { grid-template-columns: 240px 1fr; }\n}\n\n@media (min-width: 70rem) {\n  .layout { grid-template-columns: 240px 1fr 300px; }\n}\n\n/* ---------- respect user preferences ---------- */\n/* Some people find motion genuinely nauseating. Two lines. */\n@media (prefers-reduced-motion: reduce) {\n  *, *::before, *::after {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n    transition-duration: 0.01ms !important;\n    scroll-behavior: auto !important;\n  }\n}\n\n@media (prefers-color-scheme: dark) {\n  :root:not([data-theme=\"light\"]) {\n    --surface: #161616;\n    --ink: #f0f0f0;\n  }\n}\n</style>",
+            "codeLanguage": "html",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Write the narrow layout first and add at `min-width` breakpoints",
+              "The viewport meta tag is required or a phone renders at desktop width",
+              "Choose breakpoints where the content breaks, in rem, not from a device list",
+              "Intrinsic sizing with clamp and auto-fit needs far fewer media queries",
+              "Test at 375px for horizontal scroll; size images to prevent layout shift"
+            ],
+            "quiz": {
+              "title": "Responsive design",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why build mobile-first rather than designing wide and scaling down?",
+                  "explanation": "Mobile-first makes the narrow layout the base rather than a set of overrides, which is where most users are and where an afterthought layout shows.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The narrow layout is the base instead of a series of overrides",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Mobile browsers do not support max-width queries",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It produces smaller CSS files in every case",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Desktop layouts do not need media queries",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "A page scrolls horizontally at 375px wide. What are the usual causes?",
+                  "explanation": "Fixed widths wider than the viewport, unbreakable long strings, and unconstrained images are the three standard causes.",
+                  "allowsMultiple": true,
+                  "options": [
+                    {
+                      "text": "An element with a fixed width wider than the screen",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "A long unbroken string such as a URL or token",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "An image without `max-width: 100%`",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Using rem units for font sizes",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Accessibility: Keyboard, Contrast and Screen Readers",
+            "slug": "accessibility-keyboard-contrast-and-screen-readers",
+            "type": "Architecture",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## It is part of the build\n\nAccessibility retrofitted after an audit is expensive and half-done. Built in from the start it costs very little, because most of it is using the right element and not removing things the browser gives you.\n\nIt is also a legal requirement in many jurisdictions for public-facing services.\n\n## Everything must work from the keyboard\n\nTab through your page. Every interactive element should be reachable, in a sensible order, with a visible focus indicator.\n\nNever write `outline: none` without providing a replacement. Removing the focus ring because it is \"ugly\" makes the page unusable for anyone not using a mouse, and it is the single most common accessibility failure on the web.\n\nUse `:focus-visible` to style focus for keyboard users without showing a ring on mouse clicks.\n\n## Contrast is measurable\n\nWCAG AA requires 4.5:1 for normal text and 3:1 for large text and interactive boundaries. Browser dev tools report the ratio directly, so this is checkable in seconds rather than a matter of opinion.\n\nLight grey placeholder text almost always fails.\n\n## Never rely on colour alone\n\nA red border says nothing to a colour-blind user or a screen reader. Pair colour with text, an icon or a pattern.\n\nThe test: print it in greyscale. Is the meaning still there?\n\n## ARIA is a last resort\n\nThe first rule of ARIA is not to use it. A `<button>` needs no `role=\"button\"`. Incorrect ARIA is worse than none, because it overrides what the browser would have conveyed correctly.\n\nWhere it earns its place: `aria-label` for an icon-only button, `aria-live` for content updating without a page change, `aria-expanded` on a disclosure control.\n\n## Announce dynamic changes\n\nContent inserted by JavaScript is invisible to a screen reader unless it is in a live region. A search that updates results silently gives a screen reader user no indication anything happened.\n\n## Test with real tools\n\nRun axe or Lighthouse for the automated checks — they catch perhaps a third of issues. Then tab through the page, and try a screen reader for ten minutes. That ten minutes teaches more than any checklist.",
+            "codeExample": "/* The single most common accessibility failure on the web. */\nbutton:focus { outline: none; }        /* NEVER do this without a replacement */\n\n/* :focus-visible shows a ring for keyboard users and not on mouse clicks —\n   which is what people actually wanted when they removed the outline. */\n:focus-visible {\n  outline: 3px solid #4d90fe;\n  outline-offset: 2px;\n}\n\n/* Contrast is measurable, not a matter of taste. */\n.text-muted { color: #767676; }   /* 4.54:1 on white — passes AA */\n.text-faint { color: #999999; }   /* 2.85:1 on white — FAILS, common in placeholders */\n\n/* Visible to screen readers, not on screen. For skip links and extra context. */\n.visually-hidden {\n  position: absolute; width: 1px; height: 1px;\n  padding: 0; margin: -1px; overflow: hidden;\n  clip-path: inset(50%); white-space: nowrap;\n}\n\n/* A skip link: the first tab stop, letting a keyboard user jump past the nav. */\n.skip-link {\n  position: absolute; top: -3rem; left: 1rem;\n  background: #fff; padding: 0.5rem 1rem; z-index: 100;\n}\n.skip-link:focus { top: 1rem; }\n\n/*\n<a class=\"skip-link\" href=\"#main\">Skip to main content</a>\n\n<!-- Icon-only button: the label is what a screen reader announces. -->\n<button aria-label=\"Close dialog\">\n  <svg aria-hidden=\"true\" ...></svg>      <!-- decorative: hide from the tree -->\n</button>\n\n<!-- Disclosure: aria-expanded is updated in JS when it toggles. -->\n<button aria-expanded=\"false\" aria-controls=\"filters\">Filters</button>\n<div id=\"filters\" hidden>...</div>\n\n<!-- Dynamic results: without aria-live, a screen reader user gets no\n     indication that anything changed. polite waits for a pause. -->\n<div role=\"status\" aria-live=\"polite\" class=\"visually-hidden\">\n  14 results found\n</div>\n\n<!-- Error state: colour AND text AND a programmatic association. Greyscale\n     test: the meaning survives without the red. -->\n<input id=\"email\" aria-invalid=\"true\" aria-describedby=\"email-error\">\n<p id=\"email-error\" class=\"error\">\n  <svg aria-hidden=\"true\">...</svg>\n  Enter a valid email address\n</p>\n*/",
+            "codeLanguage": "css",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Build it in from the start; retrofitting after an audit is expensive and partial",
+              "Never remove the focus outline without a replacement — use `:focus-visible`",
+              "Contrast is measurable: 4.5:1 for body text, checkable in dev tools",
+              "Never signal meaning by colour alone; test it in greyscale",
+              "Prefer native elements over ARIA, and announce dynamic updates in a live region"
+            ],
+            "resources": [
+              {
+                "title": "WCAG 2.2 quick reference",
+                "url": "https://www.w3.org/WAI/WCAG22/quickref/",
+                "kind": "Specification"
+              },
+              {
+                "title": "MDN: Accessibility",
+                "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility",
+                "kind": "Documentation"
+              }
+            ],
+            "quiz": {
+              "title": "Accessibility",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why is `outline: none` on focusable elements a serious problem?",
+                  "explanation": "The focus indicator is how a keyboard user knows where they are. Removing it without a replacement makes the page unnavigable without a mouse.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Keyboard users lose all indication of where they are on the page",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It prevents the element receiving click events",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It only affects users of older browsers",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It breaks CSS transitions on the element",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What is the first rule of ARIA?",
+                  "explanation": "Native elements already carry the correct semantics. Incorrect ARIA overrides them and is worse than none at all.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Do not use ARIA — prefer a native element that already has the semantics",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Add a role attribute to every interactive element",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Use aria-label on all elements for clarity",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "ARIA attributes must always come in pairs",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "careerSlug": "frontend-web-developer",
+    "order": 2,
+    "phaseNumber": 2,
+    "title": "Phase 2 — JavaScript & the Browser",
+    "slug": "phase-2-javascript-and-the-browser",
+    "summary": "The language and the runtime it lives in: values and comparison, closures and `this`, the DOM, the event loop that explains why pages freeze, and fetching data with every state handled.",
+    "estimatedHours": 30,
+    "level": "Foundational",
+    "minimumTrack": "FastTrack",
+    "outcomes": [
+      "Predict JavaScript comparison and coercion behaviour",
+      "Use closures deliberately and explain what `this` refers to",
+      "Manipulate the DOM and handle events efficiently",
+      "Explain the event loop and why a long synchronous function freezes the page",
+      "Fetch data and render loading, empty, error and success states"
+    ],
+    "skillSlugs": [
+      "typescript",
+      "html-css",
+      "rest-api"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "The Language",
+        "summary": "Values, comparison and the function behaviour that defines JavaScript.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Values, Types and the Comparisons That Surprise You",
+            "slug": "values-types-and-the-comparisons-that-surprise-you",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Seven primitives and objects\n\n`string`, `number`, `boolean`, `null`, `undefined`, `symbol`, `bigint` are primitives. Everything else — arrays, functions, dates — is an object.\n\n`typeof null` returns `\"object\"`. That is a bug from 1995 that can never be fixed without breaking the web.\n\n## `==` coerces, `===` does not\n\n`==` converts types before comparing, which produces results nobody wants: `0 == \"\"` is true, `null == undefined` is true, `\"1\" == 1` is true.\n\nUse `===` always. The single exception worth knowing is `x == null`, which is a concise check for \"null or undefined\" — and even that is clearer written out.\n\n## `null` versus `undefined`\n\n`undefined` means a value was never set. `null` means it was deliberately set to nothing.\n\nThe distinction is real but easy to over-think. Be consistent: use `null` for intentional absence in your own code, and expect `undefined` from missing properties and parameters.\n\n## Numbers are floating point\n\nThere is one number type, and `0.1 + 0.2 === 0.3` is false, exactly as in other languages.\n\nFor money, work in minor units as integers or use a decimal library. `Number.MAX_SAFE_INTEGER` is about 9 quadrillion — beyond that, use `BigInt`.\n\n## Falsy values\n\n`false`, `0`, `-0`, `\"\"`, `null`, `undefined`, `NaN`. Everything else is truthy, including `\"0\"`, `\"false\"`, `[]` and `{}`.\n\n`if (count)` is wrong when `0` is a legitimate value, which it usually is.\n\n## Nullish operators for that exact problem\n\n`??` falls back only on `null` or `undefined`, not on `0` or `\"\"`. `||` falls back on any falsy value, which silently replaces a legitimate zero.\n\n`?.` short-circuits on null or undefined instead of throwing, which removes a lot of defensive nesting.\n\n## Prefer `const`\n\n`const` by default, `let` when reassignment is genuinely needed, never `var`. `var` is function-scoped and hoisted, which produces bugs that block scoping does not.",
+            "codeExample": "// --- coercion, and why === always ----------------------------------------\nconsole.log(0 == \"\");             // true   — nobody wants this\nconsole.log(0 == \"0\");            // true\nconsole.log(\"\" == \"0\");           // false  — not even transitive\nconsole.log(null == undefined);   // true\nconsole.log(NaN == NaN);          // false  — NaN equals nothing, including itself\n\nconsole.log(0 === \"\");            // false  — predictable\nconsole.log(Number.isNaN(NaN));   // true   — how to actually test for NaN\n\n// --- typeof quirks --------------------------------------------------------\nconsole.log(typeof null);         // \"object\"  — a bug from 1995, unfixable\nconsole.log(typeof []);           // \"object\"\nconsole.log(Array.isArray([]));   // true      — the correct check\n\n// --- floating point -------------------------------------------------------\nconsole.log(0.1 + 0.2);                    // 0.30000000000000004\nconsole.log(0.1 + 0.2 === 0.3);            // false\n\nconst totalPence = 10 + 20;                // work in minor units for money\nconsole.log((totalPence / 100).toFixed(2)); // \"0.30\"\n\n// --- falsy values, and the operator that respects zero -------------------\nconst falsy = [false, 0, -0, \"\", null, undefined, NaN];\n// Everything else is truthy, INCLUDING \"0\", \"false\", [] and {}.\n\nfunction renderCount(count) {\n  if (count) return `${count} items`;      // WRONG: hides a legitimate 0\n  return \"no items\";\n}\n\n// || falls back on ANY falsy value, silently replacing a real zero.\nconst pageSize1 = userSetting || 20;       // a userSetting of 0 becomes 20\n\n// ?? falls back only on null/undefined.\nconst pageSize2 = userSetting ?? 20;       // a userSetting of 0 stays 0\n\n// --- optional chaining removes defensive nesting -------------------------\nconst city = response?.data?.customer?.address?.city ?? \"Unknown\";\n// Without ?., this throws if any level is missing.\n\n// --- const by default -----------------------------------------------------\nconst items = [];        // the BINDING is constant; the array is still mutable\nitems.push(1);           // fine\n// items = [];           // TypeError\n\nlet index = 0;           // only when reassignment is genuinely needed\n// var count = 0;        // never: function-scoped and hoisted",
+            "codeLanguage": "javascript",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "`typeof null` is `\"object\"` — a permanent historical bug",
+              "Use `===`; `==` coerces and produces results nobody intends",
+              "Numbers are floating point; use minor units for money",
+              "`0`, `\"\"` and `NaN` are falsy — `if (count)` is wrong when zero is valid",
+              "`??` falls back only on null or undefined, unlike `||`"
+            ],
+            "resources": [
+              {
+                "title": "MDN: JavaScript reference",
+                "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference",
+                "kind": "Documentation"
+              }
+            ],
+            "quiz": {
+              "title": "Values and comparison",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why use `??` rather than `||` for a default value?",
+                  "explanation": "`||` falls back on every falsy value, so a legitimate 0 or empty string is silently replaced. `??` only falls back on null or undefined.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "`||` replaces a legitimate 0 or empty string; `??` only replaces null and undefined",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "`??` is faster to evaluate",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "`||` cannot be used with numbers",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "They are equivalent; `??` is newer syntax",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What does `typeof null` return?",
+                  "explanation": "It returns \"object\", a bug present since 1995 that cannot be corrected without breaking existing sites.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "\"object\" — a historical bug that cannot be fixed",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "\"null\"",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "\"undefined\"",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It throws a TypeError",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Functions, Closures and `this`",
+            "slug": "functions-closures-and-this",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Functions are values\n\nYou can pass a function as an argument, return one, and store one in an object. This is why callbacks, array methods and event handlers all work the way they do.\n\n## Closures capture the surrounding scope\n\nA function defined inside another can read the outer function's variables — and keeps access to them after the outer function has returned.\n\nThis is how you make private state, memoise a result, and write a counter without a global. It is also how you accidentally hold a large object in memory: a closure keeps everything it references alive.\n\n## Arrow functions differ in `this`\n\nAn arrow function has no `this` of its own; it uses the one from where it was defined. A regular function's `this` depends on how it is *called*.\n\nThat difference is the entire reason arrow functions solved the \"`this` is undefined in my callback\" problem that dominated older JavaScript.\n\n## What `this` refers to\n\n- Called as a method — the object before the dot.\n- Called standalone — `undefined` in strict mode and in modules.\n- With `call`, `apply` or `bind` — whatever you passed.\n- In an arrow function — the enclosing scope's `this`.\n\nPassing a method as a callback detaches it from its object, which is the classic source of `this` being wrong. An arrow function or `bind` fixes it.\n\n## Prefer the array methods\n\n`map`, `filter`, `reduce`, `find`, `some` and `every` say what you mean. `forEach` when you genuinely want a side effect.\n\nNote which mutate: `sort`, `reverse` and `splice` change the array in place. `toSorted` and `toReversed` return a copy, which is usually what you wanted.\n\n## Destructuring and spread\n\n`const { name, email } = user` and `{ ...defaults, ...overrides }` are idiomatic and read clearly. Note that spread is a shallow copy — nested objects are still shared.\n\n## Default parameters are evaluated per call\n\nUnlike Python, JavaScript evaluates a default expression on every call that omits the argument. `function f(items = [])` is safe here.",
+            "codeExample": "// --- closures: private state without a global ----------------------------\nfunction createCounter(start = 0) {\n  let count = start;                    // not reachable from outside\n  return {\n    increment: () => ++count,\n    get value() { return count; },\n  };\n}\n\nconst counter = createCounter();\ncounter.increment();\nconsole.log(counter.value);             // 1\n// console.log(counter.count);          // undefined — genuinely private\n\n// A closure keeps everything it references alive. This holds the entire\n// 10MB buffer in memory just to report its length.\nfunction makeLeak() {\n  const huge = new Array(10_000_000).fill(\"x\");\n  return () => huge.length;             // `huge` can never be collected\n}\nfunction noLeak() {\n  const huge = new Array(10_000_000).fill(\"x\");\n  const length = huge.length;           // capture only what is needed\n  return () => length;\n}\n\n// --- `this` depends on how a function is CALLED ---------------------------\nconst timer = {\n  seconds: 0,\n\n  startBroken() {\n    // A regular function called by setTimeout: `this` is not `timer`.\n    setInterval(function () {\n      this.seconds++;                   // TypeError — `this` is undefined\n    }, 1000);\n  },\n\n  startWorking() {\n    // An arrow has no `this` of its own, so it uses the enclosing one.\n    setInterval(() => {\n      this.seconds++;                   // `this` is `timer`\n    }, 1000);\n  },\n};\n\n// Passing a method detaches it from its object — the classic bug.\nconst button = document.querySelector(\"button\");\nbutton.addEventListener(\"click\", timer.startWorking);          // `this` is the button\nbutton.addEventListener(\"click\", () => timer.startWorking());  // correct\nbutton.addEventListener(\"click\", timer.startWorking.bind(timer)); // also correct\n\n// --- array methods: mutating vs not --------------------------------------\nconst scores = [3, 1, 2];\n\nconst sortedCopy = scores.toSorted();   // [1, 2, 3], `scores` unchanged\nscores.sort();                          // MUTATES: scores is now [1, 2, 3]\n\nconst doubled = scores.map(n => n * 2);\nconst large   = scores.filter(n => n > 1);\nconst total   = scores.reduce((sum, n) => sum + n, 0);\nconst first   = scores.find(n => n > 1);            // undefined if none match\n\n// --- spread is SHALLOW ----------------------------------------------------\nconst defaults = { theme: \"dark\", layout: { columns: 2 } };\nconst settings = { ...defaults, theme: \"light\" };\nsettings.layout.columns = 3;\nconsole.log(defaults.layout.columns);   // 3 — the nested object is shared",
+            "codeLanguage": "javascript",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Functions are values; closures keep access to the scope they were defined in",
+              "A closure keeps everything it references alive — a real source of leaks",
+              "An arrow function inherits `this`; a regular function's depends on the call",
+              "Passing a method as a callback detaches `this` — bind it or use an arrow",
+              "`sort` and `reverse` mutate; `toSorted` and `toReversed` return copies"
+            ],
+            "quiz": {
+              "title": "Functions and this",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why does an arrow function fix `this` inside a `setInterval` callback?",
+                  "explanation": "An arrow function has no `this` binding of its own, so it uses the one from the scope where it was defined rather than from how it is called.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It has no `this` of its own and inherits the enclosing scope's",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It binds `this` to the global object",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "setInterval treats arrow functions differently",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Arrow functions execute synchronously",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "`const b = { ...a }; b.nested.x = 1;`. What happens to `a.nested.x`?",
+                  "explanation": "Spread copies only the top level. The nested object is still the same object, so the mutation is visible through both.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It also becomes 1 — spread is a shallow copy",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It is unchanged, because spread copies deeply",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A TypeError is thrown",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "`b.nested` is undefined",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "The Browser",
+        "summary": "The DOM, events, and the single thread everything shares.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "The DOM and Events",
+            "slug": "the-dom-and-events",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The DOM is a live tree\n\nThe browser parses your HTML into a tree of nodes. JavaScript can read and change it, and the page updates immediately.\n\n`querySelector` and `querySelectorAll` find elements with CSS selector syntax. `querySelectorAll` returns a static NodeList — it does not update as the document changes, which is usually what you want.\n\n## Prefer `textContent`\n\n`innerHTML` parses its input as HTML. Assigning user-supplied content to it is a cross-site scripting vulnerability: a string containing a script-bearing tag executes.\n\n`textContent` sets text without parsing. Use it unless you genuinely need to insert markup, and in that case sanitise first.\n\n## Events bubble\n\nA click on a button fires on the button, then its parent, then upward to the document. That is why a single listener on a container can handle clicks on all its children.\n\nThis *delegation* is not just tidier — it works for elements added later, and it is one listener instead of a hundred.\n\n## Batch DOM changes\n\nEvery read of a layout property (`offsetHeight`, `getBoundingClientRect`) forces the browser to recalculate layout if anything changed since the last one. Alternating reads and writes in a loop — layout thrashing — is a classic performance disaster.\n\nRead everything, then write everything. Build a fragment off-document and insert it once rather than appending in a loop.\n\n## Remove listeners you added\n\nA listener on a removed element keeps that element and everything its handler closes over alive. `AbortController` removes a whole group of listeners in one call, which is much harder to get wrong.\n\n## `preventDefault` and `stopPropagation` are different\n\n`preventDefault` stops the browser's default behaviour — following a link, submitting a form. `stopPropagation` stops the event travelling to ancestors.\n\nReaching for `stopPropagation` to fix an interaction problem usually hides a design problem, and it breaks delegation elsewhere.",
+            "codeExample": "// --- textContent vs innerHTML --------------------------------------------\nconst name = getUserInput();             // e.g. '<img src=x onerror=\"steal()\">'\n\nelement.innerHTML = name;                // XSS: the onerror handler executes\nelement.textContent = name;              // safe: inserted as text, not parsed\n\n// --- event delegation -----------------------------------------------------\n// One hundred listeners, and none of them work for rows added later:\ndocument.querySelectorAll(\".row-delete\").forEach(button => {\n  button.addEventListener(\"click\", handleDelete);\n});\n\n// One listener, and it works for rows added at any point in the future.\ndocument.querySelector(\"#rows\").addEventListener(\"click\", (event) => {\n  const button = event.target.closest(\".row-delete\");\n  if (!button) return;                   // the click was somewhere else\n  handleDelete(button.dataset.rowId);\n});\n\n// --- layout thrashing -----------------------------------------------------\n// Each read after a write forces a synchronous layout recalculation. With\n// 200 boxes that is 200 forced layouts and a visibly janky page.\nfor (const box of boxes) {\n  box.style.height = box.offsetHeight + 10 + \"px\";   // write, read, write, read...\n}\n\n// Read everything first, then write everything. One layout.\nconst heights = boxes.map(box => box.offsetHeight);  // all reads\nboxes.forEach((box, i) => {                          // all writes\n  box.style.height = heights[i] + 10 + \"px\";\n});\n\n// --- build off-document, insert once -------------------------------------\nconst fragment = document.createDocumentFragment();\nfor (const item of items) {\n  const li = document.createElement(\"li\");\n  li.textContent = item.name;\n  fragment.append(li);                   // not in the document yet: no reflow\n}\nlist.append(fragment);                   // one insertion, one reflow\n\n// --- AbortController removes a whole group of listeners ------------------\nconst controller = new AbortController();\nconst { signal } = controller;\n\nwindow.addEventListener(\"resize\", onResize, { signal });\nwindow.addEventListener(\"scroll\", onScroll, { signal });\ninput.addEventListener(\"input\", onInput, { signal });\n\ncontroller.abort();   // all three removed. Far harder to get wrong than\n                      // three matching removeEventListener calls with the\n                      // exact same function references.",
+            "codeLanguage": "javascript",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "`querySelectorAll` returns a static list; the DOM tree itself is live",
+              "`innerHTML` with user content is an XSS vulnerability — use `textContent`",
+              "Events bubble, so one delegated listener handles children including future ones",
+              "Interleaving layout reads and writes causes thrashing — read then write",
+              "`AbortController` removes a group of listeners in one call"
+            ],
+            "quiz": {
+              "title": "The DOM and events",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why is assigning user-supplied content to `innerHTML` dangerous?",
+                  "explanation": "innerHTML parses its input as HTML, so markup in the string is executed. That is a cross-site scripting vulnerability; textContent inserts text without parsing.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It parses the string as HTML, so injected markup executes",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It is slower than textContent",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It removes existing event listeners",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It only works on block-level elements",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What is the main advantage of event delegation over per-element listeners?",
+                  "explanation": "A single listener on an ancestor handles all current and future descendants, which is both cheaper and works for dynamically added elements.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "One listener handles all matching children, including ones added later",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Delegated events fire faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It prevents events from bubbling",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It removes the need for preventDefault",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "The Event Loop: Why the Page Freezes",
+            "slug": "the-event-loop-why-the-page-freezes",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## One thread does everything\n\nJavaScript, layout, painting and event handling all share one thread per tab. While your code runs, nothing else can — no clicks are processed, no animation advances, nothing repaints.\n\nThat is why a long synchronous loop freezes the page completely. It is not slow; it is blocked.\n\n## How the loop works\n\nSynchronous code runs to completion. Then the loop takes the next task from the queue and runs that to completion. Repeat.\n\nAsynchronous operations — timers, network requests, events — do not run your callback immediately. They queue it, and it runs when the current work finishes.\n\n## Microtasks jump the queue\n\nPromise callbacks go in the *microtask* queue, which is fully drained after the current task and before the next macrotask (a timer, an event).\n\nThis is why a resolved promise's `.then` runs before a `setTimeout(..., 0)` queued earlier. Worth knowing when ordering surprises you.\n\n## `setTimeout(fn, 0)` is not immediate\n\nIt means \"as soon as the current work and all pending microtasks are done\". The real delay can be far more than zero, and browsers clamp nested timers.\n\nIts legitimate use is yielding: letting the browser paint before continuing.\n\n## Long work must be broken up or moved\n\nFor a long computation, either chunk it and yield between chunks, or move it to a **Web Worker**, which runs on its own thread and communicates by messages.\n\nA worker cannot touch the DOM, which is the point — the DOM is not thread-safe.\n\n## Throttle and debounce high-frequency events\n\nScroll and resize fire continuously. **Debounce** waits until the activity stops — right for a search box. **Throttle** limits to once per interval — right for scroll position.\n\nFor anything visual, `requestAnimationFrame` schedules the work just before the next paint, which is exactly the right moment.",
+            "codeExample": "// --- ordering: microtasks drain before the next macrotask ----------------\nconsole.log(\"1 sync\");\n\nsetTimeout(() => console.log(\"4 timer (macrotask)\"), 0);\n\nPromise.resolve().then(() => console.log(\"3 promise (microtask)\"));\n\nconsole.log(\"2 sync\");\n\n// Output: 1 sync, 2 sync, 3 promise, 4 timer\n// The promise callback was queued AFTER the timer and still runs first,\n// because the microtask queue is drained completely before the next macrotask.\n\n\n// --- blocking the thread --------------------------------------------------\nfunction freezeThePage() {\n  const end = Date.now() + 5000;\n  while (Date.now() < end) { /* spin */ }\n  // For five seconds: no clicks processed, no animation, no repaint. The tab\n  // is not slow, it is blocked.\n}\n\n// --- chunking: yield so the browser can paint ----------------------------\nasync function processInChunks(items, chunkSize = 500) {\n  for (let i = 0; i < items.length; i += chunkSize) {\n    for (const item of items.slice(i, i + chunkSize)) {\n      expensiveWork(item);\n    }\n    // Yield: the browser paints and handles input between chunks.\n    await new Promise(resolve => setTimeout(resolve, 0));\n  }\n}\n\n// --- a Web Worker: genuinely off the main thread -------------------------\nconst worker = new Worker(\"parse-worker.js\");\nworker.postMessage({ csv: hugeString });\nworker.onmessage = (event) => render(event.data.rows);\n// The worker cannot touch the DOM — that is the point; the DOM is not\n// thread-safe. It computes and posts the result back.\n\n\n// --- debounce: wait until the activity STOPS (search input) --------------\nfunction debounce(fn, delay = 300) {\n  let timer;\n  return (...args) => {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn(...args), delay);\n  };\n}\nsearchInput.addEventListener(\"input\", debounce(runSearch, 300));\n\n// --- throttle: at most once per interval (scroll position) ---------------\nfunction throttle(fn, interval = 100) {\n  let last = 0;\n  return (...args) => {\n    const now = Date.now();\n    if (now - last >= interval) { last = now; fn(...args); }\n  };\n}\nwindow.addEventListener(\"scroll\", throttle(updateScrollIndicator, 100));\n\n// --- visual work belongs on the frame boundary ---------------------------\nlet ticking = false;\nwindow.addEventListener(\"scroll\", () => {\n  if (ticking) return;\n  ticking = true;\n  requestAnimationFrame(() => {          // runs just before the next paint\n    header.classList.toggle(\"compact\", window.scrollY > 100);\n    ticking = false;\n  });\n});",
+            "codeLanguage": "javascript",
+            "diagramMermaid": "flowchart TB\n  A[\"Call stack: run sync code<br/>to completion\"] --> B{\"Stack empty?\"}\n  B -->|no| A\n  B -->|yes| C[\"Drain ALL microtasks<br/>promise callbacks\"]\n  C --> D[\"Render if needed\"]\n  D --> E[\"Take ONE macrotask<br/>timer, event, I/O\"]\n  E --> A",
+            "keyTakeaways": [
+              "One thread runs JavaScript, layout and painting — blocking it freezes everything",
+              "Microtasks (promises) drain fully before the next macrotask (timers, events)",
+              "`setTimeout(fn, 0)` means “after the current work”, not immediately",
+              "Chunk long work or move it to a Web Worker, which has no DOM access",
+              "Debounce search input, throttle scroll, and use requestAnimationFrame for visuals"
+            ],
+            "quiz": {
+              "title": "The event loop",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "A `setTimeout(fn, 0)` is queued before a `Promise.resolve().then(g)`. Which runs first?",
+                  "explanation": "Promise callbacks are microtasks, and the microtask queue is drained completely before the next macrotask such as a timer.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "g — microtasks drain before the next macrotask",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "fn — it was queued first",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "They run simultaneously on separate threads",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The order is not defined by the specification",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why can a Web Worker not access the DOM?",
+                  "explanation": "The DOM is not thread-safe. Workers run on a separate thread and communicate by message passing, which is the reason they can run without blocking the page.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The DOM is not thread-safe, so workers communicate by messages instead",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Workers run in a different browser process with no page loaded",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is a temporary limitation being removed",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Workers are only permitted to perform network requests",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Asynchronous Data",
+        "summary": "Fetching from an API and rendering every state the user can end up in.",
+        "estimatedHours": 1.4,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Promises, async/await and fetch",
+            "slug": "promises-async-await-and-fetch",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## A promise is a future value\n\nPending, then either fulfilled or rejected. `await` suspends the function until it settles, without blocking the thread — other work proceeds.\n\n## `fetch` does not reject on HTTP errors\n\nThis is the trap. A 404 or a 500 **fulfils** the promise. Only a network failure rejects it.\n\nSo `await fetch(url)` followed by `response.json()` on a 500 tries to parse an error page as JSON and produces a confusing error a long way from the cause.\n\nAlways check `response.ok` first.\n\n## Always set a timeout\n\n`fetch` has no default timeout. A server that accepts the connection and never responds leaves a spinner turning forever.\n\n`AbortSignal.timeout(ms)` handles this in one argument, and the same signal lets you cancel when the user navigates away.\n\n## Run independent requests in parallel\n\nTwo sequential awaits take the sum of their durations. `Promise.all` starts both and takes the longer.\n\n`Promise.all` rejects as soon as any one fails. `Promise.allSettled` waits for all and reports each outcome, which is what you want when partial results are useful.\n\n## Handle the error, do not just log it\n\nA `catch` that only calls `console.error` leaves the user staring at a spinner. Every failure needs a user-visible outcome.\n\n## Avoid the race condition\n\nA user types quickly and you fire three searches. They can return out of order, and the response to \"ab\" can arrive after the one for \"abc\", leaving the wrong results on screen.\n\nAbort the previous request, or tag each one and ignore stale responses.\n\n## Do not mix `.then` and `await`\n\nPick one. Mixed code is harder to follow and makes error handling inconsistent. `async`/`await` with `try`/`catch` reads best in most cases.",
+            "codeExample": "// --- the trap: fetch does not reject on HTTP errors ----------------------\nasync function loadBroken(id) {\n  const response = await fetch(`/api/customers/${id}`);\n  return response.json();        // on a 500, tries to parse an HTML error page\n}                                // -> \"Unexpected token '<'\", far from the cause\n\nasync function load(id, signal) {\n  const response = await fetch(`/api/customers/${id}`, {\n    signal: signal ?? AbortSignal.timeout(10_000),   // fetch has NO default timeout\n    headers: { Accept: \"application/json\" },\n  });\n\n  if (!response.ok) {            // 404 and 500 FULFIL the promise\n    throw new ApiError(`Request failed (${response.status})`, response.status);\n  }\n  return response.json();\n}\n\n// --- independent requests in parallel -------------------------------------\nasync function loadDashboardSequential(id) {\n  const customer = await load(`/api/customers/${id}`);   // 300ms\n  const usage    = await load(`/api/usage/${id}`);       // 400ms\n  return { customer, usage };                            // 700ms total\n}\n\nasync function loadDashboard(id) {\n  const [customer, usage] = await Promise.all([          // both start now\n    load(`/api/customers/${id}`),\n    load(`/api/usage/${id}`),\n  ]);\n  return { customer, usage };                            // 400ms total\n}\n\n// allSettled when a partial result is still useful.\nasync function loadWithOptionalExtras(id) {\n  const [customer, usage] = await Promise.allSettled([\n    load(`/api/customers/${id}`),\n    load(`/api/usage/${id}`),\n  ]);\n  if (customer.status === \"rejected\") throw customer.reason;   // required\n  return {\n    customer: customer.value,\n    usage: usage.status === \"fulfilled\" ? usage.value : null,  // optional\n  };\n}\n\n// --- the out-of-order race ------------------------------------------------\nlet inFlight = null;\n\nasync function search(term) {\n  inFlight?.abort();                     // cancel the previous request\n  const controller = new AbortController();\n  inFlight = controller;\n\n  try {\n    const results = await load(`/api/search?q=${encodeURIComponent(term)}`,\n                               controller.signal);\n    render(results);\n  } catch (error) {\n    if (error.name === \"AbortError\") return;    // superseded: not a failure\n    // Never just console.error: the user is still watching a spinner.\n    showError(\"Could not load results. Check your connection and try again.\");\n  }\n}\n// Without the abort, the response for \"ab\" can arrive after the one for \"abc\"\n// and overwrite the correct results with stale ones.",
+            "codeLanguage": "javascript",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "`await` suspends the function without blocking the thread",
+              "`fetch` does not reject on 404 or 500 — always check `response.ok`",
+              "Set a timeout with `AbortSignal.timeout`; fetch has no default",
+              "`Promise.all` for independent requests; `allSettled` when partial results help",
+              "Abort or tag requests, or a slow earlier response overwrites a newer one"
+            ],
+            "quiz": {
+              "title": "Promises and fetch",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What does `fetch` do when the server returns a 500?",
+                  "explanation": "The promise fulfils — only a network-level failure rejects. The status must be checked explicitly with `response.ok`.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The promise fulfils; you must check `response.ok` yourself",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The promise rejects with an HTTP error",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It retries automatically",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It throws synchronously",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "A user types quickly, firing several searches. Why can the results be wrong?",
+                  "explanation": "Responses can arrive out of order, so a slower earlier request can resolve after a newer one and overwrite the correct results.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "An earlier request can resolve later and overwrite the newer results",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The browser caches the first response",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "fetch cannot handle concurrent requests",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The server rejects rapid requests",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Handling Every State: Loading, Empty, Error, Data",
+            "slug": "handling-every-state-loading-empty-error-data",
+            "type": "Lab",
+            "estimatedMinutes": 40,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Four states, not one\n\nEvery piece of fetched data can be in four states, and users will encounter all of them:\n\n1. **Loading** — the request is in flight.\n2. **Empty** — it succeeded and there is nothing to show.\n3. **Error** — it failed.\n4. **Data** — it succeeded with results.\n\nMost beginner code handles the fourth and leaves the other three as a blank screen. A blank screen is indistinguishable from a broken page.\n\n## Empty is not an error\n\n\"No results for 'xyzzy'\" and \"Could not reach the server\" are completely different situations and must look different. Conflating them teaches users to distrust the interface.\n\nAn empty state is also an opportunity: suggest what to try, or offer the action that creates the first item.\n\n## Error messages should say what to do\n\n\"Error: 500\" tells a user nothing. \"We could not load your orders. Try again in a moment.\" tells them it is not their fault and that retrying is reasonable.\n\nInclude a retry button. Most failures are transient, and a button is far better than asking someone to reload the page and lose their place.\n\n## Model the state explicitly\n\nA discriminated union — one object with a `status` field — makes it impossible to be loading and errored at once. Separate `isLoading` and `error` booleans allow four combinations, two of which are nonsense.\n\nThis also makes the rendering a single switch, so forgetting a case is visible.\n\n## Announce changes to screen readers\n\nSwapping content in without a page change is silent to assistive technology. An `aria-live` region announces \"Loading\" and \"14 results found\".\n\n## Do not flash the spinner\n\nFor a request that takes 80ms, a spinner appearing and vanishing is worse than nothing. Delay showing it by 200-300ms; most requests finish first.\n\n## Keep the previous data during a refresh\n\nWhen reloading existing data, showing the old data dimmed is better than replacing everything with a spinner. The user keeps their context.",
+            "codeExample": "// One status field: impossible to be loading AND errored at once, which\n// separate isLoading/error booleans would allow.\n/** @typedef {{status:\"idle\"} | {status:\"loading\"} | {status:\"error\", message:string}\n *          | {status:\"empty\"} | {status:\"data\", items:Array}} ViewState */\n\n/** @type {ViewState} */\nlet state = { status: \"idle\" };\n\nfunction setState(next) {\n  state = next;\n  render();\n}\n\nasync function loadOrders(customerId) {\n  // Delay the spinner: a request that finishes in 80ms should not flash one.\n  const spinnerTimer = setTimeout(() => {\n    if (state.status === \"loading\") showSpinner();\n  }, 250);\n\n  setState({ status: \"loading\" });\n\n  try {\n    const orders = await load(`/api/customers/${customerId}/orders`);\n    setState(orders.length === 0\n      ? { status: \"empty\" }                 // NOT an error — a different thing\n      : { status: \"data\", items: orders });\n  } catch (error) {\n    if (error.name === \"AbortError\") return;\n    setState({\n      status: \"error\",\n      // Says what happened and implies what to do. Not \"Error: 500\".\n      message: error.status === 404\n        ? \"We could not find that customer.\"\n        : \"We could not load these orders. Try again in a moment.\",\n    });\n  } finally {\n    clearTimeout(spinnerTimer);\n    hideSpinner();\n  }\n}\n\nfunction render() {\n  const root = document.querySelector(\"#orders\");\n  const live = document.querySelector(\"#orders-status\");   // aria-live region\n\n  switch (state.status) {\n    case \"idle\":\n      root.replaceChildren();\n      break;\n\n    case \"loading\":\n      root.replaceChildren(skeletonRows(3));\n      live.textContent = \"Loading orders\";       // announced to screen readers\n      break;\n\n    case \"empty\":\n      // An opportunity, not a dead end.\n      root.replaceChildren(emptyState({\n        title: \"No orders yet\",\n        body: \"When this customer places an order it will appear here.\",\n        action: { label: \"Create an order\", onClick: openCreateOrder },\n      }));\n      live.textContent = \"No orders found\";\n      break;\n\n    case \"error\":\n      // A retry button: most failures are transient, and reloading the page\n      // would lose the user's place.\n      root.replaceChildren(errorState({\n        message: state.message,\n        action: { label: \"Try again\", onClick: () => loadOrders(currentId) },\n      }));\n      live.textContent = state.message;\n      break;\n\n    case \"data\":\n      root.replaceChildren(orderTable(state.items));\n      live.textContent = `${state.items.length} orders found`;\n      break;\n  }\n}\n\n/* <div id=\"orders-status\" role=\"status\" aria-live=\"polite\" class=\"visually-hidden\"></div> */",
+            "codeLanguage": "javascript",
+            "diagramMermaid": "stateDiagram-v2\n  [*] --> idle\n  idle --> loading: fetch\n  loading --> data: ok, results\n  loading --> empty: ok, none\n  loading --> error: failed\n  error --> loading: retry\n  data --> loading: refresh",
+            "keyTakeaways": [
+              "Loading, empty, error and data are four distinct states — all four will be seen",
+              "Empty is not an error; they must look different and say different things",
+              "Error messages state what happened and offer a retry",
+              "Model state as one discriminated union so impossible combinations cannot exist",
+              "Announce changes in a live region and delay the spinner by 200-300ms"
+            ],
+            "quiz": {
+              "title": "Handling states",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why model view state as a single `status` field rather than separate `isLoading` and `error` flags?",
+                  "explanation": "Two booleans allow four combinations, including nonsensical ones like loading and errored simultaneously. One status field makes those unrepresentable.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Separate flags allow impossible combinations; one status field cannot",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It uses less memory",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Boolean flags are not supported in strict mode",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It removes the need for a render function",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why delay showing a loading spinner by around 250ms?",
+                  "explanation": "A request finishing in under 100ms would otherwise flash a spinner on and off, which reads as a glitch rather than as progress.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A fast request would otherwise flash the spinner, which looks like a glitch",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It reduces server load",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Spinners cannot render immediately",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It gives the network time to connect",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "careerSlug": "frontend-web-developer",
+    "order": 3,
+    "phaseNumber": 3,
+    "title": "Phase 3 — TypeScript, Tooling & Shipping",
+    "slug": "phase-3-typescript-tooling-and-shipping",
+    "summary": "What makes front-end work maintainable: types that describe real data, narrowing instead of casting, a build you understand, performance measured on a real device, and tests that check behaviour rather than markup.",
+    "estimatedHours": 30,
+    "level": "Foundational",
+    "minimumTrack": "Balanced",
+    "outcomes": [
+      "Describe data with types and let the compiler catch shape errors",
+      "Narrow union types instead of reaching for `any` or a cast",
+      "Explain what npm and a bundler actually do",
+      "Measure and improve performance on a mid-range device",
+      "Test front-end behaviour the way a user experiences it"
+    ],
+    "skillSlugs": [
+      "typescript",
+      "html-css",
+      "testing",
+      "angular",
+      "git"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "TypeScript",
+        "summary": "Types that describe your data, and narrowing instead of casting.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Types That Describe Your Data",
+            "slug": "types-that-describe-your-data",
+            "type": "Coding",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## It is JavaScript with the shapes written down\n\nTypeScript compiles to JavaScript and adds no runtime behaviour. Everything it does happens while you type and when you build.\n\nThe payoff is real: a typo in a property name, a function called with the wrong arguments, a field that might be undefined — all caught before the code runs.\n\n## Infer where obvious, annotate at boundaries\n\n`const count = 0` is inferred as `number`. Writing `: number` there adds noise.\n\nAnnotate where it matters: function parameters, return types on exported functions, and anything crossing a boundary. Those are the places a wrong assumption travels furthest.\n\n## Model your domain\n\nAn `interface` or `type` for your data is documentation the compiler enforces. `Order` says exactly what an order has, and misspelling `custmerId` fails to compile rather than producing `undefined` at runtime.\n\n## Unions express \"one of these\"\n\n`type Status = \"draft\" | \"paid\" | \"cancelled\"` is far better than `string`. A typo is a compile error, your editor autocompletes the options, and a `switch` can be checked for exhaustiveness.\n\n## Optional versus undefined\n\n`email?: string` means the property may be absent. `email: string | undefined` means it must be present and may hold undefined. The distinction matters when constructing objects.\n\n## `unknown`, never `any`\n\n`any` switches off checking for that value and everything derived from it, and it spreads silently through a codebase.\n\n`unknown` is the safe version: you may hold it, but you must narrow it before use. For data arriving from outside — an API response, JSON from storage — `unknown` plus a validation step is the correct pattern.\n\n## Turn on `strict`\n\n`strict: true` enables the checks that make TypeScript worth using, particularly `strictNullChecks`. Without it, every type silently includes null and undefined, and the tool catches far less.\n\nStart strict on a new project.",
+            "codeExample": "// --- model the domain -----------------------------------------------------\ntype OrderStatus = \"draft\" | \"submitted\" | \"shipped\" | \"cancelled\";\n\ninterface Order {\n  readonly id: string;\n  customerId: string;\n  status: OrderStatus;\n  lines: OrderLine[];\n  placedAt: string;          // ISO 8601; a Date does not survive JSON\n  cancelledAt?: string;      // optional: may be absent entirely\n}\n\ninterface OrderLine {\n  sku: string;\n  quantity: number;\n  unitPriceMinor: number;    // pence, not pounds — never a float for money\n}\n\n// A typo is now a compile error rather than a silent undefined at runtime.\nfunction describe(order: Order): string {\n  // return order.custmerId;            // error: did you mean 'customerId'?\n  return `${order.customerId}: ${order.status}`;\n}\n\n// A literal union autocompletes and rejects typos.\nfunction setStatus(order: Order, status: OrderStatus): Order {\n  return { ...order, status };\n}\n// setStatus(order, \"shiped\");          // error: not assignable to OrderStatus\n\n// --- unknown, not any -----------------------------------------------------\nasync function loadOrderUnsafe(id: string): Promise<Order> {\n  const response = await fetch(`/api/orders/${id}`);\n  return response.json();              // typed as `any`: a total lie. The\n}                                      // compiler now trusts data it never saw.\n\nfunction isOrder(value: unknown): value is Order {\n  if (typeof value !== \"object\" || value === null) return false;\n  const o = value as Record<string, unknown>;\n  return typeof o.id === \"string\"\n      && typeof o.customerId === \"string\"\n      && typeof o.status === \"string\"\n      && Array.isArray(o.lines);\n}\n\nasync function loadOrder(id: string): Promise<Order> {\n  const response = await fetch(`/api/orders/${id}`);\n  if (!response.ok) throw new Error(`Failed: ${response.status}`);\n\n  const data: unknown = await response.json();   // honest about what we have\n  if (!isOrder(data)) {\n    // Fails HERE with a clear message, not three components away as an\n    // \"undefined is not a function\".\n    throw new Error(\"Unexpected response shape from /api/orders\");\n  }\n  return data;                                   // narrowed to Order\n}\n\n// --- tsconfig.json --------------------------------------------------------\n// {\n//   \"compilerOptions\": {\n//     \"strict\": true,                     // the checks that make it worthwhile\n//     \"noUncheckedIndexedAccess\": true,   // arr[0] is T | undefined — honest\n//     \"noUnusedLocals\": true,\n//     \"target\": \"ES2022\",\n//     \"module\": \"ESNext\",\n//     \"moduleResolution\": \"bundler\"\n//   }\n// }",
+            "codeLanguage": "typescript",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "TypeScript adds no runtime behaviour — it checks while you write and build",
+              "Let inference handle the obvious; annotate boundaries and exported signatures",
+              "String literal unions beat `string` for fixed sets of values",
+              "Use `unknown` for external data and narrow it; never `any`",
+              "Enable `strict`, especially `strictNullChecks`"
+            ],
+            "resources": [
+              {
+                "title": "TypeScript handbook",
+                "url": "https://www.typescriptlang.org/docs/handbook/intro.html",
+                "kind": "Documentation"
+              }
+            ],
+            "quiz": {
+              "title": "TypeScript basics",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why is `unknown` preferable to `any` for an API response?",
+                  "explanation": "`any` disables checking for that value and everything derived from it. `unknown` forces you to narrow before use, so the validation happens once at the boundary.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "`unknown` forces narrowing before use; `any` disables checking and spreads",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "`unknown` is faster at runtime",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "`any` is deprecated in recent TypeScript",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "They behave identically with strict mode enabled",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What does enabling `strictNullChecks` change?",
+                  "explanation": "Without it, null and undefined are assignable to every type, so the compiler cannot warn about the most common runtime error in JavaScript.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "null and undefined stop being assignable to every type, so unguarded access is flagged",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It prevents variables being declared without a value",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It converts null to undefined automatically",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It only affects function return types",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Narrowing, Unions and Avoiding the Cast",
+            "slug": "narrowing-unions-and-avoiding-the-cast",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## A cast is a promise, not a check\n\n`value as Order` tells the compiler to stop asking questions. Nothing is verified. If you are wrong, the error surfaces somewhere else entirely, and the type annotation actively misleads the next reader.\n\nNarrowing is the alternative: prove the type with a check the compiler understands.\n\n## The compiler follows your checks\n\n`typeof x === \"string\"`, `Array.isArray(x)`, `x instanceof Error`, `\"kind\" in x`, and a plain `if (x)` all narrow the type inside the branch. You do not need to cast afterwards.\n\n## Discriminated unions\n\nGive each variant a shared literal field and the compiler can tell them apart:\n\n```ts\ntype Result =\n  | { status: \"ok\"; data: Order }\n  | { status: \"error\"; message: string };\n```\n\nInside `if (result.status === \"ok\")`, `result.data` is available and `result.message` is not. That is the whole pattern, and it models almost every \"one of these outcomes\" situation.\n\n## Exhaustiveness checking\n\nAssign the narrowed value to `never` in the default branch. When someone adds a variant, every switch missing it fails to compile — pointing you at each place that must handle it.\n\nThis turns a whole class of runtime bug into a build error.\n\n## Type predicates for reusable checks\n\nA function returning `value is Order` performs a real runtime check and narrows the type for the caller. Unlike a cast, it verifies.\n\n## Prefer `satisfies` to an annotation for config objects\n\n`satisfies` checks that a value conforms to a type while keeping its specific inferred type. You get validation without losing the literal types.\n\n## Zod or Valibot at the boundary\n\nHand-written type guards get tedious. A schema library validates at runtime and derives the TypeScript type from the same schema, so the two cannot drift apart.",
+            "codeExample": "// --- a cast is a promise; narrowing is a proof ---------------------------\nfunction badLength(value: unknown): number {\n  return (value as string).length;     // no check: crashes if it is a number\n}\n\nfunction length(value: unknown): number {\n  if (typeof value === \"string\") return value.length;   // narrowed to string\n  if (Array.isArray(value)) return value.length;        // narrowed to unknown[]\n  return 0;\n}\n\n// --- discriminated union: the pattern for \"one of these outcomes\" --------\ntype LoadResult =\n  | { status: \"loading\" }\n  | { status: \"empty\" }\n  | { status: \"data\"; orders: Order[] }\n  | { status: \"error\"; message: string; retryable: boolean };\n\nfunction renderResult(result: LoadResult): string {\n  switch (result.status) {\n    case \"loading\":\n      return \"Loading...\";\n    case \"empty\":\n      return \"No orders yet\";\n    case \"data\":\n      return `${result.orders.length} orders`;      // .orders available here\n      // return result.message;                     // error: not on this variant\n    case \"error\":\n      return result.retryable ? `${result.message} Try again.` : result.message;\n    default: {\n      // Exhaustiveness: adding a fifth variant makes THIS line fail to compile,\n      // pointing at every switch that must now handle it.\n      const exhaustive: never = result;\n      return exhaustive;\n    }\n  }\n}\n\n// --- narrowing with `in` and instanceof ----------------------------------\ntype ApiFailure = { code: number } | Error;\n\nfunction describeFailure(failure: ApiFailure): string {\n  if (failure instanceof Error) return failure.message;   // narrowed to Error\n  if (\"code\" in failure) return `HTTP ${failure.code}`;   // narrowed to the object\n  return \"Unknown failure\";\n}\n\n// --- satisfies: validate without losing the literal types ----------------\nconst themes = {\n  light: { bg: \"#ffffff\", ink: \"#1a1a1a\" },\n  dark:  { bg: \"#161616\", ink: \"#f0f0f0\" },\n} satisfies Record<string, { bg: string; ink: string }>;\n\ntype ThemeName = keyof typeof themes;     // \"light\" | \"dark\", not just string\n// With `: Record<string, ...>` instead, ThemeName would widen to `string`.\n\n// --- a schema library so the type and the check cannot drift -------------\nimport { z } from \"zod\";\n\nconst OrderSchema = z.object({\n  id: z.string(),\n  customerId: z.string(),\n  status: z.enum([\"draft\", \"submitted\", \"shipped\", \"cancelled\"]),\n  lines: z.array(z.object({\n    sku: z.string(),\n    quantity: z.number().int().positive(),\n    unitPriceMinor: z.number().int().nonnegative(),\n  })),\n  placedAt: z.string().datetime(),\n});\n\ntype OrderFromSchema = z.infer<typeof OrderSchema>;   // derived from the schema\n\nasync function fetchOrder(id: string): Promise<OrderFromSchema> {\n  const response = await fetch(`/api/orders/${id}`);\n  // Validates at runtime AND narrows the type. One definition, so the check\n  // and the type can never disagree.\n  return OrderSchema.parse(await response.json());\n}",
+            "codeLanguage": "typescript",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "A cast asserts without checking; narrowing proves it to the compiler",
+              "`typeof`, `instanceof`, `in` and truthiness all narrow inside the branch",
+              "A discriminated union plus a switch models any set of outcomes",
+              "Assign to `never` in the default branch for exhaustiveness checking",
+              "Use a schema library at the boundary so the type and the check cannot drift"
+            ],
+            "quiz": {
+              "title": "Narrowing",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What does `value as Order` actually do?",
+                  "explanation": "It asserts the type without any verification. If the value is not an Order, the failure surfaces somewhere unrelated and the annotation misleads readers.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Asserts the type with no runtime check, so a wrong assumption fails elsewhere",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Converts the value into an Order at runtime",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Validates the value against the Order interface",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Throws immediately if the shape does not match",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What does assigning the narrowed value to `never` in a default branch achieve?",
+                  "explanation": "Once every variant is handled, the remaining type is never. Adding a variant breaks that assignment, so the build fails at every switch that must be updated.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Adding a new union variant makes every unhandled switch fail to compile",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It throws a runtime error for unexpected values",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It silences the compiler for unhandled cases",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It converts the switch into an if-else chain",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "Tooling",
+        "summary": "What npm and a bundler actually do, and what a framework adds on top.",
+        "estimatedHours": 1.4,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "npm, Modules and a Build You Understand",
+            "slug": "npm-modules-and-a-build-you-understand",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## npm installs, and records what it installed\n\n`package.json` lists your direct dependencies. `package-lock.json` records the exact resolved versions of everything, including transitive dependencies.\n\nCommit the lock file. Without it, your colleague and your CI server get different versions and \"works on my machine\" becomes a real conversation.\n\nUse `npm ci` in CI: it installs exactly the lock file, and fails if the two disagree.\n\n## Version ranges\n\n`^1.2.3` accepts any 1.x. `~1.2.3` accepts 1.2.x. `1.2.3` accepts only that.\n\nThe caret is the default and usually fine, because the lock file pins the actual version. The range only matters when the lock is regenerated.\n\n## dependencies versus devDependencies\n\nAnything the shipped code imports is a dependency. Build tools, test runners and type definitions are devDependencies and never reach production.\n\n## ES modules\n\n`import` and `export` are the standard. They are statically analysable, which is what lets a bundler remove code you do not use.\n\nPrefer named exports. A default export can be imported under any name, so the same module gets three different names across a codebase.\n\n## What a bundler does\n\nVite, esbuild or Rollup follow your imports, produce a dependency graph, and emit a small number of optimised files.\n\nConcretely: it resolves bare imports the browser cannot, transpiles TypeScript and modern syntax, removes unused exports, minifies, adds content hashes to filenames for caching, and splits code so a route's JavaScript loads only when that route does.\n\n## Know what is in your bundle\n\nRun a bundle analyser occasionally. A 300KB date library imported for one function, or a whole icon set pulled in for three icons, is common and usually a one-line fix.\n\n## Keep the dependency count honest\n\nEvery dependency is code you ship, a supply-chain risk and a future upgrade. For anything you could write in twenty lines, write the twenty lines.",
+            "codeExample": "// package.json\n{\n  \"name\": \"renewal-dashboard\",\n  \"type\": \"module\",                    // ES modules, not CommonJS\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"tsc --noEmit && vite build\",   // typecheck THEN bundle\n    \"preview\": \"vite preview\",\n    \"test\": \"vitest\",\n    \"analyse\": \"vite build && vite-bundle-visualizer\"\n  },\n  \"dependencies\": {                    // shipped to the browser\n    \"zod\": \"^3.23.8\"\n  },\n  \"devDependencies\": {                 // never reaches production\n    \"typescript\": \"^5.5.4\",\n    \"vite\": \"^5.4.0\",\n    \"vitest\": \"^2.0.5\",\n    \"@types/node\": \"^22.1.0\"\n  }\n}\n\n// Commit package-lock.json. In CI use `npm ci`, which installs exactly the\n// lock file and fails if package.json and the lock disagree — rather than\n// silently resolving something new.\n\n// ---------------------------------------------------------------------------\n// Named exports: the name travels with the thing.\n// api/orders.ts\nexport async function fetchOrder(id: string): Promise<Order> { /* ... */ }\nexport async function listOrders(customerId: string): Promise<Order[]> { /* ... */ }\nexport type { Order, OrderLine } from \"./types.js\";\n\n// A default export can be imported under ANY name, so the same module ends up\n// called three different things across a codebase.\n// export default fetchOrder;\n\n// consumer.ts\nimport { fetchOrder, listOrders } from \"./api/orders.js\";\nimport type { Order } from \"./api/orders.js\";     // type-only: erased at build\n\n// ---------------------------------------------------------------------------\n// Code splitting: this chunk downloads only when the route is visited.\nconst AdminPanel = () => import(\"./routes/admin.js\");\n\n// Tree shaking depends on static imports. This defeats it — the bundler\n// cannot know which export is needed, so it keeps them all.\nconst moduleName = getUserChoice();\nconst mod = await import(`./features/${moduleName}.js`);\n\n// ---------------------------------------------------------------------------\n// vite.config.ts\nexport default {\n  build: {\n    target: \"es2022\",\n    sourcemap: true,          // readable production stack traces\n    rollupOptions: {\n      output: {\n        // Vendor code changes rarely: a separate chunk stays cached across\n        // deployments while your application code changes.\n        manualChunks: { vendor: [\"zod\"] },\n      },\n    },\n  },\n};",
+            "codeLanguage": "json",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Commit the lock file and use `npm ci`; without it environments diverge",
+              "devDependencies never reach production — keep build and test tools there",
+              "Named exports over default; a default can be renamed by every importer",
+              "A bundler resolves, transpiles, tree-shakes, minifies, hashes and splits",
+              "Check the bundle occasionally; every dependency is shipped code and future work"
+            ],
+            "quiz": {
+              "title": "Tooling",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why commit `package-lock.json` and use `npm ci` in CI?",
+                  "explanation": "The lock file records exact resolved versions including transitive ones. `npm ci` installs precisely that and fails on a mismatch, so environments cannot diverge.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It pins exact versions so every environment installs identically",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It makes installation faster but is otherwise optional",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is required for TypeScript to compile",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It replaces the need for package.json",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why prefer named exports over a default export?",
+                  "explanation": "A default export can be imported under any name, so the same module acquires different names in different files, hurting searchability and consistency.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A default can be renamed by every importer, so one module gets several names",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Default exports cannot be tree-shaken",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Default exports are not supported by Vite",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Named exports produce smaller bundles in all cases",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "From Vanilla to a Framework: What Angular Adds",
+            "slug": "from-vanilla-to-a-framework-what-angular-adds",
+            "type": "Concept",
+            "estimatedMinutes": 40,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Why frameworks exist\n\nHand-written DOM manipulation works, and stops scaling at a predictable point. Once several parts of a page depend on the same state, keeping the DOM in agreement with that state by hand becomes the bulk of the work — and the bulk of the bugs.\n\nA framework's core contribution is this: you describe what the UI should look like for a given state, and it handles making the DOM match.\n\n## What Angular provides\n\n- **Components** — a template, styles and logic packaged with a defined input and output contract.\n- **Data binding** — the template re-renders when the data changes; you never write `element.textContent = ...`.\n- **Dependency injection** — the same idea as on the server, and the same benefit for testing.\n- **Routing** — URL to component, with lazy loading per route.\n- **Forms** — validation, state and error display as a system rather than ad hoc.\n- **HTTP client** — typed requests with interceptors for auth and errors.\n- **TypeScript throughout** — Angular assumes it, which is why the earlier TypeScript work matters.\n\n## The cost is real\n\nA framework is more to learn, more to ship, and a set of conventions you must follow. For a landing page or a small widget it is overhead with no return.\n\nThe honest boundary: a handful of interactive elements, use the platform. An application with routing, shared state and many screens, use a framework.\n\n## The concepts transfer\n\nComponents, one-way data flow, lifecycle, dependency injection and reactive state appear in React, Vue and Svelte too, under different names.\n\nLearning one well means learning the second in days. That is why the fundamentals in this path matter more than the framework choice.\n\n## Your platform knowledge does not become obsolete\n\nEvery framework renders to the DOM, is subject to the event loop, and inherits the box model. Framework users who do not know the platform get stuck the moment something behaves unexpectedly — and they cannot debug it, because the abstraction is where they stopped looking.",
+            "codeExample": "// --- by hand: every state change must be manually propagated -------------\nlet orders = [];\nlet status = \"idle\";\n\nasync function loadOrders(customerId) {\n  status = \"loading\";\n  document.querySelector(\"#spinner\").hidden = false;      // remember this\n  document.querySelector(\"#error\").hidden = true;         // and this\n  document.querySelector(\"#list\").innerHTML = \"\";         // and this\n\n  try {\n    orders = await fetchOrders(customerId);\n    status = \"data\";\n    renderList(orders);                                   // and this\n    document.querySelector(\"#count\").textContent = orders.length;   // and this\n  } catch {\n    status = \"error\";\n    document.querySelector(\"#error\").hidden = false;      // and this\n  } finally {\n    document.querySelector(\"#spinner\").hidden = true;     // and this\n  }\n}\n// Every new piece of UI that depends on `orders` adds another line to remember.\n// Forgetting one is the bug, and there is nothing to catch it.\n\n\n// --- Angular: describe the UI for a state --------------------------------\nimport { Component, computed, inject, input, resource } from \"@angular/core\";\n\n@Component({\n  selector: \"app-orders\",\n  standalone: true,\n  template: `\n    @if (ordersResource.isLoading()) {\n      <app-skeleton rows=\"3\" />\n    } @else if (ordersResource.error()) {\n      <app-error [message]=\"errorMessage()\" (retry)=\"ordersResource.reload()\" />\n    } @else if (orders().length === 0) {\n      <app-empty title=\"No orders yet\" />\n    } @else {\n      <p>{{ orders().length }} orders</p>\n      <ul>\n        @for (order of orders(); track order.id) {\n          <li>{{ order.customerId }} — {{ order.status }}</li>\n        }\n      </ul>\n    }\n  `,\n})\nexport class OrdersComponent {\n  customerId = input.required<string>();\n  private api = inject(OrdersApi);        // dependency injection: fake it in tests\n\n  ordersResource = resource({\n    request: () => ({ customerId: this.customerId() }),\n    loader: ({ request }) => this.api.list(request.customerId),\n  });\n\n  // Derived state: recomputed automatically, never manually synchronised.\n  orders = computed(() => this.ordersResource.value() ?? []);\n  errorMessage = computed(() =>\n    this.ordersResource.error() ? \"Could not load orders.\" : \"\");\n}\n// All four states are declared in one place. Adding a fifth piece of UI that\n// depends on `orders` requires nothing to be remembered.",
+            "codeLanguage": "typescript",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Frameworks exist so you describe the UI for a state, not the steps to update it",
+              "Angular brings components, binding, DI, routing, forms and a typed HTTP client",
+              "For a few interactive elements the platform is enough; an app needs a framework",
+              "Components, one-way flow and lifecycle transfer across all the major frameworks",
+              "Platform knowledge is what lets you debug when the abstraction behaves oddly"
+            ],
+            "quiz": {
+              "title": "Frameworks",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What is the central problem a UI framework solves?",
+                  "explanation": "Keeping the DOM in agreement with application state by hand becomes the bulk of the work and the bugs. A framework derives the DOM from the state instead.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Keeping the DOM in sync with state manually does not scale as dependencies grow",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Browsers cannot render complex pages without one",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "JavaScript is too slow without a framework",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Frameworks are required for TypeScript support",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why does platform knowledge still matter when using a framework?",
+                  "explanation": "Frameworks render to the DOM, run on the event loop and inherit CSS behaviour. When something behaves unexpectedly, debugging requires understanding the layer beneath.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Frameworks sit on the DOM, the event loop and CSS — debugging requires that layer",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Frameworks are frequently replaced, so the API is not worth learning",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Frameworks do not support standard CSS",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is only relevant for supporting older browsers",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Shipping",
+        "summary": "Performance measured on a real device, and tests that check behaviour.",
+        "estimatedHours": 1.4,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Performance on a Real Device",
+            "slug": "performance-on-a-real-device",
+            "type": "Lab",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Your laptop is not the test\n\nYou are on a fast machine with a fast connection and a warm cache. Your users are frequently on a mid-range phone on mobile data.\n\nThrottle the CPU to 4x slowdown and the network to Slow 4G in dev tools. That is a far more honest picture, and it is usually uncomfortable the first time.\n\n## Measure the metrics users feel\n\n- **Largest Contentful Paint** — when the main content appears. Target under 2.5s.\n- **Interaction to Next Paint** — how quickly the page responds to input. Target under 200ms.\n- **Cumulative Layout Shift** — how much content jumps as it loads. Target under 0.1.\n\nThese correspond to what people actually experience: is it there, does it respond, does it stay still.\n\n## JavaScript is the usual culprit\n\nA large bundle must be downloaded, parsed and executed before anything is interactive, and parsing is where a slow device really suffers.\n\nThe fixes, in order of impact: split by route, defer what is not needed immediately, and remove dependencies you barely use.\n\n## Images are the other one\n\nServe modern formats. Size them for the space they occupy — a 3000px image in a 400px slot wastes most of the bytes. Set `width` and `height` so the space is reserved, and `loading=\"lazy\"` below the fold.\n\n## Layout shift has a small number of causes\n\nImages without dimensions, web fonts swapping, and content injected above existing content. Each has a standard fix: size attributes, `font-display: optional` or a matched fallback metric, and reserving space for anything that will arrive.\n\n## Cache deliberately\n\nContent-hashed filenames can be cached for a year, because a change produces a new name. The HTML must not be, or nobody gets the new version.\n\n## Measure, change one thing, measure again\n\nRun Lighthouse before and after. Performance work done by intuition frequently makes things worse, and without a before-and-after you will not know.",
+            "codeExample": "<!-- Preconnect to an origin you will definitely use: saves the DNS and TLS\n     round trips on a slow connection. -->\n<link rel=\"preconnect\" href=\"https://api.example.com\" crossorigin>\n\n<!-- Preload the LCP image so it starts downloading before the CSS is parsed. -->\n<link rel=\"preload\" as=\"image\" href=\"/hero-800.webp\"\n      imagesrcset=\"/hero-400.webp 400w, /hero-800.webp 800w, /hero-1600.webp 1600w\">\n\n<!-- font-display: swap shows fallback text immediately rather than invisible\n     text, and the preload reduces the reflow when the real font arrives. -->\n<link rel=\"preload\" as=\"font\" type=\"font/woff2\"\n      href=\"/fonts/inter.woff2\" crossorigin>\n\n<!-- Serve the size the slot needs. A 1600px image in a 400px slot wastes most\n     of its bytes, and on Slow 4G that is seconds. -->\n<img src=\"/hero-800.webp\"\n     srcset=\"/hero-400.webp 400w, /hero-800.webp 800w, /hero-1600.webp 1600w\"\n     sizes=\"(max-width: 40rem) 100vw, 800px\"\n     width=\"800\" height=\"400\"          <!-- reserves the space: no layout shift -->\n     alt=\"\" fetchpriority=\"high\">\n\n<!-- Below the fold: defer entirely. -->\n<img src=\"/chart.webp\" width=\"600\" height=\"300\" alt=\"\" loading=\"lazy\" decoding=\"async\">\n\n<style>\n  /* Reserve space for anything that arrives later — an ad slot, an embed,\n     a banner. Injecting content above existing content is the other main\n     cause of layout shift. */\n  .ad-slot { min-height: 250px; }\n\n  @font-face {\n    font-family: \"Inter\";\n    src: url(\"/fonts/inter.woff2\") format(\"woff2\");\n    font-display: swap;\n    /* Match the fallback's metrics so the swap does not reflow the text. */\n    size-adjust: 107%;\n    ascent-override: 90%;\n  }\n</style>\n\n<!-- Route-level code splitting: the admin bundle downloads only when needed. -->\n<script type=\"module\">\n  document.querySelector(\"#admin-link\")?.addEventListener(\"click\", async () => {\n    const { mountAdmin } = await import(\"./routes/admin.js\");\n    mountAdmin();\n  });\n</script>\n\n<!--\nCaching:\n  /assets/main.a3f9c2.js   Cache-Control: public, max-age=31536000, immutable\n                           (safe forever: a change produces a new hash)\n  /index.html              Cache-Control: no-cache\n                           (must revalidate, or nobody gets the new version)\n\nMeasure honestly:\n  dev tools -> Performance -> CPU 4x slowdown, Network Slow 4G\n  Lighthouse before, change ONE thing, Lighthouse after.\n-->",
+            "codeLanguage": "html",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Test with CPU throttling and Slow 4G — your laptop is not representative",
+              "LCP under 2.5s, INP under 200ms, CLS under 0.1",
+              "Bundle size is usually the biggest lever: split by route and drop dependencies",
+              "Size images for their slot, set dimensions, and lazy-load below the fold",
+              "Cache hashed assets for a year and never cache the HTML"
+            ],
+            "quiz": {
+              "title": "Performance",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why set `width` and `height` on an image even when CSS controls its size?",
+                  "explanation": "The attributes let the browser reserve the correct space before the image loads, preventing the content jump that Cumulative Layout Shift measures.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The browser reserves space before loading, preventing layout shift",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It forces the image to render at that exact pixel size",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is required for lazy loading to work",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It improves image compression",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Which caching headers are right for a content-hashed JavaScript file and for index.html?",
+                  "explanation": "A hashed filename changes when its content does, so it can be cached indefinitely. The HTML must revalidate or users never receive the new asset names.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Cache the hashed file for a year; the HTML must not be cached",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Cache both for a year",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Cache neither",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Cache the HTML for a year and revalidate the JavaScript",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Testing Front-End Code",
+            "slug": "testing-front-end-code",
+            "type": "Coding",
+            "estimatedMinutes": 40,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Test what a user does\n\nThe most useful front-end tests interact the way a person does: find the button by its visible label, click it, and check what appears.\n\nTests written against CSS classes and DOM structure break every time the markup is tidied, teaching the team that failures are noise.\n\n## Query the way people perceive\n\nTesting Library's guidance is to find elements by role and accessible name — `getByRole(\"button\", { name: \"Create account\" })`.\n\nThis has a useful side effect: if your test cannot find the element that way, a screen reader user probably cannot either. The test surfaces accessibility problems for free.\n\n## Three levels\n\n- **Unit** — pure functions: formatting, validation, calculation. Fast, and where most cases belong.\n- **Component** — render a component, interact, assert. Vitest with Testing Library.\n- **End-to-end** — a real browser over a real flow with Playwright. Slow, so keep them few and important.\n\nMost tests should be the first two.\n\n## Do not test the framework\n\n`@if` works. Your template's conditional rendering does not need a test proving the framework functions.\n\nTest your logic, your states and your edge cases.\n\n## Cover all four states\n\nLoading, empty, error and data. The error and empty cases are the ones nobody clicks through manually, and therefore the ones that break.\n\n## Mock at the network boundary\n\nIntercept HTTP rather than stubbing your own service classes. Then your real data-fetching code runs, including the error handling, and the test survives refactoring.\n\n## One end-to-end test of the critical path\n\nSign in, do the main thing, sign out — in a real browser. This catches the build-level failures no unit test can: a missing asset, a broken route, a content security policy blocking a script.",
+            "codeExample": "import { describe, expect, it, vi } from \"vitest\";\nimport { render, screen } from \"@testing-library/angular\";\nimport userEvent from \"@testing-library/user-event\";\nimport { http, HttpResponse } from \"msw\";\nimport { setupServer } from \"msw/node\";\n\n// Intercept at the NETWORK boundary. Our real fetching code, error handling\n// and parsing all run — and the test survives refactoring them.\nconst server = setupServer();\nbeforeAll(() => server.listen());\nafterEach(() => server.resetHandlers());\nafterAll(() => server.close());\n\ndescribe(\"OrdersComponent\", () => {\n\n  it(\"shows the orders once they load\", async () => {\n    server.use(http.get(\"/api/customers/:id/orders\", () =>\n      HttpResponse.json([\n        { id: \"1\", customerId: \"C-1\", status: \"shipped\", lines: [] },\n        { id: \"2\", customerId: \"C-1\", status: \"draft\", lines: [] },\n      ])));\n\n    await render(OrdersComponent, { inputs: { customerId: \"C-1\" } });\n\n    // Found by what the user SEES, not by a CSS class that will be renamed.\n    expect(await screen.findByText(\"2 orders\")).toBeInTheDocument();\n  });\n\n  it(\"shows an empty state, not an error, when there are no orders\", async () => {\n    server.use(http.get(\"/api/customers/:id/orders\", () => HttpResponse.json([])));\n\n    await render(OrdersComponent, { inputs: { customerId: \"C-1\" } });\n\n    // Empty and error are different situations and must look different.\n    expect(await screen.findByText(\"No orders yet\")).toBeInTheDocument();\n    expect(screen.queryByRole(\"alert\")).not.toBeInTheDocument();\n  });\n\n  it(\"shows an error with a working retry when the request fails\", async () => {\n    let attempts = 0;\n    server.use(http.get(\"/api/customers/:id/orders\", () => {\n      attempts += 1;\n      return attempts === 1\n        ? new HttpResponse(null, { status: 500 })\n        : HttpResponse.json([{ id: \"1\", customerId: \"C-1\", status: \"draft\", lines: [] }]);\n    }));\n\n    await render(OrdersComponent, { inputs: { customerId: \"C-1\" } });\n\n    expect(await screen.findByText(/could not load/i)).toBeInTheDocument();\n\n    // By role and accessible name: if this query fails, a screen reader user\n    // cannot find the button either. The test catches that for free.\n    await userEvent.click(screen.getByRole(\"button\", { name: /try again/i }));\n\n    expect(await screen.findByText(\"1 orders\")).toBeInTheDocument();\n  });\n});\n\n// --- one end-to-end test of the critical path ----------------------------\n// tests/e2e/critical-path.spec.ts — Playwright, a real browser.\n// Catches what no unit test can: a missing asset, a broken route, a CSP\n// blocking a script, a build that produces nothing.\n//\n// test(\"a user can sign in and see their orders\", async ({ page }) => {\n//   await page.goto(\"/\");\n//   await page.getByLabel(\"Email address\").fill(\"test@example.com\");\n//   await page.getByLabel(\"Password\").fill(\"correct-horse-battery\");\n//   await page.getByRole(\"button\", { name: \"Sign in\" }).click();\n//   await expect(page.getByRole(\"heading\", { name: \"Your orders\" })).toBeVisible();\n// });",
+            "codeLanguage": "typescript",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Test by visible label and role, the way a user perceives the page",
+              "Queries that fail by accessible name often reveal a real accessibility problem",
+              "Mostly unit and component tests; keep end-to-end tests few",
+              "Do not test the framework — test your logic and your states",
+              "Mock at the network boundary so your real fetching and error handling run"
+            ],
+            "quiz": {
+              "title": "Testing front-end code",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why query elements by role and accessible name rather than by CSS class?",
+                  "explanation": "It matches how a user perceives the page, survives markup refactoring, and a failing query often reveals a genuine accessibility problem.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It reflects how users perceive the page and surfaces accessibility problems",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Role queries execute faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "CSS classes are not available in tests",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is the only way to find dynamically rendered elements",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why intercept at the network boundary rather than stubbing your own API service?",
+                  "explanation": "Intercepting HTTP means your real fetching, parsing and error handling all execute, so the test covers them and survives refactoring of those internals.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Your real fetching and error-handling code runs, and the test survives refactoring",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It is the only way to test asynchronous code",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Service stubs are not supported by Vitest",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It produces faster tests in every case",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

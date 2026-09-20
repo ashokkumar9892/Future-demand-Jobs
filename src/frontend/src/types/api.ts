@@ -31,6 +31,9 @@ export interface CareerSummary {
   title: string;
   slug: string;
   summary: string;
+  /** Display grouping, e.g. "Foundations" or "AI Engineering". */
+  category: string;
+  categoryOrder: number;
   salaryMinUsd: number;
   salaryMaxUsd: number;
   seniorSalaryMinUsd: number;

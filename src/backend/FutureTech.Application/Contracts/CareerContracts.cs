@@ -6,6 +6,8 @@ public record CareerSummaryDto(
     string Title,
     string Slug,
     string Summary,
+    string Category,
+    int CategoryOrder,
     int SalaryMinUsd,
     int SalaryMaxUsd,
     int SeniorSalaryMinUsd,

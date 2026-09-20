@@ -34,7 +34,10 @@ public record CareerSeed(
     List<string> ResumeKeywords, List<string> Responsibilities, List<string> InterviewFocus,
     List<CareerSkillSeed> Skills, List<LadderStageSeed> Ladder,
     List<ReadinessDimensionSeed> ReadinessDimensions,
-    List<string> Certifications, List<string> Projects);
+    List<string> Certifications, List<string> Projects,
+    // Optional so a content pack written before grouping existed still loads;
+    // such a career falls into the "Other" group at the end of the list.
+    string? Category = null, int CategoryOrder = 0);
 
 public record ResourceSeed(string Title, string Url, string Kind);
 

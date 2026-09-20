@@ -20,13 +20,44 @@
     "resumeBullets": [
       "Built a streaming LLM chat application with Angular and ASP.NET Core, including server-side prompt management, bounded context windows and per-message token cost accounting"
     ],
-    "skillSlugs": ["csharp", "dotnet", "angular", "llm", "prompt-engineering"],
+    "skillSlugs": [
+      "csharp",
+      "dotnet",
+      "angular",
+      "llm",
+      "prompt-engineering"
+    ],
     "milestones": [
-      { "order": 1, "title": "API skeleton and provider abstraction", "description": "ASP.NET Core project, typed client behind an ILlmProvider interface, configuration-bound keys via user secrets.", "estimatedHours": 3 },
-      { "order": 2, "title": "Streaming endpoint", "description": "Server-sent events from the API to the browser; verify first-token latency.", "estimatedHours": 4 },
-      { "order": 3, "title": "Angular chat UI", "description": "Message list, streaming renderer, markdown formatting, error and retry states.", "estimatedHours": 5 },
-      { "order": 4, "title": "Conversation persistence", "description": "Per-user conversations and messages, with a context-window trimming strategy.", "estimatedHours": 4 },
-      { "order": 5, "title": "Cost and resilience", "description": "Token accounting, retry with exponential backoff, structured logging.", "estimatedHours": 4 }
+      {
+        "order": 1,
+        "title": "API skeleton and provider abstraction",
+        "description": "ASP.NET Core project, typed client behind an ILlmProvider interface, configuration-bound keys via user secrets.",
+        "estimatedHours": 3
+      },
+      {
+        "order": 2,
+        "title": "Streaming endpoint",
+        "description": "Server-sent events from the API to the browser; verify first-token latency.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 3,
+        "title": "Angular chat UI",
+        "description": "Message list, streaming renderer, markdown formatting, error and retry states.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 4,
+        "title": "Conversation persistence",
+        "description": "Per-user conversations and messages, with a context-window trimming strategy.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 5,
+        "title": "Cost and resilience",
+        "description": "Token accounting, retry with exponential backoff, structured logging.",
+        "estimatedHours": 4
+      }
     ]
   },
   {
@@ -50,14 +81,51 @@
     "resumeBullets": [
       "Delivered an enterprise document question-answering system over PDF, Word and Excel sources using Azure OpenAI and Azure AI Search, with hybrid retrieval, reranking and enforced citations"
     ],
-    "skillSlugs": ["rag", "vector-db", "azure", "dotnet", "angular", "llm"],
+    "skillSlugs": [
+      "rag",
+      "vector-db",
+      "azure",
+      "dotnet",
+      "angular",
+      "llm"
+    ],
     "milestones": [
-      { "order": 1, "title": "Upload and storage", "description": "Multi-format upload to Blob Storage with virus-scan hook and metadata record.", "estimatedHours": 4 },
-      { "order": 2, "title": "Extraction and chunking", "description": "Text extraction per format, chunking with configurable size and overlap, location metadata retained.", "estimatedHours": 6 },
-      { "order": 3, "title": "Embedding and indexing", "description": "Batch embedding, Azure AI Search index schema with vector and filterable fields.", "estimatedHours": 5 },
-      { "order": 4, "title": "Hybrid retrieval and reranking", "description": "Keyword plus vector query, semantic reranking, top-k tuning.", "estimatedHours": 5 },
-      { "order": 5, "title": "Grounded answering with citations", "description": "Prompt construction, citation extraction, refusal behaviour when unsupported.", "estimatedHours": 5 },
-      { "order": 6, "title": "Evaluation set", "description": "20 question/answer pairs with measured groundedness and retrieval hit rate.", "estimatedHours": 3 }
+      {
+        "order": 1,
+        "title": "Upload and storage",
+        "description": "Multi-format upload to Blob Storage with virus-scan hook and metadata record.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 2,
+        "title": "Extraction and chunking",
+        "description": "Text extraction per format, chunking with configurable size and overlap, location metadata retained.",
+        "estimatedHours": 6
+      },
+      {
+        "order": 3,
+        "title": "Embedding and indexing",
+        "description": "Batch embedding, Azure AI Search index schema with vector and filterable fields.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 4,
+        "title": "Hybrid retrieval and reranking",
+        "description": "Keyword plus vector query, semantic reranking, top-k tuning.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 5,
+        "title": "Grounded answering with citations",
+        "description": "Prompt construction, citation extraction, refusal behaviour when unsupported.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 6,
+        "title": "Evaluation set",
+        "description": "20 question/answer pairs with measured groundedness and retrieval hit rate.",
+        "estimatedHours": 3
+      }
     ]
   },
   {
@@ -80,13 +148,44 @@
     "resumeBullets": [
       "Built a tool-calling customer service agent over live CRM and order systems with server-side authorisation, bounded reasoning loops and full tool-call auditing"
     ],
-    "skillSlugs": ["ai-agents", "llm", "dotnet", "sql", "ai-security"],
+    "skillSlugs": [
+      "ai-agents",
+      "llm",
+      "dotnet",
+      "sql",
+      "ai-security"
+    ],
     "milestones": [
-      { "order": 1, "title": "Tool contracts", "description": "Define three tools with strict JSON schemas and server-side validation.", "estimatedHours": 4 },
-      { "order": 2, "title": "Authorisation layer", "description": "Bind every tool call to the authenticated principal; write the negative tests first.", "estimatedHours": 5 },
-      { "order": 3, "title": "Agent loop", "description": "Planner, tool dispatch, step limit, timeout and cancellation.", "estimatedHours": 6 },
-      { "order": 4, "title": "Knowledge base retrieval", "description": "Index support articles and wire them in as the third tool.", "estimatedHours": 4 },
-      { "order": 5, "title": "Audit and handoff", "description": "Structured audit log and human escalation path.", "estimatedHours": 4 }
+      {
+        "order": 1,
+        "title": "Tool contracts",
+        "description": "Define three tools with strict JSON schemas and server-side validation.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 2,
+        "title": "Authorisation layer",
+        "description": "Bind every tool call to the authenticated principal; write the negative tests first.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 3,
+        "title": "Agent loop",
+        "description": "Planner, tool dispatch, step limit, timeout and cancellation.",
+        "estimatedHours": 6
+      },
+      {
+        "order": 4,
+        "title": "Knowledge base retrieval",
+        "description": "Index support articles and wire them in as the third tool.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 5,
+        "title": "Audit and handoff",
+        "description": "Structured audit log and human escalation path.",
+        "estimatedHours": 4
+      }
     ]
   },
   {
@@ -109,14 +208,50 @@
     "resumeBullets": [
       "Built a human-in-the-loop email automation service that classifies, summarises and drafts replies with structured outputs, idempotent processing and an explicit approval gate before any send"
     ],
-    "skillSlugs": ["ai-agents", "llm", "dotnet", "prompt-engineering", "ai-security"],
+    "skillSlugs": [
+      "ai-agents",
+      "llm",
+      "dotnet",
+      "prompt-engineering",
+      "ai-security"
+    ],
     "milestones": [
-      { "order": 1, "title": "Mailbox ingestion", "description": "Connect to the mailbox, poll or subscribe, store message metadata idempotently.", "estimatedHours": 4 },
-      { "order": 2, "title": "Structured classification", "description": "Fixed taxonomy, JSON schema output, confidence thresholds.", "estimatedHours": 4 },
-      { "order": 3, "title": "Thread summarisation", "description": "Chunk and summarise long threads within a token budget.", "estimatedHours": 4 },
-      { "order": 4, "title": "Draft generation", "description": "Tone-matched drafts grounded in the thread and related records.", "estimatedHours": 5 },
-      { "order": 5, "title": "Approval workflow", "description": "Angular review queue with approve, edit, reject and audit trail.", "estimatedHours": 5 },
-      { "order": 6, "title": "Safety pass", "description": "PII redaction and prompt-injection defences on untrusted email content.", "estimatedHours": 2 }
+      {
+        "order": 1,
+        "title": "Mailbox ingestion",
+        "description": "Connect to the mailbox, poll or subscribe, store message metadata idempotently.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 2,
+        "title": "Structured classification",
+        "description": "Fixed taxonomy, JSON schema output, confidence thresholds.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 3,
+        "title": "Thread summarisation",
+        "description": "Chunk and summarise long threads within a token budget.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 4,
+        "title": "Draft generation",
+        "description": "Tone-matched drafts grounded in the thread and related records.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 5,
+        "title": "Approval workflow",
+        "description": "Angular review queue with approve, edit, reject and audit trail.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 6,
+        "title": "Safety pass",
+        "description": "PII redaction and prompt-injection defences on untrusted email content.",
+        "estimatedHours": 2
+      }
     ]
   },
   {
@@ -139,13 +274,44 @@
     "resumeBullets": [
       "Implemented a natural-language-to-SQL assistant with curated schema grounding, AST-level query validation and execution under a restricted read-only principal"
     ],
-    "skillSlugs": ["llm", "sql", "dotnet", "ai-security", "data-governance"],
+    "skillSlugs": [
+      "llm",
+      "sql",
+      "dotnet",
+      "ai-security",
+      "data-governance"
+    ],
     "milestones": [
-      { "order": 1, "title": "Curated schema context", "description": "Build the whitelisted schema description passed to the model.", "estimatedHours": 4 },
-      { "order": 2, "title": "Generation prompt", "description": "System prompt, dialect rules, few-shot examples, structured output.", "estimatedHours": 4 },
-      { "order": 3, "title": "Validator", "description": "Parse and assert single read-only SELECT; reject everything else.", "estimatedHours": 5 },
-      { "order": 4, "title": "Constrained execution", "description": "Read-only login, row cap, timeout, cancellation.", "estimatedHours": 4 },
-      { "order": 5, "title": "Results UI", "description": "Table, chart, generated-SQL panel, clarifying-question flow.", "estimatedHours": 5 }
+      {
+        "order": 1,
+        "title": "Curated schema context",
+        "description": "Build the whitelisted schema description passed to the model.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 2,
+        "title": "Generation prompt",
+        "description": "System prompt, dialect rules, few-shot examples, structured output.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 3,
+        "title": "Validator",
+        "description": "Parse and assert single read-only SELECT; reject everything else.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 4,
+        "title": "Constrained execution",
+        "description": "Read-only login, row cap, timeout, cancellation.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 5,
+        "title": "Results UI",
+        "description": "Table, chart, generated-SQL panel, clarifying-question flow.",
+        "estimatedHours": 5
+      }
     ]
   },
   {
@@ -168,13 +334,44 @@
     "resumeBullets": [
       "Built an internal IT help desk assistant with runbook retrieval, confidence-based escalation and idempotent ticket creation, instrumented with deflection metrics"
     ],
-    "skillSlugs": ["rag", "ai-agents", "dotnet", "azure", "observability"],
+    "skillSlugs": [
+      "rag",
+      "ai-agents",
+      "dotnet",
+      "azure",
+      "observability"
+    ],
     "milestones": [
-      { "order": 1, "title": "Runbook ingestion", "description": "Index internal documentation with freshness and ownership metadata.", "estimatedHours": 4 },
-      { "order": 2, "title": "Answer pipeline", "description": "Retrieve, ground, produce step-by-step resolution instructions.", "estimatedHours": 5 },
-      { "order": 3, "title": "Confidence and escalation policy", "description": "Define and tune the threshold; make the decision explainable.", "estimatedHours": 4 },
-      { "order": 4, "title": "Ticketing integration", "description": "Idempotent ticket creation with transcript attachment.", "estimatedHours": 4 },
-      { "order": 5, "title": "Metrics dashboard", "description": "Deflection rate, escalation rate, content gap report.", "estimatedHours": 3 }
+      {
+        "order": 1,
+        "title": "Runbook ingestion",
+        "description": "Index internal documentation with freshness and ownership metadata.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 2,
+        "title": "Answer pipeline",
+        "description": "Retrieve, ground, produce step-by-step resolution instructions.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 3,
+        "title": "Confidence and escalation policy",
+        "description": "Define and tune the threshold; make the decision explainable.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 4,
+        "title": "Ticketing integration",
+        "description": "Idempotent ticket creation with transcript attachment.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 5,
+        "title": "Metrics dashboard",
+        "description": "Deflection rate, escalation rate, content gap report.",
+        "estimatedHours": 3
+      }
     ]
   },
   {
@@ -197,13 +394,43 @@
     "resumeBullets": [
       "Delivered an invoice extraction pipeline with schema-constrained output, per-field confidence routing, business-rule validation and a human review queue"
     ],
-    "skillSlugs": ["llm", "dotnet", "azure", "data-governance"],
+    "skillSlugs": [
+      "llm",
+      "dotnet",
+      "azure",
+      "data-governance"
+    ],
     "milestones": [
-      { "order": 1, "title": "Upload and storage", "description": "Secure upload, format checks, blob storage with metadata.", "estimatedHours": 3 },
-      { "order": 2, "title": "Schema-constrained extraction", "description": "Strict JSON schema, per-field confidence, retries on schema failure.", "estimatedHours": 5 },
-      { "order": 3, "title": "Validation rules", "description": "Total reconciliation, date sanity, vendor matching, duplicate detection.", "estimatedHours": 4 },
-      { "order": 4, "title": "Review queue", "description": "Angular review screen with side-by-side document and fields.", "estimatedHours": 4 },
-      { "order": 5, "title": "Accuracy measurement", "description": "Labelled test set and a field-level accuracy report.", "estimatedHours": 2 }
+      {
+        "order": 1,
+        "title": "Upload and storage",
+        "description": "Secure upload, format checks, blob storage with metadata.",
+        "estimatedHours": 3
+      },
+      {
+        "order": 2,
+        "title": "Schema-constrained extraction",
+        "description": "Strict JSON schema, per-field confidence, retries on schema failure.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 3,
+        "title": "Validation rules",
+        "description": "Total reconciliation, date sanity, vendor matching, duplicate detection.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 4,
+        "title": "Review queue",
+        "description": "Angular review screen with side-by-side document and fields.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 5,
+        "title": "Accuracy measurement",
+        "description": "Labelled test set and a field-level accuracy report.",
+        "estimatedHours": 2
+      }
     ]
   },
   {
@@ -227,14 +454,51 @@
     "resumeBullets": [
       "Designed and built a multi-step business automation agent with an inspectable planner, idempotent side effects, compensating transactions, policy-driven approval gates and end-to-end distributed tracing"
     ],
-    "skillSlugs": ["ai-agents", "event-driven", "dotnet", "observability", "ai-security", "architecture"],
+    "skillSlugs": [
+      "ai-agents",
+      "event-driven",
+      "dotnet",
+      "observability",
+      "ai-security",
+      "architecture"
+    ],
     "milestones": [
-      { "order": 1, "title": "Ingestion and intent extraction", "description": "Normalise inbound requests and extract structured intent.", "estimatedHours": 4 },
-      { "order": 2, "title": "Planner", "description": "Produce and persist an explicit step list with preconditions.", "estimatedHours": 6 },
-      { "order": 3, "title": "Executor with idempotency", "description": "Step execution, idempotency keys, retry policy.", "estimatedHours": 6 },
-      { "order": 4, "title": "Compensation", "description": "Compensating actions and consistent-state guarantees on failure.", "estimatedHours": 5 },
-      { "order": 5, "title": "Policy and approval", "description": "Data-driven policy layer with an approval UI.", "estimatedHours": 4 },
-      { "order": 6, "title": "Observability and cost control", "description": "Correlation IDs, traces, per-run cost ceiling and alerts.", "estimatedHours": 5 }
+      {
+        "order": 1,
+        "title": "Ingestion and intent extraction",
+        "description": "Normalise inbound requests and extract structured intent.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 2,
+        "title": "Planner",
+        "description": "Produce and persist an explicit step list with preconditions.",
+        "estimatedHours": 6
+      },
+      {
+        "order": 3,
+        "title": "Executor with idempotency",
+        "description": "Step execution, idempotency keys, retry policy.",
+        "estimatedHours": 6
+      },
+      {
+        "order": 4,
+        "title": "Compensation",
+        "description": "Compensating actions and consistent-state guarantees on failure.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 5,
+        "title": "Policy and approval",
+        "description": "Data-driven policy layer with an approval UI.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 6,
+        "title": "Observability and cost control",
+        "description": "Correlation IDs, traces, per-run cost ceiling and alerts.",
+        "estimatedHours": 5
+      }
     ]
   },
   {
@@ -258,14 +522,52 @@
     "resumeBullets": [
       "Built a multi-tenant enterprise RAG platform with Entra ID authentication, retrieval-time document permission filtering, hybrid search with reranking, enforced citations and cost/latency observability"
     ],
-    "skillSlugs": ["rag", "vector-db", "identity", "azure", "observability", "ai-security", "architecture"],
+    "skillSlugs": [
+      "rag",
+      "vector-db",
+      "identity",
+      "azure",
+      "observability",
+      "ai-security",
+      "architecture"
+    ],
     "milestones": [
-      { "order": 1, "title": "Identity and roles", "description": "Entra ID sign-in, role mapping, group claims available to the API.", "estimatedHours": 5 },
-      { "order": 2, "title": "Permission-aware index", "description": "Index schema carrying ACL metadata; filter applied at query time.", "estimatedHours": 6 },
-      { "order": 3, "title": "Hybrid retrieval and reranking", "description": "Vector plus keyword, reranking, top-k tuning against a test set.", "estimatedHours": 6 },
-      { "order": 4, "title": "Grounded generation", "description": "Citation enforcement and refusal behaviour.", "estimatedHours": 5 },
-      { "order": 5, "title": "Observability", "description": "Structured query logs, dashboards, alerts on cost and latency.", "estimatedHours": 5 },
-      { "order": 6, "title": "Evaluation harness", "description": "Fixed question set with groundedness and relevance scoring.", "estimatedHours": 5 }
+      {
+        "order": 1,
+        "title": "Identity and roles",
+        "description": "Entra ID sign-in, role mapping, group claims available to the API.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 2,
+        "title": "Permission-aware index",
+        "description": "Index schema carrying ACL metadata; filter applied at query time.",
+        "estimatedHours": 6
+      },
+      {
+        "order": 3,
+        "title": "Hybrid retrieval and reranking",
+        "description": "Vector plus keyword, reranking, top-k tuning against a test set.",
+        "estimatedHours": 6
+      },
+      {
+        "order": 4,
+        "title": "Grounded generation",
+        "description": "Citation enforcement and refusal behaviour.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 5,
+        "title": "Observability",
+        "description": "Structured query logs, dashboards, alerts on cost and latency.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 6,
+        "title": "Evaluation harness",
+        "description": "Fixed question set with groundedness and relevance scoring.",
+        "estimatedHours": 5
+      }
     ]
   },
   {
@@ -292,17 +594,537 @@
     "resumeBullets": [
       "Produced an end-to-end enterprise AI architecture for insurance claims processing: requirements, C4 architecture, ADRs, cost model at 40,000 documents/month, security design and a deployed proof of concept"
     ],
-    "skillSlugs": ["architecture", "system-design", "azure", "rag", "ai-security", "cost-optimisation", "terraform", "communication"],
+    "skillSlugs": [
+      "architecture",
+      "system-design",
+      "azure",
+      "rag",
+      "ai-security",
+      "cost-optimisation",
+      "terraform",
+      "communication"
+    ],
     "milestones": [
-      { "order": 1, "title": "Requirements and assumptions", "description": "Functional, non-functional, compliance, out-of-scope, stated assumptions.", "estimatedHours": 4 },
-      { "order": 2, "title": "Architecture views", "description": "Context, container and component diagrams with trust boundaries.", "estimatedHours": 6 },
-      { "order": 3, "title": "Technology selection and ADRs", "description": "Decisions recorded with rejected alternatives and consequences.", "estimatedHours": 4 },
-      { "order": 4, "title": "Cost model", "description": "Service-by-service monthly cost, token maths, 2x sensitivity analysis.", "estimatedHours": 4 },
-      { "order": 5, "title": "Security design", "description": "Identity, network, secrets, PII, residency, injection defences, audit.", "estimatedHours": 5 },
-      { "order": 6, "title": "API design", "description": "OpenAPI specifications for the proposed services.", "estimatedHours": 3 },
-      { "order": 7, "title": "Proof of concept", "description": "Working code for the riskiest component of the design.", "estimatedHours": 8 },
-      { "order": 8, "title": "Deployment from IaC", "description": "Bicep or Terraform deployment to a live environment.", "estimatedHours": 4 },
-      { "order": 9, "title": "Presentation", "description": "20-minute deck for a mixed technical and executive audience.", "estimatedHours": 2 }
+      {
+        "order": 1,
+        "title": "Requirements and assumptions",
+        "description": "Functional, non-functional, compliance, out-of-scope, stated assumptions.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 2,
+        "title": "Architecture views",
+        "description": "Context, container and component diagrams with trust boundaries.",
+        "estimatedHours": 6
+      },
+      {
+        "order": 3,
+        "title": "Technology selection and ADRs",
+        "description": "Decisions recorded with rejected alternatives and consequences.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 4,
+        "title": "Cost model",
+        "description": "Service-by-service monthly cost, token maths, 2x sensitivity analysis.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 5,
+        "title": "Security design",
+        "description": "Identity, network, secrets, PII, residency, injection defences, audit.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 6,
+        "title": "API design",
+        "description": "OpenAPI specifications for the proposed services.",
+        "estimatedHours": 3
+      },
+      {
+        "order": 7,
+        "title": "Proof of concept",
+        "description": "Working code for the riskiest component of the design.",
+        "estimatedHours": 8
+      },
+      {
+        "order": 8,
+        "title": "Deployment from IaC",
+        "description": "Bicep or Terraform deployment to a live environment.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 9,
+        "title": "Presentation",
+        "description": "20-minute deck for a mixed technical and executive audience.",
+        "estimatedHours": 2
+      }
+    ]
+  },
+  {
+    "order": 11,
+    "title": "Enterprise Renewal Intelligence Copilot",
+    "slug": "enterprise-renewal-copilot",
+    "summary": "A renewal-risk copilot over synthetic customer, usage and contract data: scoring service, API, retrieval over contract text with citations, and a review screen an analyst can actually work from.",
+    "briefMarkdown": "## Goal\n\nCompress a renewal analyst's fragmented morning — customer record here, usage export there, contract PDF somewhere else — into a guided review that takes minutes. This is the reference Forward Deployed Engineer project: the value is the analyst's changed workflow, not the model call underneath.\n\n## Why this one\n\nA Forward Deployed Engineer is hired to land a product inside someone else's mess. That means synthetic-but-realistic data, an integration you did not design, and a user who will judge the work by whether their Tuesday got easier. This project rehearses all three.\n\n## What you build\n\nA Python service that scores renewal risk from pure, testable functions; a FastAPI layer over it with generated docs; retrieval over contract text that cites the clause it used; and a thin dashboard for the review itself.\n\n## Data rules\n\n**Synthetic data only.** Generate the customer set — never copy real or employer data into a portfolio repository. Saying so out loud in an interview is itself a signal about how you handle client data.\n\n## Requirements\n\n- Risk scoring lives in pure functions with unit tests, separate from any transport or model code.\n- The API exposes list, single-customer and scored-report endpoints, with pagination on the list.\n- Every AI-generated statement about a contract cites the clause it came from; an answer with no supporting clause says so rather than guessing.\n- The scored report is reproducible: the same input data produces the same ranking.\n- A reviewer can go from \"open the tool\" to \"decision on the top-risk account\" without leaving it.\n\n## Stretch goals\n\n- Swap the model provider behind one interface.\n- Add an evaluation set of known-risky accounts and measure the scorer against it on every commit.\n- Containerise and deploy, with health and readiness endpoints.\n- Log every AI call with token counts so the cost per review is a number you can quote.",
+    "techStack": "Python, FastAPI, pytest, SQLAlchemy, Postgres, retrieval with citations, Docker, Angular",
+    "difficulty": "Advanced",
+    "estimatedHours": 45,
+    "architectureMermaid": "flowchart LR\n  A[Analyst] --> B[Review Dashboard]\n  B --> C[FastAPI Service]\n  C --> D[Risk Scoring - pure functions]\n  C --> E[(Customer & Usage Store)]\n  C --> F[Contract Retrieval]\n  F --> G[(Vector Index)]\n  F --> H[LLM Provider]\n  H --> I[Answer + Clause Citations]",
+    "acceptanceCriteria": [
+      "The repository contains no real customer, employer or personally identifying data; the dataset is generated by a script that ships with it.",
+      "Risk scoring is covered by unit tests that run without a database, a network call or a model.",
+      "The same customer dataset always produces the same risk ranking.",
+      "Every contract claim in the UI links to the clause it was drawn from.",
+      "A question the contracts do not answer returns “not stated in the contract” rather than a plausible invention.",
+      "The API documents itself and a new developer can run the whole thing from the README in under ten minutes."
+    ],
+    "resumeBullets": [
+      "Built a renewal-risk copilot over synthetic enterprise data: deterministic scoring in tested pure functions, a FastAPI service, and contract retrieval where every generated claim cites its source clause",
+      "Designed the tool around the analyst's review workflow, cutting a fragmented multi-system check into a single guided pass"
+    ],
+    "skillSlugs": [
+      "python",
+      "rag",
+      "llm",
+      "rest-api",
+      "testing",
+      "integration",
+      "discovery",
+      "prototyping",
+      "docker"
+    ],
+    "milestones": [
+      {
+        "order": 1,
+        "title": "Synthetic dataset and risk model",
+        "description": "Generator script for customer, usage and contract records. Risk scoring as pure functions with a unit test suite.",
+        "estimatedHours": 8
+      },
+      {
+        "order": 2,
+        "title": "API over the scorer",
+        "description": "FastAPI service exposing list, detail and scored-report endpoints, with pagination and generated docs.",
+        "estimatedHours": 8
+      },
+      {
+        "order": 3,
+        "title": "Persistence",
+        "description": "Move from JSON files to Postgres via SQLAlchemy without changing the scoring functions.",
+        "estimatedHours": 7
+      },
+      {
+        "order": 4,
+        "title": "Contract retrieval with citations",
+        "description": "Chunk and index contract text; answer questions with the clause quoted and linked. Refuse when unsupported.",
+        "estimatedHours": 10
+      },
+      {
+        "order": 5,
+        "title": "Review dashboard",
+        "description": "A screen that ranks accounts by risk and lets a reviewer work the top of the list end to end.",
+        "estimatedHours": 7
+      },
+      {
+        "order": 6,
+        "title": "Evaluation and packaging",
+        "description": "An eval set of known-risky accounts run on every commit; Docker image with health and readiness endpoints.",
+        "estimatedHours": 5
+      }
+    ]
+  },
+  {
+    "order": 12,
+    "title": "Field Integration Harness",
+    "slug": "field-integration-harness",
+    "summary": "A small harness that pulls from a customer-shaped source system you do not control, normalises the mess, and proves the data landed — the unglamorous work that decides whether a deployment succeeds.",
+    "briefMarkdown": "## Goal\n\nIngest from a system you did not design, whose data is inconsistent and whose owner will not change it for you. Land it clean, and be able to prove you did.\n\n## Why this one\n\nDeployments rarely fail on the model. They fail on a date column with three formats, an ID that is not unique, and a nightly export that silently truncates. A Forward Deployed Engineer is the person who finds that on day three rather than week six.\n\n## What you build\n\nA connector against a deliberately awkward source (CSV exports with drifting schema, a paginated REST API with rate limits), a normalisation layer with explicit rules, and a reconciliation report that states what arrived, what was rejected and why.\n\n## Requirements\n\n- Schema drift in the source is detected and reported, not silently absorbed.\n- Every rejected row is retained with the reason for rejection; nothing is dropped in silence.\n- Re-running the ingest is safe: the same export twice produces one set of records, not two.\n- Rate limits and transient failures are retried with backoff and a bounded number of attempts.\n- The reconciliation report is something you could send to the customer without editing.\n\n## Stretch goals\n\n- A dry-run mode that reports what would change without writing.\n- Alerting when the rejection rate crosses a threshold.",
+    "techStack": "Python or .NET, REST and CSV ingestion, Postgres, idempotent upserts, reconciliation reporting",
+    "difficulty": "Intermediate",
+    "estimatedHours": 25,
+    "architectureMermaid": "flowchart LR\n  A[Customer CSV Export] --> C[Connector]\n  B[Customer REST API] --> C\n  C --> D[Schema Drift Check]\n  D --> E[Normalisation Rules]\n  E --> F[(Landing Store)]\n  E --> G[(Rejected Rows + Reasons)]\n  F --> H[Reconciliation Report]\n  G --> H",
+    "acceptanceCriteria": [
+      "Running the same export twice leaves the record count unchanged.",
+      "A column added, removed or renamed at the source is reported before any rows are written.",
+      "Every rejected row is queryable with a human-readable reason.",
+      "A rate-limited or failing source is retried with backoff and gives up cleanly rather than hanging.",
+      "The reconciliation report reconciles: rows in, rows accepted, rows rejected, and the three numbers agree."
+    ],
+    "resumeBullets": [
+      "Built an idempotent ingestion harness against uncontrolled customer source systems, with schema-drift detection, retained rejections and a customer-facing reconciliation report"
+    ],
+    "skillSlugs": [
+      "integration",
+      "python",
+      "sql",
+      "database-design",
+      "testing",
+      "observability"
+    ],
+    "milestones": [
+      {
+        "order": 1,
+        "title": "Awkward source simulator",
+        "description": "A generator that produces exports with realistic problems: drifting columns, duplicate ids, mixed date formats.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 2,
+        "title": "Connector and retries",
+        "description": "CSV and paginated REST ingestion with backoff and bounded retries.",
+        "estimatedHours": 6
+      },
+      {
+        "order": 3,
+        "title": "Normalisation and rejection",
+        "description": "Explicit rules; rejected rows retained with reasons rather than dropped.",
+        "estimatedHours": 7
+      },
+      {
+        "order": 4,
+        "title": "Idempotent load",
+        "description": "Upsert on a natural key so a repeated export does not duplicate.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 5,
+        "title": "Reconciliation report",
+        "description": "A report whose in/accepted/rejected figures balance, fit to send to the customer.",
+        "estimatedHours": 3
+      }
+    ]
+  },
+  {
+    "order": 13,
+    "title": "Console Task Tracker (C#)",
+    "slug": "console-task-tracker-csharp",
+    "summary": "A first C# application with real structure: typed records, file persistence, input validation and a test project — the smallest program that is still shaped like professional code.",
+    "briefMarkdown": "## Goal\n\nWrite a C# console application you would not be embarrassed to show, and learn why the structure matters before a framework hides it.\n\n## What you build\n\nA task tracker: add, list, complete and delete tasks, stored in a JSON file that survives restart. No database, no web framework — the point is the language and the shape.\n\n## Why it matters\n\nEvery later .NET topic assumes you are fluent in the things this exercises: types, collections, LINQ, exceptions and a class whose responsibilities you can state in one sentence.\n\n## Requirements\n\n- Task state is a type, not a loose string; an invalid state cannot be represented.\n- Storage sits behind an interface, so the file store can be swapped for an in-memory one in tests.\n- Bad input produces a clear message and leaves the stored data untouched.\n- A test project covers the task operations without touching the file system.\n\n## Stretch goals\n\n- Due dates with an overdue view.\n- A `--json` flag that makes the output machine-readable.",
+    "techStack": "C#, .NET 8, System.Text.Json, xUnit",
+    "difficulty": "Foundational",
+    "estimatedHours": 12,
+    "architectureMermaid": "flowchart TD\n  A[Console UI] --> B[Command Parser]\n  B --> C[TaskService]\n  C --> D[ITaskStore]\n  D --> E[(JSON File Store)]\n  D --> F[In-Memory Store - tests]",
+    "acceptanceCriteria": [
+      "Tasks survive closing and reopening the application.",
+      "An invalid command prints usage guidance rather than a stack trace.",
+      "The test project runs green without creating a file on disk.",
+      "No method is longer than can be read without scrolling."
+    ],
+    "resumeBullets": [
+      "Built a tested C# console application with interface-backed persistence, typed domain state and validated input handling"
+    ],
+    "skillSlugs": [
+      "csharp",
+      "oop",
+      "testing",
+      "git"
+    ],
+    "milestones": [
+      {
+        "order": 1,
+        "title": "Domain types",
+        "description": "Task record, status enum, and the operations as method signatures before any implementation.",
+        "estimatedHours": 3
+      },
+      {
+        "order": 2,
+        "title": "In-memory service and tests",
+        "description": "TaskService against an in-memory store, with tests written alongside.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 3,
+        "title": "File persistence",
+        "description": "JSON store behind the same interface; the tests do not change.",
+        "estimatedHours": 3
+      },
+      {
+        "order": 4,
+        "title": "Command-line surface",
+        "description": "Parsing, help text and error messages that guide rather than dump.",
+        "estimatedHours": 2
+      }
+    ]
+  },
+  {
+    "order": 14,
+    "title": "Library REST API (ASP.NET Core)",
+    "slug": "library-rest-api-dotnet",
+    "summary": "A first web API with the parts that make it real: EF Core against a database, validation, meaningful status codes, and integration tests that exercise the routes.",
+    "briefMarkdown": "## Goal\n\nTake the same care you learned in the console app onto the web, and meet the four things every API job asks about: routing, model binding and validation, persistence, and status codes that mean something.\n\n## What you build\n\nA lending library API: books, members, loans. A member cannot borrow a book that is already out; returning a book frees it. That one rule is enough to force real thinking about state.\n\n## Requirements\n\n- Validation failures return 400 with a body naming the offending fields.\n- Borrowing an unavailable book returns 409, not 200 with a sad message.\n- Entities are mapped to request and response models — EF entities are never the API contract.\n- Database access goes through EF Core with a migration history in the repository.\n- Integration tests hit the routes through the real pipeline.\n\n## Stretch goals\n\n- Pagination and filtering on the book list.\n- An authenticated `/me/loans` route.",
+    "techStack": "C#, ASP.NET Core, EF Core, SQL Server or SQLite, xUnit, WebApplicationFactory",
+    "difficulty": "Foundational",
+    "estimatedHours": 18,
+    "architectureMermaid": "flowchart LR\n  A[HTTP Client] --> B[ASP.NET Core Controllers]\n  B --> C[Request/Response Models]\n  B --> D[LoanService]\n  D --> E[EF Core DbContext]\n  E --> F[(Relational Database)]",
+    "acceptanceCriteria": [
+      "Borrowing an already-borrowed book returns 409 Conflict.",
+      "A malformed create request returns 400 with per-field messages.",
+      "No EF entity type appears in a controller signature.",
+      "Migrations are committed and a clean checkout can create the database from them.",
+      "Integration tests cover the borrow and return paths end to end."
+    ],
+    "resumeBullets": [
+      "Built an ASP.NET Core REST API with EF Core persistence, request/response model separation, field-level validation and integration tests over the real request pipeline"
+    ],
+    "skillSlugs": [
+      "csharp",
+      "dotnet",
+      "rest-api",
+      "sql",
+      "database-design",
+      "testing"
+    ],
+    "milestones": [
+      {
+        "order": 1,
+        "title": "Schema and migrations",
+        "description": "Books, members and loans modelled in EF Core with the first migration committed.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 2,
+        "title": "CRUD endpoints",
+        "description": "Controllers, request and response models, validation attributes.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 3,
+        "title": "The lending rule",
+        "description": "Borrow and return, with the conflict case returning 409.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 4,
+        "title": "Integration tests",
+        "description": "WebApplicationFactory tests covering the happy path and the conflict.",
+        "estimatedHours": 4
+      }
+    ]
+  },
+  {
+    "order": 15,
+    "title": "Inventory Service (Java & Spring Boot)",
+    "slug": "inventory-service-java",
+    "summary": "The same API discipline in the Java ecosystem: Spring Boot, JPA, bean validation and JUnit, so the concepts transfer rather than the syntax.",
+    "briefMarkdown": "## Goal\n\nBuild a Spring Boot service well enough that you can compare the two ecosystems honestly in an interview, rather than repeating what you have read.\n\n## What you build\n\nA warehouse inventory service: stock items, stock levels, and movements in and out. Stock can never go negative, and a movement that would take it there is rejected.\n\n## Requirements\n\n- Layers are separated: controller, service, repository.\n- Validation is declarative with bean validation, and failures return 400 with field detail.\n- A movement that would drive stock negative returns 409 and writes nothing.\n- Concurrent movements against the same item cannot both succeed past the available quantity.\n- JUnit tests cover the service layer, and at least one test starts the full context.\n\n## Stretch goals\n\n- Flyway migrations rather than schema generation.\n- An audit trail of every movement with its resulting balance.",
+    "techStack": "Java 21, Spring Boot, Spring Data JPA, Bean Validation, JUnit 5, Postgres",
+    "difficulty": "Foundational",
+    "estimatedHours": 18,
+    "architectureMermaid": "flowchart LR\n  A[HTTP Client] --> B[Spring REST Controller]\n  B --> C[InventoryService]\n  C --> D[Spring Data Repository]\n  D --> E[(Postgres)]\n  C --> F[Movement Audit]",
+    "acceptanceCriteria": [
+      "A movement that would make stock negative returns 409 and leaves the balance unchanged.",
+      "Two simultaneous movements cannot both consume the last unit.",
+      "Validation failures return 400 naming the invalid fields.",
+      "The service layer is tested without starting a web server.",
+      "At least one test boots the full Spring context and hits a real endpoint."
+    ],
+    "resumeBullets": [
+      "Built a Spring Boot inventory service with JPA persistence, declarative validation, concurrency-safe stock movements and a JUnit suite covering both unit and full-context paths"
+    ],
+    "skillSlugs": [
+      "java",
+      "spring-boot",
+      "oop",
+      "rest-api",
+      "sql",
+      "testing"
+    ],
+    "milestones": [
+      {
+        "order": 1,
+        "title": "Project and entities",
+        "description": "Spring Boot project, JPA entities for items and movements, repositories.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 2,
+        "title": "Endpoints and validation",
+        "description": "Controllers with bean validation and a consistent error body.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 3,
+        "title": "The stock rule",
+        "description": "Service-layer enforcement that stock cannot go negative, with the 409 path.",
+        "estimatedHours": 5
+      },
+      {
+        "order": 4,
+        "title": "Concurrency",
+        "description": "Optimistic locking or a constrained update so the last unit cannot be sold twice.",
+        "estimatedHours": 3
+      },
+      {
+        "order": 5,
+        "title": "Tests",
+        "description": "JUnit service tests plus one full-context integration test.",
+        "estimatedHours": 2
+      }
+    ]
+  },
+  {
+    "order": 16,
+    "title": "Retail Database Design & Query Workbook",
+    "slug": "retail-database-design",
+    "summary": "Model a small retail business from a written brief, load realistic volume, then make the slow queries fast and prove it with execution plans.",
+    "briefMarkdown": "## Goal\n\nTurn an ambiguous business description into a normalised schema, then earn the right to denormalise anything by measuring first.\n\n## What you build\n\nA schema for customers, products, orders and order lines; a loader that generates a few hundred thousand rows; a set of reporting queries; and a short write-up of what you indexed and what it bought you.\n\n## Why it matters\n\nAlmost every backend interview contains a schema question and a \"this query is slow\" question. Both are answerable from evidence once you have done this once.\n\n## Requirements\n\n- The schema is in third normal form, and you can explain each table's key.\n- Referential integrity is enforced by constraints, not by application code.\n- Money is never stored in a floating-point type.\n- At least three reporting queries are measured before and after indexing, with the plans saved.\n- One query is deliberately rewritten rather than indexed, to show the difference.\n\n## Stretch goals\n\n- A NoSQL version of the order document and a written comparison of the trade-offs.\n- Partition or archive a large table and measure the effect.",
+    "techStack": "SQL Server or PostgreSQL, T-SQL / SQL, execution plans, a data generation script",
+    "difficulty": "Foundational",
+    "estimatedHours": 16,
+    "architectureMermaid": "erDiagram\n  CUSTOMER ||--o{ ORDER : places\n  ORDER ||--|{ ORDER_LINE : contains\n  PRODUCT ||--o{ ORDER_LINE : appears_in\n  CATEGORY ||--o{ PRODUCT : groups",
+    "acceptanceCriteria": [
+      "Every table has a declared primary key and every relationship a foreign key constraint.",
+      "Monetary columns use a fixed-point type, not float or real.",
+      "The generated dataset is large enough that a missing index is visibly slow.",
+      "Before-and-after execution plans are saved for each tuned query.",
+      "The write-up states, for each index, what it cost on writes as well as what it saved on reads."
+    ],
+    "resumeBullets": [
+      "Designed and load-tested a normalised retail schema, then tuned reporting queries using execution-plan evidence, documenting the read gain and write cost of every index added"
+    ],
+    "skillSlugs": [
+      "sql",
+      "database-design",
+      "data-governance",
+      "nosql"
+    ],
+    "milestones": [
+      {
+        "order": 1,
+        "title": "Model from the brief",
+        "description": "Entities, keys and relationships derived from a written business description; normalisation to 3NF.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 2,
+        "title": "Constraints and types",
+        "description": "Primary and foreign keys, check constraints, correct numeric and date types.",
+        "estimatedHours": 3
+      },
+      {
+        "order": 3,
+        "title": "Generate volume",
+        "description": "A script producing a few hundred thousand realistic rows.",
+        "estimatedHours": 2
+      },
+      {
+        "order": 4,
+        "title": "Reporting queries",
+        "description": "Joins, grouping and window functions answering real business questions.",
+        "estimatedHours": 3
+      },
+      {
+        "order": 5,
+        "title": "Tune and document",
+        "description": "Index, rewrite, measure. Save the plans and write up the trade-offs.",
+        "estimatedHours": 4
+      }
+    ]
+  },
+  {
+    "order": 17,
+    "title": "Log Analyzer & Report Tool (Python)",
+    "slug": "log-analyzer-python",
+    "summary": "A Python command-line tool that parses messy log files, aggregates what matters, and emits a report — with tests, packaging and a virtual environment done properly.",
+    "briefMarkdown": "## Goal\n\nLearn Python on a task Python is genuinely good at, and pick up the surrounding practice — virtual environments, dependencies, tests, a real CLI — at the same time.\n\n## What you build\n\nA tool that reads web-server logs, handles malformed lines without dying, and reports traffic by hour, top paths, and error rates.\n\n## Requirements\n\n- A malformed line is counted and skipped, never fatal.\n- Large files are streamed, not read into memory whole.\n- Output is available as both a readable table and JSON.\n- Dependencies are pinned and the project installs into a clean virtual environment from the README.\n- pytest covers the parser against a fixture file that includes bad lines.\n\n## Stretch goals\n\n- Detect a traffic anomaly against a rolling baseline.\n- Publish the package so `pip install` works from a local wheel.",
+    "techStack": "Python 3, argparse or Typer, pytest, generators, JSON output",
+    "difficulty": "Foundational",
+    "estimatedHours": 14,
+    "architectureMermaid": "flowchart LR\n  A[Log Files] --> B[Streaming Reader]\n  B --> C[Line Parser]\n  C --> D[Valid Records]\n  C --> E[Malformed Counter]\n  D --> F[Aggregators]\n  F --> G[Table Output]\n  F --> H[JSON Output]",
+    "acceptanceCriteria": [
+      "A file containing malformed lines produces a report plus a count of what was skipped.",
+      "Memory use stays flat as the input file grows.",
+      "The same run can emit either a table or JSON from one flag.",
+      "A clean virtual environment plus the README is enough to run it.",
+      "pytest passes against a fixture that deliberately includes broken input."
+    ],
+    "resumeBullets": [
+      "Built a tested Python CLI that streams and parses large log files, tolerates malformed input and emits both human-readable and machine-readable reports"
+    ],
+    "skillSlugs": [
+      "python",
+      "testing",
+      "linux",
+      "git"
+    ],
+    "milestones": [
+      {
+        "order": 1,
+        "title": "Environment and skeleton",
+        "description": "Virtual environment, pinned dependencies, CLI skeleton with help text.",
+        "estimatedHours": 3
+      },
+      {
+        "order": 2,
+        "title": "Streaming parser",
+        "description": "Generator-based reading and a parser that survives bad lines.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 3,
+        "title": "Aggregation",
+        "description": "By hour, top paths, error rates.",
+        "estimatedHours": 3
+      },
+      {
+        "order": 4,
+        "title": "Output modes and tests",
+        "description": "Table and JSON output; pytest against a messy fixture.",
+        "estimatedHours": 4
+      }
+    ]
+  },
+  {
+    "order": 18,
+    "title": "Responsive Portfolio & Dashboard (Web Foundations)",
+    "slug": "web-foundations-portfolio",
+    "summary": "A hand-built responsive site and a small TypeScript dashboard that consumes a real API — enough front-end fluency to be useful on any team, without a framework doing the thinking.",
+    "briefMarkdown": "## Goal\n\nUnderstand the browser before a framework abstracts it: layout, the DOM, fetch, async, and types.\n\n## What you build\n\nTwo connected pieces. A responsive portfolio page in hand-written HTML and CSS, and a small TypeScript dashboard that fetches from a public API, handles loading and failure states, and renders results accessibly.\n\n## Requirements\n\n- Layout is done with flexbox and grid; no layout tables and no CSS framework.\n- The page is usable at phone width with no horizontal scrolling.\n- The dashboard shows distinct loading, empty, error and success states — all four.\n- API responses are typed; `any` does not appear in the codebase.\n- Keyboard navigation reaches every interactive element, and focus is visible.\n\n## Stretch goals\n\n- A dark mode driven by `prefers-color-scheme`.\n- Cache responses in `localStorage` with an expiry and handle the storage being unavailable.",
+    "techStack": "HTML, CSS (flexbox and grid), TypeScript, fetch, Vite",
+    "difficulty": "Foundational",
+    "estimatedHours": 14,
+    "architectureMermaid": "flowchart TD\n  A[Browser] --> B[Static HTML + CSS]\n  A --> C[TypeScript Bundle]\n  C --> D[Typed API Client]\n  D --> E[Public REST API]\n  C --> F[State: loading / empty / error / data]\n  F --> G[Accessible DOM Rendering]",
+    "acceptanceCriteria": [
+      "No horizontal scrolling at 375px wide.",
+      "All four states — loading, empty, error, success — are reachable and visibly distinct.",
+      "The TypeScript build passes with strict mode on and no `any`.",
+      "Every interactive element is reachable by keyboard with a visible focus ring.",
+      "A failed network request shows a message a non-technical user could act on."
+    ],
+    "resumeBullets": [
+      "Built a responsive site and a strict-mode TypeScript dashboard consuming a live API, with explicit loading, empty, error and success states and keyboard-accessible rendering"
+    ],
+    "skillSlugs": [
+      "html-css",
+      "typescript",
+      "rest-api",
+      "git"
+    ],
+    "milestones": [
+      {
+        "order": 1,
+        "title": "Responsive layout",
+        "description": "Hand-written HTML and CSS using flexbox and grid, mobile-first.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 2,
+        "title": "TypeScript setup",
+        "description": "Vite project with strict mode, and typed models for the API responses.",
+        "estimatedHours": 3
+      },
+      {
+        "order": 3,
+        "title": "Fetch and state",
+        "description": "Async data loading with all four states rendered distinctly.",
+        "estimatedHours": 4
+      },
+      {
+        "order": 4,
+        "title": "Accessibility pass",
+        "description": "Keyboard navigation, focus visibility, semantic elements and labels.",
+        "estimatedHours": 3
+      }
     ]
   }
 ]

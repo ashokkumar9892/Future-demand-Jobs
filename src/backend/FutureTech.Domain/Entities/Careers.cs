@@ -19,6 +19,17 @@ public class CareerPath : Entity
     public string Slug { get; set; } = string.Empty;
     public string Summary { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Display grouping on the careers list, e.g. "Foundations" or "AI &amp; Data".
+    /// Free text rather than an enum: the grouping is content, and a new content
+    /// pack should be able to introduce a group without a code change.
+    /// </summary>
+    public string Category { get; set; } = string.Empty;
+
+    /// <summary>Order of the category itself, so Foundations can sit above the
+    /// senior tracks regardless of the ranks inside it.</summary>
+    public int CategoryOrder { get; set; }
+
     public int SalaryMinUsd { get; set; }
     public int SalaryMaxUsd { get; set; }
     public int SeniorSalaryMinUsd { get; set; }

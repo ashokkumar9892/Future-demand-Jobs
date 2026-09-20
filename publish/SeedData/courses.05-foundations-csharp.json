@@ -1,0 +1,1444 @@
+[
+  {
+    "careerSlug": "csharp-dotnet-developer",
+    "order": 1,
+    "phaseNumber": 1,
+    "title": "Phase 1 — C# Language Foundations",
+    "slug": "phase-1-c-sharp-language-foundations",
+    "summary": "The language itself, learned properly: types and what the compiler does with them, the difference between value and reference semantics, collections, LINQ, exceptions and async. No framework yet — these are the things every later topic assumes.",
+    "estimatedHours": 40,
+    "level": "Foundational",
+    "minimumTrack": "FastTrack",
+    "outcomes": [
+      "Read C# code and predict what it does before running it",
+      "Choose between value and reference types, and reason about null",
+      "Pick the right collection for a job and say why",
+      "Express a query with LINQ instead of a nested loop",
+      "Use exceptions where they belong and async without deadlocking"
+    ],
+    "skillSlugs": [
+      "csharp",
+      "oop",
+      "git"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "Types, Values and Control Flow",
+        "summary": "What the compiler enforces for you, and the value/reference distinction that explains half of all beginner bugs.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Your First C# Program, and What the Compiler Is Doing",
+            "slug": "your-first-c-sharp-program-and-what-the-compiler-is-doing",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## A compiled, statically typed language\n\nC# is compiled before it runs and every variable has a type known at compile time. That sounds like bureaucracy when you come from a scripting language. It is not — it is a large class of bugs being caught while you type instead of in production.\n\nWhen you write `int count = \"seven\";` the compiler refuses. That refusal is the feature.\n\n## What actually happens when you run it\n\nYour `.cs` files are compiled to an intermediate language (IL), which the .NET runtime turns into machine code as it executes. You do not need to think about this often, but it explains two things you will notice: why the first call to a method is slower than the rest, and why a `.dll` can be inspected to see what types it contains.\n\n## The shape of a program\n\nModern C# lets you write top-level statements with no visible class. That is convenient for learning and fine for small tools. Real projects still organise code into namespaces and classes, because once there is more than one file you need somewhere to put things.\n\nStart with top-level statements, and move to explicit classes the moment your file has more than one job.\n\n## Variables, and why `var` is not dynamic\n\n`var total = 10;` does not mean \"untyped\". The compiler infers `int` and it stays `int` forever. `var` saves typing, not type safety.\n\nUse it when the type is obvious from the right-hand side, and write the type out when it is not.\n\n## Strings are immutable\n\nEvery operation that looks like it changes a string actually makes a new one. `name += \"x\"` in a loop that runs ten thousand times creates ten thousand strings. That is the single most common accidental performance bug in beginner C#, and `StringBuilder` is the answer.",
+            "codeExample": "// Top-level statements: no class needed for a small program.\nusing System.Text;\n\nint count = 3;                    // explicit type\nvar name = \"renewal\";             // inferred as string, and stays string forever\n// name = 5;                      // compile error — caught now, not in production\n\nConsole.WriteLine($\"{name}: {count}\");   // string interpolation\n\n// Immutability bites here. This allocates a new string every iteration.\nvar slow = \"\";\nfor (var i = 0; i < 10_000; i++)\n    slow += i;                    // 10,000 allocations\n\n// StringBuilder mutates one buffer instead.\nvar builder = new StringBuilder();\nfor (var i = 0; i < 10_000; i++)\n    builder.Append(i);\nvar fast = builder.ToString();    // one allocation at the end\n\nConsole.WriteLine(slow.Length == fast.Length);   // True — same result, very different cost\n\n// Digit separators are legal and make large numbers readable.\nconst int MaxRows = 1_000_000;",
+            "codeLanguage": "csharp",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "C# is compiled and statically typed; the compiler rejecting your code is the feature",
+              "Source becomes IL, which the runtime compiles as it executes",
+              "`var` is type inference, not dynamic typing — the type is fixed at compile time",
+              "Strings are immutable; building one in a loop allocates a new string each time"
+            ],
+            "resources": [
+              {
+                "title": "C# language tour",
+                "url": "https://learn.microsoft.com/dotnet/csharp/tour-of-csharp/",
+                "kind": "Documentation"
+              }
+            ],
+            "quiz": {
+              "title": "Language basics",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What does `var` do in C#?",
+                  "explanation": "`var` asks the compiler to infer the type from the initialiser. The variable is then statically typed for its whole life — nothing about it is dynamic.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Infers the type at compile time; the variable is statically typed thereafter",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Makes the variable dynamically typed",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Allows the variable to hold any type at runtime",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Defers type checking until runtime",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why is `text += x` inside a large loop a problem?",
+                  "explanation": "Strings are immutable, so each concatenation allocates a whole new string. StringBuilder mutates a single buffer instead.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Strings are immutable, so every concatenation allocates a new string",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The compiler cannot infer the type inside a loop",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It causes a stack overflow",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "`+=` is not valid for strings in C#",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Value Types, Reference Types and Null",
+            "slug": "value-types-reference-types-and-null",
+            "type": "Concept",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Two kinds of variable\n\nAn `int`, a `bool`, a `DateTime` or a `struct` holds its value directly. Assigning one copies the value.\n\nA `class` instance, an array or a string holds a *reference* to an object elsewhere in memory. Assigning one copies the reference, and both variables now point at the same object.\n\nThis distinction explains a large share of confusing beginner bugs: you changed something through one variable and another variable changed too, because there was only ever one object.\n\n## What this means in practice\n\nPass a `List<string>` to a method and the method can add to your list. Pass an `int` and it cannot change your number. Neither behaviour is wrong; you just need to know which one you have.\n\nIf you want a method not to modify a collection you pass it, either pass a copy or accept a read-only interface.\n\n## Null is a reference thing\n\nValue types cannot be null unless you mark them nullable with `?`. Reference types could always be null, and dereferencing null is the most common runtime crash in .NET.\n\n## Nullable reference types are worth turning on\n\nModern C# projects enable nullable reference types, and then `string` means \"never null\" while `string?` means \"might be null\". The compiler warns you when you dereference something that might be null without checking.\n\nTurn it on in every new project. It moves an entire bug category from runtime to compile time, which is the same trade that made static typing worth it in the first place.\n\n## Records give you value semantics for classes\n\nA `record` is a reference type that compares by value. Two records with identical contents are equal, which is what you usually want for data. Use them for anything that is data rather than behaviour.",
+            "codeExample": "// --- reference semantics: one object, two names --------------------------\nvar a = new List<int> { 1, 2, 3 };\nvar b = a;               // copies the REFERENCE, not the list\nb.Add(4);\nConsole.WriteLine(a.Count);   // 4 — a and b are the same list\n\n// --- value semantics: two independent values -----------------------------\nint x = 1;\nint y = x;               // copies the VALUE\ny++;\nConsole.WriteLine(x);    // 1 — unaffected\n\n// --- methods can mutate what you pass them -------------------------------\nvoid AddOne(List<int> items) => items.Add(99);\nAddOne(a);\nConsole.WriteLine(a.Count);   // 5 — your list was modified\n\n// Signal intent by accepting a read-only view instead:\nint Total(IReadOnlyCollection<int> items) => items.Sum();\n\n// --- nullable reference types (<Nullable>enable</Nullable> in the .csproj) -\nstring definitely = \"value\";\nstring? maybe = null;\n\n// Console.WriteLine(maybe.Length);        // warning: possible null dereference\nConsole.WriteLine(maybe?.Length ?? 0);     // null-conditional + null-coalescing\n\n// --- records compare by value --------------------------------------------\nrecord Customer(string Id, string Name);\n\nvar c1 = new Customer(\"C-1\", \"Acme\");\nvar c2 = new Customer(\"C-1\", \"Acme\");\nConsole.WriteLine(c1 == c2);               // True — a class would print False",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart LR\n  subgraph Value[\"Value type: int x = 1\"]\n    V1[x: 1]\n    V2[y: 1]\n  end\n  subgraph Reference[\"Reference type: List a\"]\n    R1[a] --> OBJ[\"List object<br/>1, 2, 3, 4\"]\n    R2[b] --> OBJ\n  end",
+            "keyTakeaways": [
+              "Value types copy their value; reference types copy a reference to one shared object",
+              "A method can mutate a collection you pass it, because it holds the same object",
+              "Value types need `?` to be null; reference types may always be null unless you opt in",
+              "Enable nullable reference types: `string` never null, `string?` might be",
+              "Records are reference types that compare by value — use them for data"
+            ],
+            "quiz": {
+              "title": "Value and reference types",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "You assign one `List<int>` variable to another and add an item through the second. What does the first one show?",
+                  "explanation": "Assignment copies the reference, so both names point at one object. The add is visible through both.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The added item, because both variables reference the same list",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The original items only, because assignment copies the list",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "An empty list",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A compile error — lists cannot be assigned",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "With nullable reference types enabled, what does `string?` mean?",
+                  "explanation": "`string` becomes a promise of non-null and `string?` opts back into possible null, with compiler warnings on unguarded dereference.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The value might be null, and the compiler will warn if you dereference it unchecked",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The value is always null",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The string is optional in a method signature",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The variable is a value type",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "Collections and LINQ",
+        "summary": "Choosing the right container, and expressing what you want instead of how to loop for it.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Arrays, Lists and Dictionaries — Choosing the Right One",
+            "slug": "arrays-lists-and-dictionaries-choosing-the-right-one",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Three containers cover most work\n\n- **Array** — fixed size, fastest, use when the count is known and will not change.\n- **`List<T>`** — grows as you add, indexed access, the default choice.\n- **`Dictionary<TKey, TValue>`** — lookup by key in roughly constant time.\n\nThe decision that matters most is the third one. If your code ever does \"loop through a list to find the item with this id\", and does it more than occasionally, you want a dictionary.\n\n## Why the dictionary matters so much\n\nFinding an item in a list means checking each element in turn. With 10 items that is invisible. With 10,000 items inside another loop over 10,000 items, it is a hundred million comparisons and your program appears to hang.\n\nThis is the single most common accidental performance disaster in application code, and switching to a dictionary usually turns it into a few milliseconds.\n\n## Pick the interface you expose carefully\n\nReturn `IReadOnlyList<T>` when callers should not modify what you hand back. Accept `IEnumerable<T>` when you only need to iterate once. Being specific in what you accept and restrictive in what you return is free documentation.\n\n## HashSet for membership\n\nWhen the only question is \"have I seen this?\", `HashSet<T>` answers in constant time and refuses duplicates automatically.\n\n## Beware iterating while modifying\n\nAdding to or removing from a collection while a `foreach` is running over it throws. If you need to remove items, collect them first and remove afterwards, or iterate a copy.",
+            "codeExample": "// The bug that looks fine at 10 records and hangs at 10,000.\nList<Order> orders = LoadOrders();       // 10,000\nList<Customer> customers = LoadCustomers();  // 10,000\n\n// O(n*m) — 100,000,000 comparisons. Appears to hang.\nforeach (var order in orders)\n{\n    var customer = customers.First(c => c.Id == order.CustomerId);   // scans the list\n    Console.WriteLine($\"{customer.Name}: {order.Total}\");\n}\n\n// O(n+m) — build the index once, then look up in roughly constant time.\nvar byId = customers.ToDictionary(c => c.Id);\nforeach (var order in orders)\n{\n    if (byId.TryGetValue(order.CustomerId, out var customer))        // no scan\n        Console.WriteLine($\"{customer.Name}: {order.Total}\");\n}\n\n// TryGetValue over indexing: indexing throws when the key is absent, and\n// \"the customer might be missing\" is a real case in imported data.\n\n// HashSet when the only question is membership.\nvar seen = new HashSet<string>();\nforeach (var order in orders)\n    if (!seen.Add(order.Reference))          // Add returns false if already present\n        Console.WriteLine($\"duplicate reference: {order.Reference}\");\n\n// Specific in, restrictive out.\nIReadOnlyList<Order> Recent(IEnumerable<Order> source) =>\n    source.Where(o => o.Date > DateTime.Today.AddDays(-30)).ToList();",
+            "codeLanguage": "csharp",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Array for fixed size, List for the general case, Dictionary for lookup by key",
+              "Searching a list inside a loop is the classic accidental performance disaster",
+              "Accept `IEnumerable<T>`, return `IReadOnlyList<T>` — specific in, restrictive out",
+              "HashSet answers membership questions and refuses duplicates",
+              "Modifying a collection during `foreach` throws — collect then remove"
+            ],
+            "quiz": {
+              "title": "Collections",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "You need to look up customers by id inside a loop over 10,000 orders. Which collection should hold the customers?",
+                  "explanation": "A list search scans every element, giving quadratic behaviour. A dictionary lookup is roughly constant time.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Dictionary<string, Customer>",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "List<Customer>",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Customer[]",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "IEnumerable<Customer>",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why prefer `TryGetValue` over the indexer on a dictionary?",
+                  "explanation": "The indexer throws when the key is absent. TryGetValue makes the missing case an ordinary branch, which imported data will need.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The indexer throws when the key is missing; TryGetValue handles absence as a normal case",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "TryGetValue is faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The indexer does not work with string keys",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "TryGetValue allows duplicate keys",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "LINQ: Querying Collections Without Loops",
+            "slug": "linq-querying-collections-without-loops",
+            "type": "Coding",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Say what you want, not how to get it\n\nLINQ replaces a loop, a condition and an accumulator with one readable expression. `Where` filters, `Select` transforms, `OrderBy` sorts, `GroupBy` groups, and `Sum`, `Count`, `Any` and `First` produce a result.\n\nThe gain is not brevity. It is that the resulting line says what you meant, so a reader does not have to reconstruct the intent from the mechanics.\n\n## Deferred execution is the thing to understand\n\n`Where` and `Select` do not run when you write them. They build a query that runs when you enumerate it — with `foreach`, `ToList()`, `Count()` or similar.\n\nTwo consequences catch people out. First, if the underlying data changes between defining and enumerating, you see the new data. Second, enumerating the same query twice does the work twice.\n\nWhen you need the results more than once, call `ToList()` and keep them.\n\n## `First` versus `FirstOrDefault`\n\n`First` throws when nothing matches. `FirstOrDefault` returns null (or the default value). Choose deliberately: if a missing match is a bug, `First` is right and the exception is informative. If a missing match is normal, `FirstOrDefault` with a null check is right.\n\nCalling `First` on a query that legitimately finds nothing is a common source of production exceptions.\n\n## Any() rather than Count() > 0\n\n`Any()` stops at the first match. `Count()` walks everything. On a list the difference is negligible; on a database query or a large sequence it is not.\n\n## Keep it readable\n\nLINQ can express almost anything, including things nobody should read. If a chain needs more than about four operations, give intermediate results names. A query you cannot explain out loud is worse than the loop it replaced.",
+            "codeExample": "var orders = LoadOrders();\n\n// Filter, project, sort — one expression that reads as its intent.\nvar recentLargeOrders = orders\n    .Where(o => o.Date > DateTime.Today.AddDays(-30))\n    .Where(o => o.Total > 1_000m)\n    .OrderByDescending(o => o.Total)\n    .Select(o => new { o.Reference, o.Total })\n    .ToList();                     // executes HERE, not above\n\n// Grouping: revenue per region, largest first.\nvar byRegion = orders\n    .GroupBy(o => o.Region)\n    .Select(g => new { Region = g.Key, Revenue = g.Sum(o => o.Total), Count = g.Count() })\n    .OrderByDescending(r => r.Revenue)\n    .ToList();\n\n// --- deferred execution, demonstrated ------------------------------------\nvar query = orders.Where(o => o.Total > 100m);   // nothing has run yet\norders.Add(new Order { Total = 500m });\nConsole.WriteLine(query.Count());                // includes the new order\n\n// Enumerating twice does the work twice:\nvar expensive = orders.Where(o => ExpensiveCheck(o));\nvar count = expensive.Count();       // runs ExpensiveCheck on every order\nvar first = expensive.First();       // runs it again\nvar once = expensive.ToList();       // materialise instead, then reuse\n\n// --- First vs FirstOrDefault ---------------------------------------------\nvar mustExist = orders.First(o => o.Reference == knownRef);      // throws if absent — correct if that's a bug\nvar mightExist = orders.FirstOrDefault(o => o.Reference == userInput);\nif (mightExist is null)\n    Console.WriteLine(\"No order with that reference.\");\n\n// Any() short-circuits; Count() > 0 does not.\nif (orders.Any(o => o.Total > 10_000m))\n    Console.WriteLine(\"Has a large order\");",
+            "codeLanguage": "csharp",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "LINQ expresses intent: `Where`, `Select`, `OrderBy`, `GroupBy` plus a terminal operation",
+              "Queries are deferred — they run on enumeration, and enumerating twice works twice",
+              "`First` throws on no match, `FirstOrDefault` returns null; pick deliberately",
+              "`Any()` short-circuits where `Count() > 0` walks the whole sequence",
+              "Break long chains into named steps; unreadable LINQ is worse than a loop"
+            ],
+            "quiz": {
+              "title": "LINQ",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What does `orders.Where(o => o.Total > 100)` do at the moment that line executes?",
+                  "explanation": "LINQ operators are deferred. The predicate runs when the query is enumerated, not when it is defined.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Builds a query; nothing is evaluated until it is enumerated",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Immediately filters and returns a new list",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Modifies the original collection in place",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Throws if the collection is empty",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "When should you call `First` rather than `FirstOrDefault`?",
+                  "explanation": "Use First when a missing match means a bug — the exception is informative. Use FirstOrDefault when absence is a legitimate case.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "When a missing match indicates a bug and you want the exception",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Always — FirstOrDefault is deprecated",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "When the collection may be empty",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "When performance matters, since First is faster",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Errors and Async",
+        "summary": "Handling failure deliberately, and doing work that waits without blocking.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Exceptions: Throwing, Catching and When Not To",
+            "slug": "exceptions-throwing-catching-and-when-not-to",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Exceptions are for the exceptional\n\nAn exception says \"I cannot complete this and cannot sensibly continue\". A user typing an invalid date is not exceptional — it is Tuesday. Validate and return a result. A database that has vanished mid-transaction is exceptional.\n\nUsing exceptions for ordinary control flow makes code slow and hides real failures in noise.\n\n## Catch what you can handle\n\nThe commonest beginner mistake is catching everything and carrying on:\n\n```csharp\ntry { DoWork(); } catch { }\n```\n\nThis converts a visible failure into a silent wrong answer, which is strictly worse. If you cannot do something meaningful with an exception, let it propagate to something that can.\n\n## Catch specifically\n\nCatch `FileNotFoundException`, not `Exception`. The specific catch documents what you expected to go wrong and leaves everything else alone.\n\n## Never lose the stack trace\n\n`throw;` rethrows preserving where the error came from. `throw ex;` resets the stack trace to this line and destroys your best diagnostic. This distinction costs people hours of debugging.\n\n## Finally, or better, using\n\nCleanup that must happen regardless goes in `finally`. For anything implementing `IDisposable` — files, connections, HTTP clients — `using` does it for you and is harder to get wrong.\n\n## Fail with a useful message\n\nAn exception message is read by someone under pressure who does not have your context. Include the values involved: not \"invalid input\" but \"renewal_date '19/09/2026' could not be parsed for customer CUST-0042; expected ISO 8601\".",
+            "codeExample": "// --- ordinary invalid input is not exceptional ---------------------------\n// Bad: exceptions as control flow for something that happens constantly.\nDateTime ParseBad(string input) => DateTime.Parse(input);   // throws on user typos\n\n// Good: absence of a value is a normal result.\nbool TryParseRenewal(string input, out DateTime value) =>\n    DateTime.TryParse(input, out value);\n\n// --- catch specifically, and only what you can handle --------------------\nstring ReadConfigOrDefault(string path)\n{\n    try\n    {\n        return File.ReadAllText(path);\n    }\n    catch (FileNotFoundException)\n    {\n        // We CAN handle this: a missing config file means use defaults.\n        return DefaultConfig;\n    }\n    // UnauthorizedAccessException is deliberately NOT caught. We cannot fix a\n    // permissions problem here, and hiding it would produce a silently wrong\n    // configuration in production.\n}\n\n// --- preserving the stack trace ------------------------------------------\nvoid Process(Order order)\n{\n    try\n    {\n        Validate(order);\n    }\n    catch (ValidationException)\n    {\n        Log.Warning(\"validation failed for order {Reference}\", order.Reference);\n        throw;        // CORRECT: rethrows with the original stack trace\n        // throw ex;  // WRONG: stack trace now starts here; you lose the origin\n    }\n}\n\n// --- messages carry the values -------------------------------------------\nif (!DateTime.TryParse(raw, out var renewal))\n    throw new FormatException(\n        $\"renewal_date '{raw}' could not be parsed for customer {customerId}; expected ISO 8601\");\n\n// --- using handles cleanup even when something throws --------------------\nusing var stream = File.OpenRead(path);     // disposed at end of scope, always\nvar content = new StreamReader(stream).ReadToEnd();",
+            "codeLanguage": "csharp",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Exceptions are for conditions you cannot handle, not routine validation",
+              "An empty catch turns a visible failure into a silent wrong answer",
+              "Catch the specific exception you expected; let everything else propagate",
+              "`throw;` preserves the stack trace, `throw ex;` destroys it",
+              "Use `using` for anything disposable; put values in the exception message"
+            ],
+            "quiz": {
+              "title": "Exceptions",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What is wrong with `try { DoWork(); } catch { }`?",
+                  "explanation": "Swallowing every exception converts a visible failure into a silent wrong answer, which is harder to diagnose than a crash.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It turns a visible failure into a silent wrong answer",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It is slower than catching a specific exception",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It will not compile without an exception variable",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It only catches exceptions from the first statement",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What is the difference between `throw;` and `throw ex;` inside a catch block?",
+                  "explanation": "`throw;` preserves the original stack trace. `throw ex;` resets it to the rethrow line, destroying the information about where the failure actually started.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "`throw;` preserves the original stack trace; `throw ex;` resets it to this line",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "They are identical",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "`throw ex;` is required to rethrow a caught exception",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "`throw;` only works for custom exception types",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "async and await Without the Deadlocks",
+            "slug": "async-and-await-without-the-deadlocks",
+            "type": "Coding",
+            "estimatedMinutes": 50,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## What async is actually for\n\n`async`/`await` is about *not holding a thread while waiting*. When your code calls a database or an HTTP API, most of the elapsed time is spent waiting for someone else. Without async, a thread sits blocked doing nothing. With it, that thread is released to serve another request and resumes yours when the answer arrives.\n\nOn a web server this is the difference between handling a few hundred concurrent requests and a few thousand. It does not make any single operation faster.\n\n## async all the way up\n\nIf a method awaits something, it is `async` and returns `Task` or `Task<T>`. Its caller awaits it, so the caller is async too, all the way to the framework entry point.\n\nDo not break the chain by calling `.Result` or `.Wait()` on a task. In some contexts that deadlocks, and in all contexts it blocks the thread you were trying to free.\n\n## Return Task, not void\n\n`async void` cannot be awaited and its exceptions cannot be caught by the caller — they crash the process. The only legitimate use is an event handler. Everywhere else, return `Task`.\n\n## Await in parallel when the work is independent\n\nAwaiting two independent calls in sequence takes the sum of their durations. Start both, then await both, and it takes the longer of the two. `Task.WhenAll` does this.\n\nOnly do this when the calls genuinely do not depend on each other, and be careful about how many you start at once — a thousand simultaneous requests will be rate-limited.\n\n## Pass the cancellation token\n\nAccept a `CancellationToken` and pass it down. When the caller gives up — the user navigated away, the request timed out — the work stops instead of continuing to consume resources for an answer nobody will read.",
+            "codeExample": "// --- the chain: async all the way up -------------------------------------\npublic async Task<RenewalReport> BuildReportAsync(string customerId, CancellationToken ct)\n{\n    var customer = await _customers.GetAsync(customerId, ct);\n    var usage    = await _usage.GetAsync(customerId, ct);\n    return new RenewalReport(customer, usage);\n}\n\n// --- blocking breaks it --------------------------------------------------\npublic RenewalReport BuildReportBad(string customerId)\n{\n    // Blocks the thread you were trying to free, and deadlocks in some contexts.\n    return BuildReportAsync(customerId, CancellationToken.None).Result;\n}\n\n// --- independent work in parallel ----------------------------------------\npublic async Task<RenewalReport> BuildReportFastAsync(string customerId, CancellationToken ct)\n{\n    // Start both, THEN await. Neither depends on the other's result.\n    Task<Customer> customerTask = _customers.GetAsync(customerId, ct);\n    Task<Usage>    usageTask    = _usage.GetAsync(customerId, ct);\n\n    await Task.WhenAll(customerTask, usageTask);\n\n    // Sequential: 200ms + 300ms = 500ms.  Parallel: max(200, 300) = 300ms.\n    return new RenewalReport(customerTask.Result, usageTask.Result);\n}\n\n// --- async void: only for event handlers ---------------------------------\npublic async void OnButtonClick(object sender, EventArgs e)   // acceptable here\n{\n    try { await DoWorkAsync(); }\n    catch (Exception ex) { Log.Error(ex, \"click handler failed\"); }\n    // The try/catch is mandatory: an escaping exception from async void\n    // crashes the process rather than reaching any caller.\n}\n\npublic async Task DoWorkAsync() { /* ... */ }   // everywhere else: Task",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "sequenceDiagram\n  participant R as Request\n  participant T as Thread pool\n  participant D as Database\n  R->>T: handle request\n  T->>D: await query\n  Note over T: thread RELEASED<br/>serves other requests\n  D-->>T: result ready\n  Note over T: a thread resumes the method\n  T-->>R: response",
+            "keyTakeaways": [
+              "async frees the thread while waiting on I/O; it does not make a single call faster",
+              "Async propagates up the call chain — never break it with `.Result` or `.Wait()`",
+              "Return `Task`, not `void`; `async void` exceptions crash the process",
+              "Use `Task.WhenAll` for independent work to pay the longest duration, not the sum",
+              "Accept and pass a CancellationToken so abandoned work actually stops"
+            ],
+            "quiz": {
+              "title": "async and await",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What does `async`/`await` primarily achieve on a web server?",
+                  "explanation": "The waiting thread is released back to the pool instead of blocking, so the server handles far more concurrent requests. The individual call is no faster.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Threads are released while waiting on I/O, so more concurrent requests can be served",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Each individual operation completes faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Work is automatically spread across CPU cores",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Exceptions are handled automatically",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why should an asynchronous method return `Task` rather than `void`?",
+                  "explanation": "An `async void` method cannot be awaited and its exceptions cannot be caught by a caller — they propagate as unhandled and crash the process.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "`async void` cannot be awaited and its exceptions crash the process",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "`async void` is a compile error outside event handlers",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "`Task` is faster to allocate",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "`void` methods cannot use `await`",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "careerSlug": "csharp-dotnet-developer",
+    "order": 2,
+    "phaseNumber": 2,
+    "title": "Phase 2 — Object-Oriented Design & Testing",
+    "slug": "phase-2-object-oriented-design-and-testing",
+    "summary": "How to arrange code so it stays changeable: classes and interfaces used for reasons you can state, invalid states made unrepresentable, dependency injection understood as a problem rather than a ritual, and tests written alongside the code.",
+    "estimatedHours": 30,
+    "level": "Foundational",
+    "minimumTrack": "FastTrack",
+    "outcomes": [
+      "Choose between a class, a record and an interface for a stated reason",
+      "Design types where invalid states cannot be constructed",
+      "Explain what dependency injection solves, not just how to configure it",
+      "Apply single responsibility without generating ceremony",
+      "Write unit tests with xUnit, including for code with external dependencies"
+    ],
+    "skillSlugs": [
+      "oop",
+      "csharp",
+      "testing",
+      "architecture"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "Designing with Types",
+        "summary": "Using the type system to make wrong code fail to compile.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Classes, Interfaces and the Case for Each",
+            "slug": "classes-interfaces-and-the-case-for-each",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## A class bundles data with the behaviour that owns it\n\nThe useful question is not \"what are the nouns in my problem\" but \"what invariants does this thing protect\". A `BankAccount` class exists because something must guarantee the balance never goes negative. If a class protects nothing and has only properties, it is data — make it a record.\n\n## An interface is a promise about capability\n\n`ITaskStore` says: whoever implements this can save and load tasks. It says nothing about whether that is a file, a database or a dictionary in memory.\n\nThat separation buys two concrete things. You can test the code that uses the store without a file system. And you can change the storage later without touching the logic.\n\n## Do not write an interface per class reflexively\n\nThe habit of giving every class an interface with the same name and an `I` in front produces twice the files and no benefit. Introduce an interface when there is a real reason: a second implementation, a test double, or a boundary you want to keep stable.\n\nOne implementation and no tests against it means you have written a second name for the same thing.\n\n## Inheritance is the weakest of the options\n\n`class Manager : Employee` couples them permanently, and the coupling is inherited by every future change. Composition — holding a reference to something and delegating — keeps the pieces independent.\n\nPrefer interfaces for polymorphism and composition for reuse. Reach for inheritance when the subtype genuinely *is* the base type in every context, which is rarer than it first appears.\n\n## Sealed by default is a reasonable habit\n\nA class not designed to be inherited from should say so. It documents intent and prevents someone building on assumptions you never made.",
+            "codeExample": "// Data with no invariant to protect: a record, not a class.\npublic record TaskItem(Guid Id, string Title, TaskStatus Status, DateOnly? Due);\n\npublic enum TaskStatus { Open, InProgress, Done }\n\n// An interface with a real reason to exist: two implementations, one of them\n// used by every test.\npublic interface ITaskStore\n{\n    Task<IReadOnlyList<TaskItem>> LoadAsync(CancellationToken ct = default);\n    Task SaveAsync(IReadOnlyList<TaskItem> items, CancellationToken ct = default);\n}\n\npublic sealed class JsonFileTaskStore(string path) : ITaskStore\n{\n    public async Task<IReadOnlyList<TaskItem>> LoadAsync(CancellationToken ct = default)\n    {\n        if (!File.Exists(path)) return [];\n        await using var stream = File.OpenRead(path);\n        return await JsonSerializer.DeserializeAsync<List<TaskItem>>(stream, cancellationToken: ct) ?? [];\n    }\n\n    public async Task SaveAsync(IReadOnlyList<TaskItem> items, CancellationToken ct = default)\n    {\n        await using var stream = File.Create(path);\n        await JsonSerializer.SerializeAsync(stream, items, cancellationToken: ct);\n    }\n}\n\n// The test double. This is the second implementation that justifies the interface.\npublic sealed class InMemoryTaskStore : ITaskStore\n{\n    private List<TaskItem> _items = [];\n    public Task<IReadOnlyList<TaskItem>> LoadAsync(CancellationToken ct = default)\n        => Task.FromResult<IReadOnlyList<TaskItem>>(_items);\n    public Task SaveAsync(IReadOnlyList<TaskItem> items, CancellationToken ct = default)\n    {\n        _items = [.. items];\n        return Task.CompletedTask;\n    }\n}\n\n// The service knows only the promise, never which implementation it has.\npublic sealed class TaskService(ITaskStore store)\n{\n    public async Task<TaskItem> AddAsync(string title, CancellationToken ct = default)\n    {\n        var items = (await store.LoadAsync(ct)).ToList();\n        var item = new TaskItem(Guid.NewGuid(), title, TaskStatus.Open, null);\n        items.Add(item);\n        await store.SaveAsync(items, ct);\n        return item;\n    }\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "A class earns its existence by protecting an invariant; pure data should be a record",
+              "An interface promises a capability and decouples users from implementations",
+              "Do not create an interface per class — require a second implementation or a test double",
+              "Prefer composition over inheritance; inheritance couples permanently",
+              "Seal classes you did not design for inheritance"
+            ],
+            "quiz": {
+              "title": "Classes and interfaces",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "When is introducing an interface genuinely justified?",
+                  "explanation": "An interface earns its place when something varies: a second implementation, a test double, or a boundary you want to hold stable. Otherwise it is a second name for one thing.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "When there is a second implementation, a test double, or a boundary to keep stable",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Always — every class should have a matching interface",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "When the class has more than five methods",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "When the class will be used by more than one caller",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why is composition usually preferred over inheritance?",
+                  "explanation": "Inheritance permanently couples the types, and every future change to the base propagates. Composition keeps the pieces independently changeable.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Inheritance couples the types permanently; composition keeps them independently changeable",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Inheritance is slower at runtime",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "C# does not support multiple inheritance",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Composition requires less code in every case",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Encapsulation and Making Invalid States Unrepresentable",
+            "slug": "encapsulation-and-making-invalid-states-unrepresentable",
+            "type": "Architecture",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The best validation is a type that cannot be wrong\n\nMost defensive checks scattered through a codebase exist because some object could be constructed in a nonsensical state. Remove that possibility and the checks become unnecessary.\n\nIf an order must always have at least one line, do not create an empty order and validate later — require the lines in the constructor. Now \"order with no lines\" is not a bug to catch; it is a program that does not compile.\n\n## Private setters and real constructors\n\nA class with public setters on everything is a bag of fields. Anyone can put it into any state at any time, and no method can rely on anything.\n\nMake the constructor establish a valid object, keep setters private, and expose deliberate methods for the transitions that are allowed. `order.Cancel()` can enforce that a shipped order cannot be cancelled; `order.Status = Cancelled` cannot.\n\n## Enums over magic strings\n\nA status that is a `string` accepts `\"Compelte\"`. A status that is an `enum` does not compile. This is the same principle applied to the smallest scale, and it is free.\n\n## Expose collections read-only\n\nA public `List<T>` property lets any caller add and remove items behind your back, bypassing every rule your class enforces. Expose `IReadOnlyList<T>` and provide explicit methods for the changes that are permitted.\n\n## Guard at the boundary, trust inside\n\nValidate input where it enters the system — the API, the file parser, the form. Once it is a domain object, the type guarantees hold and internal code does not need to re-check them.\n\nThe alternative, checking everywhere, is both slower and less reliable, because one forgotten check is a bug and nobody can tell which checks are still needed.",
+            "codeExample": "// --- a bag of fields: any state is reachable at any time -----------------\npublic class BadOrder\n{\n    public string Status { get; set; } = \"\";        // \"Complte\" compiles fine\n    public List<OrderLine> Lines { get; set; } = [];// anyone can empty it\n    public decimal Total { get; set; }              // can disagree with Lines\n}\n\n// --- invalid states made unrepresentable ---------------------------------\npublic sealed class Order\n{\n    private readonly List<OrderLine> _lines;\n\n    public Order(string reference, IEnumerable<OrderLine> lines)\n    {\n        _lines = [.. lines];\n        // An order with no lines cannot be constructed, so no later code has\n        // to handle one.\n        if (_lines.Count == 0)\n            throw new ArgumentException(\"An order must have at least one line.\", nameof(lines));\n\n        Reference = !string.IsNullOrWhiteSpace(reference)\n            ? reference\n            : throw new ArgumentException(\"Reference is required.\", nameof(reference));\n    }\n\n    public string Reference { get; }\n    public OrderStatus Status { get; private set; } = OrderStatus.Draft;\n\n    // Callers cannot add or remove lines behind the class's back.\n    public IReadOnlyList<OrderLine> Lines => _lines;\n\n    // Derived, never stored — so it cannot disagree with the lines.\n    public decimal Total => _lines.Sum(l => l.Quantity * l.UnitPrice);\n\n    // The only legal transitions, each enforcing its own rule.\n    public void Submit()\n    {\n        if (Status != OrderStatus.Draft)\n            throw new InvalidOperationException($\"Cannot submit an order that is {Status}.\");\n        Status = OrderStatus.Submitted;\n    }\n\n    public void Cancel()\n    {\n        if (Status == OrderStatus.Shipped)\n            throw new InvalidOperationException(\"A shipped order cannot be cancelled.\");\n        Status = OrderStatus.Cancelled;\n    }\n}\n\npublic enum OrderStatus { Draft, Submitted, Shipped, Cancelled }\npublic record OrderLine(string Sku, int Quantity, decimal UnitPrice);",
+            "codeLanguage": "csharp",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Prefer types that cannot represent an invalid state over validation after the fact",
+              "Establish validity in the constructor; keep setters private and expose intentional methods",
+              "Use enums instead of strings for fixed sets of values",
+              "Expose collections as read-only and provide explicit mutation methods",
+              "Validate at the boundary and trust the types inside"
+            ],
+            "quiz": {
+              "title": "Encapsulation",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why derive `Total` from the order lines rather than storing it as a settable property?",
+                  "explanation": "A stored total can drift out of agreement with the lines. A derived value cannot be wrong, because there is only one source of truth.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A stored total can disagree with the lines; a derived one cannot",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Derived properties are faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Stored decimals lose precision",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Properties cannot be serialised",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What is gained by exposing `IReadOnlyList<T>` instead of `List<T>`?",
+                  "explanation": "A public List lets callers mutate state behind the class's back, bypassing every rule it enforces. Read-only forces changes through intentional methods.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Callers cannot bypass the class's rules by mutating the collection directly",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It uses less memory",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It serialises more compactly",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It allows duplicate entries to be rejected automatically",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "SOLID in Practice",
+        "summary": "Two principles that pay for themselves, without the ceremony that usually accompanies them.",
+        "estimatedHours": 1.4,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Dependency Injection: The Problem It Solves",
+            "slug": "dependency-injection-the-problem-it-solves",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Start with the problem\n\nA class that constructs its own dependencies is welded to them:\n\n```csharp\npublic class TaskService\n{\n    private readonly JsonFileTaskStore _store = new(\"tasks.json\");\n}\n```\n\nYou cannot test this without writing files. You cannot point it at a database without editing it. You cannot use two of them with different paths. The class decided something it had no business deciding.\n\n## The fix is embarrassingly simple\n\nAsk for the dependency instead of creating it:\n\n```csharp\npublic class TaskService(ITaskStore store) { }\n```\n\nThat is dependency injection. Everything else — containers, lifetimes, registration — is machinery for doing this at scale. The idea is just: take what you need as a parameter.\n\n## What the container adds\n\nIn a real application, `TaskService` needs a store, which needs a connection, which needs configuration. Wiring that by hand at every call site is tedious and repetitive.\n\nA container is told once how to build each thing, and constructs the whole graph on demand. ASP.NET Core has one built in, and you register services at startup.\n\n## Lifetimes, briefly\n\n- **Transient** — a new one every time. The safe default.\n- **Scoped** — one per web request. Correct for anything holding request state, including a database context.\n- **Singleton** — one for the application's lifetime. Fine for stateless helpers and configuration; dangerous for anything holding mutable state, because every request shares it.\n\nThe classic production bug is injecting a scoped database context into a singleton, which keeps one context alive forever.\n\n## Depend on the interface\n\nTake `ITaskStore`, not `JsonFileTaskStore`. Taking the concrete type gives up everything the injection was for.",
+            "codeExample": "// --- welded to its dependency --------------------------------------------\npublic class HardToTestService\n{\n    private readonly JsonFileTaskStore _store = new(\"tasks.json\");\n    // No test can run without touching the file system.\n    // No configuration can change the path.\n}\n\n// --- ask, don't construct -------------------------------------------------\npublic sealed class TaskService(ITaskStore store, ILogger<TaskService> logger)\n{\n    public async Task<TaskItem> CompleteAsync(Guid id, CancellationToken ct = default)\n    {\n        var items = (await store.LoadAsync(ct)).ToList();\n        var index = items.FindIndex(t => t.Id == id);\n        if (index < 0) throw new KeyNotFoundException($\"No task with id {id}.\");\n\n        items[index] = items[index] with { Status = TaskStatus.Done };\n        await store.SaveAsync(items, ct);\n        logger.LogInformation(\"Completed task {TaskId}\", id);\n        return items[index];\n    }\n}\n\n// --- registration: tell the container how to build things once ------------\nvar builder = WebApplication.CreateBuilder(args);\n\nbuilder.Services.AddSingleton<ITaskStore>(_ =>\n    new JsonFileTaskStore(builder.Configuration[\"Storage:Path\"]!));  // stateless, shared\n\nbuilder.Services.AddScoped<TaskService>();        // per request\nbuilder.Services.AddDbContext<AppDbContext>();    // scoped by default — correct\n\n// DANGER: this would capture a scoped DbContext inside a singleton, keeping one\n// context alive for the life of the application.\n// builder.Services.AddSingleton<ReportService>();   // if ReportService takes AppDbContext\n\n// --- and in a test, no container and no file system ----------------------\n// var service = new TaskService(new InMemoryTaskStore(), NullLogger<TaskService>.Instance);",
+            "codeLanguage": "csharp",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "A class that constructs its own dependencies cannot be tested or reconfigured",
+              "Dependency injection is simply taking what you need as a constructor parameter",
+              "A container builds the object graph so you do not wire it by hand everywhere",
+              "Transient by default, scoped for per-request state, singleton only when stateless",
+              "Inject a scoped context into a singleton and it lives forever — a classic production bug"
+            ],
+            "quiz": {
+              "title": "Dependency injection",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What is the core problem dependency injection solves?",
+                  "explanation": "A class constructing its own dependencies has decided something it should not have, making it untestable and unconfigurable. Taking them as parameters restores both.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A class that constructs its own dependencies cannot be tested or reconfigured",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It makes object creation faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It removes the need for interfaces",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It reduces the number of classes in a project",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What goes wrong when a scoped DbContext is injected into a singleton service?",
+                  "explanation": "The singleton captures the first context it receives and holds it for the application's lifetime, long past the request it belonged to.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The singleton holds one context alive for the whole application lifetime",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The application fails to start with a clear error every time",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Each request silently gets its own copy anyway",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Nothing — lifetimes are advisory",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Single Responsibility Without Ceremony",
+            "slug": "single-responsibility-without-ceremony",
+            "type": "Architecture",
+            "estimatedMinutes": 40,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## One reason to change\n\nA class should have one reason to change. Not one method, not one line — one *reason*.\n\nThe practical test is whether you can describe what it does in a sentence without using \"and\". \"Loads tasks from a file, formats them for display and sends the overdue ones by email\" is three reasons, and a change to any one of them risks the other two.\n\n## Notice the mixed levels\n\nA method that opens a file, parses dates, applies a business rule and writes HTML is operating at four different levels of abstraction at once. That is the readable symptom of a responsibility problem, and it is easy to spot without invoking principles.\n\nGood code reads at one level per method, with details delegated downward.\n\n## Do not over-apply it\n\nThe common failure is the opposite: a codebase where every class has one method, nothing can be understood without opening nine files, and the indirection hides rather than reveals.\n\nSplit when a class has genuinely separate reasons to change, or when it has become hard to test. Do not split because a rule says small is good.\n\n## Let the tests tell you\n\nA class that needs six mocks to test is telling you something. So is one where half the tests set up state that the other half ignores.\n\nTest difficulty is the most honest signal about structure available, and it arrives before the design problem becomes expensive.\n\n## A pragmatic order\n\nWrite it as one thing. Get it working and tested. Split it when a second reason to change actually arrives, and let the tests guide where the seam goes.\n\nDesigning the seams in advance is how you end up with elaborate structure serving requirements that never materialised.",
+            "codeExample": "// --- four responsibilities, four levels of abstraction, one method -------\npublic class OverdueReporter\n{\n    public void Run()\n    {\n        var json = File.ReadAllText(\"tasks.json\");                  // I/O\n        var tasks = JsonSerializer.Deserialize<List<TaskItem>>(json)!;  // parsing\n        var overdue = tasks.Where(t => t.Due < DateOnly.FromDateTime(DateTime.Today)\n                                    && t.Status != TaskStatus.Done);    // business rule\n        var html = \"<ul>\" + string.Join(\"\", overdue.Select(t => $\"<li>{t.Title}</li>\")) + \"</ul>\";\n        new SmtpClient().Send(\"me@example.com\", \"team@example.com\", \"Overdue\", html);  // email\n    }\n    // Reasons to change: the file format, the parser, the overdue rule, the\n    // report layout, the mail transport. Five, and a change to any one risks\n    // the rest. Nothing here can be tested without a file and an SMTP server.\n}\n\n// --- separated, and each piece testable alone ----------------------------\n\n// The business rule: a pure function. No file, no network, instant to test.\npublic static class OverdueRule\n{\n    public static IReadOnlyList<TaskItem> Select(IEnumerable<TaskItem> tasks, DateOnly today) =>\n        tasks.Where(t => t.Due is { } due && due < today && t.Status != TaskStatus.Done)\n             .ToList();\n}\n\n// Presentation: also pure.\npublic static class OverdueReport\n{\n    public static string ToHtml(IReadOnlyList<TaskItem> tasks) =>\n        $\"<ul>{string.Join(\"\", tasks.Select(t => $\"<li>{t.Title}</li>\"))}</ul>\";\n}\n\n// Orchestration: reads at ONE level. Every detail is delegated downward.\npublic sealed class OverdueNotifier(ITaskStore store, IEmailSender email, TimeProvider clock)\n{\n    public async Task RunAsync(CancellationToken ct = default)\n    {\n        var tasks = await store.LoadAsync(ct);\n        var today = DateOnly.FromDateTime(clock.GetUtcNow().Date);\n        var overdue = OverdueRule.Select(tasks, today);\n        if (overdue.Count == 0) return;\n        await email.SendAsync(\"team@example.com\", \"Overdue\", OverdueReport.ToHtml(overdue), ct);\n    }\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "One class, one reason to change — test it by describing it without saying “and”",
+              "Mixed levels of abstraction in one method are the readable symptom",
+              "Over-splitting is as damaging as under-splitting; indirection can hide rather than reveal",
+              "Test difficulty is the earliest honest signal that a class does too much",
+              "Write it whole, then split when a second reason to change actually arrives"
+            ],
+            "quiz": {
+              "title": "Single responsibility",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What is the most reliable early signal that a class has too many responsibilities?",
+                  "explanation": "Test difficulty shows up before the design problem becomes expensive, and it is objective rather than a matter of taste.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It becomes hard to test — many mocks, or setup half the tests ignore",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It exceeds a certain number of lines",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It has more than one public method",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is referenced by more than three other classes",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What is the recommended order of work?",
+                  "explanation": "Designing seams in advance produces structure serving requirements that never arrive. Let the second reason to change, and the tests, show you where to split.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Write it as one thing, get it tested, then split when a second reason to change arrives",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Design all the class boundaries before writing any code",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Give every class exactly one method from the start",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Split only when a file exceeds 200 lines",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Testing",
+        "summary": "Tests that catch regressions rather than restating the implementation.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Your First Unit Tests with xUnit",
+            "slug": "your-first-unit-tests-with-xunit",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## What a unit test is for\n\nIt pins behaviour down so that a future change that breaks it is noticed immediately, by a machine, rather than eventually, by a user.\n\nThat framing decides what to test. Test the behaviour someone depends on. Do not test that a property returns what you just set — that tests the compiler.\n\n## Arrange, act, assert\n\nThree parts, in order, with a blank line between them:\n\n```csharp\nvar service = new TaskService(new InMemoryTaskStore());   // arrange\nvar task = await service.AddAsync(\"Write tests\");         // act\nAssert.Equal(TaskStatus.Open, task.Status);               // assert\n```\n\nWhen a test has two acts, it is two tests.\n\n## Name the test as a sentence\n\n`AddAsync_GivenBlankTitle_Throws` tells you what broke without opening the file. `Test1` does not. The name is read far more often than the body — usually in a CI failure list at an inconvenient moment.\n\n## Theory for the same behaviour with different data\n\n`[Fact]` is one case. `[Theory]` with `[InlineData]` runs the same test over several inputs, each reported separately, so you see exactly which input failed.\n\n## Test the edges\n\nThe interesting cases are empty, one, many, null, boundary values and the failure path. The happy path with typical values is the case least likely to break.\n\n## One assert per concept\n\nSeveral asserts are fine if they check one behaviour. But when a test asserts six unrelated things, the first failure hides the rest and you fix them one run at a time.",
+            "codeExample": "using Xunit;\n\npublic class TaskServiceTests\n{\n    // Each test gets a fresh in-memory store: no file system, no shared state,\n    // and the whole suite runs in milliseconds.\n    private static TaskService NewService() => new(new InMemoryTaskStore());\n\n    [Fact]\n    public async Task AddAsync_GivenTitle_CreatesTaskInOpenStatus()\n    {\n        var service = NewService();\n\n        var task = await service.AddAsync(\"Write tests\");\n\n        Assert.Equal(\"Write tests\", task.Title);\n        Assert.Equal(TaskStatus.Open, task.Status);   // several asserts, one behaviour\n    }\n\n    [Theory]\n    [InlineData(\"\")]\n    [InlineData(\"   \")]\n    [InlineData(null)]\n    public async Task AddAsync_GivenBlankTitle_Throws(string? title)\n    {\n        var service = NewService();\n\n        // Each input is reported separately, so you see WHICH one failed.\n        await Assert.ThrowsAsync<ArgumentException>(() => service.AddAsync(title!));\n    }\n\n    [Fact]\n    public async Task CompleteAsync_GivenUnknownId_Throws()\n    {\n        var service = NewService();\n\n        // The failure path, which is the one most likely to be wrong.\n        await Assert.ThrowsAsync<KeyNotFoundException>(\n            () => service.CompleteAsync(Guid.NewGuid()));\n    }\n\n    [Fact]\n    public async Task ListAsync_GivenNoTasks_ReturnsEmpty()\n    {\n        var service = NewService();\n\n        var tasks = await service.ListAsync();\n\n        Assert.Empty(tasks);        // the \"zero\" edge, not the comfortable middle\n    }\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "A test pins behaviour so a machine catches the regression, not a user",
+              "Arrange, act, assert — two acts means two tests",
+              "Name tests as sentences; the name is read far more often than the body",
+              "Use `[Theory]` with `[InlineData]` so each input reports separately",
+              "Test empty, one, many, null, boundaries and failures — not the comfortable middle"
+            ],
+            "resources": [
+              {
+                "title": "Unit testing in .NET",
+                "url": "https://learn.microsoft.com/dotnet/core/testing/",
+                "kind": "Documentation"
+              }
+            ],
+            "quiz": {
+              "title": "Unit testing",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why prefer `[Theory]` with `[InlineData]` over a loop inside a single `[Fact]`?",
+                  "explanation": "Each case is reported as its own test, so a failure names the exact input. A loop stops at the first failure and hides the rest.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Each input is reported separately, so you see exactly which one failed",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Theories run faster than facts",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Loops are not allowed inside test methods",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Theories can test private methods",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Which of these is the least valuable thing to unit test?",
+                  "explanation": "Asserting that an auto-property returns what you just assigned tests the compiler, not your behaviour.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "That a property returns the value just assigned to it",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "That an invalid title is rejected",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "That completing an unknown id throws",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "That an empty store returns an empty list",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Testing Code That Talks to the Outside World",
+            "slug": "testing-code-that-talks-to-the-outside-world",
+            "type": "Lab",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## The boundary is the problem\n\nCode that reads files, calls HTTP APIs, queries databases or asks for the current time is awkward to test. Tests become slow, need infrastructure, and fail for reasons unrelated to your change.\n\nThe fix is not a clever mocking framework. It is putting those things behind an interface so a test can supply something else.\n\n## Fakes usually beat mocks\n\nA **fake** is a working implementation that is simpler — an in-memory store, for example. A **mock** is configured to expect particular calls and verify them.\n\nPrefer fakes. A fake tests behaviour: put a task in, get it out. A mock often tests implementation: assert that `SaveAsync` was called exactly once. The second kind breaks when you refactor without changing behaviour, which teaches everyone to distrust the suite.\n\nUse a mock when the interaction *is* the behaviour — \"an email must be sent\" is a legitimate thing to verify.\n\n## Time is a dependency\n\n`DateTime.Now` inside a method makes \"what happens after the due date\" untestable without waiting. Inject `TimeProvider` (built into modern .NET) and a test can state the date.\n\nAnything non-deterministic deserves the same treatment: random numbers, new GUIDs, the machine name.\n\n## Know which kind of test you are writing\n\nA **unit test** exercises your logic with everything external faked. Milliseconds, run constantly.\n\nAn **integration test** exercises the real thing — a real database, the real HTTP pipeline. Slower, fewer, and the only way to catch the mistakes that live in the wiring.\n\nYou need both. Unit tests alone pass while the application fails to start.\n\n## Do not fake what you own and can use directly\n\nAn in-memory SQLite database is often better than faking a repository: it tests your actual queries. Fake at the edges you genuinely cannot control — third-party APIs, the clock, the network.",
+            "codeExample": "using Microsoft.Extensions.Time.Testing;\nusing Xunit;\n\npublic class OverdueNotifierTests\n{\n    // A fake: a real, simple implementation. Tests behaviour, survives refactors.\n    private sealed class FakeEmailSender : IEmailSender\n    {\n        public List<(string To, string Subject, string Body)> Sent = [];\n        public Task SendAsync(string to, string subject, string body, CancellationToken ct = default)\n        {\n            Sent.Add((to, subject, body));\n            return Task.CompletedTask;\n        }\n    }\n\n    [Fact]\n    public async Task RunAsync_GivenOverdueTask_SendsOneEmail()\n    {\n        // Time is injected, so \"after the due date\" needs no waiting.\n        var clock = new FakeTimeProvider(new DateTimeOffset(2026, 9, 20, 9, 0, 0, TimeSpan.Zero));\n        var store = new InMemoryTaskStore();\n        await store.SaveAsync([\n            new TaskItem(Guid.NewGuid(), \"Overdue one\", TaskStatus.Open, new DateOnly(2026, 9, 1)),\n            new TaskItem(Guid.NewGuid(), \"Not due yet\", TaskStatus.Open, new DateOnly(2026, 12, 1)),\n            new TaskItem(Guid.NewGuid(), \"Already done\", TaskStatus.Done, new DateOnly(2026, 9, 1)),\n        ]);\n        var email = new FakeEmailSender();\n\n        await new OverdueNotifier(store, email, clock).RunAsync();\n\n        // Sending the email IS the behaviour here, so verifying it is legitimate.\n        var sent = Assert.Single(email.Sent);\n        Assert.Contains(\"Overdue one\", sent.Body);\n        Assert.DoesNotContain(\"Not due yet\", sent.Body);\n        Assert.DoesNotContain(\"Already done\", sent.Body);\n    }\n\n    [Fact]\n    public async Task RunAsync_GivenNothingOverdue_SendsNoEmail()\n    {\n        var clock = new FakeTimeProvider(new DateTimeOffset(2026, 1, 1, 9, 0, 0, TimeSpan.Zero));\n        var email = new FakeEmailSender();\n\n        await new OverdueNotifier(new InMemoryTaskStore(), email, clock).RunAsync();\n\n        Assert.Empty(email.Sent);       // the quiet case, which is easy to get wrong\n    }\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart TB\n  subgraph Unit[\"Unit test — milliseconds, run constantly\"]\n    A[Your logic] --> B[Fake store]\n    A --> C[Fake clock]\n    A --> D[Fake email]\n  end\n  subgraph Integration[\"Integration test — slower, fewer\"]\n    E[Real HTTP pipeline] --> F[Real logic]\n    F --> G[(In-memory database)]\n  end",
+            "keyTakeaways": [
+              "Put external dependencies behind interfaces so tests can substitute them",
+              "Prefer fakes over mocks: fakes test behaviour, mocks often test implementation",
+              "Inject `TimeProvider` rather than calling `DateTime.Now` inside logic",
+              "Unit tests for logic, integration tests for wiring — you need both",
+              "Fake only what you cannot control; a real in-memory database beats a fake repository"
+            ],
+            "quiz": {
+              "title": "Testing at the boundary",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why are fakes usually preferable to mocks?",
+                  "explanation": "A fake lets you assert on outcomes, which survive refactoring. A mock asserting exact call sequences breaks on behaviour-preserving changes, and people stop trusting the suite.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Fakes test behaviour and survive refactoring; call-verifying mocks often test implementation",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Fakes are faster to execute",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Mocks cannot be used with async methods",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Fakes require no interface",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why inject a time provider instead of calling `DateTime.Now` inside the logic?",
+                  "explanation": "Embedded clock calls make date-dependent behaviour untestable without waiting. An injected provider lets the test state the date.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It makes date-dependent behaviour testable without waiting for real time to pass",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "`DateTime.Now` is deprecated",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It improves performance",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It avoids time zone bugs automatically",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "careerSlug": "csharp-dotnet-developer",
+    "order": 3,
+    "phaseNumber": 3,
+    "title": "Phase 3 — Web APIs with ASP.NET Core & EF Core",
+    "slug": "phase-3-web-apis-with-asp-net-core-and-ef-core",
+    "summary": "Putting the language and the design discipline onto the web: the request pipeline, status codes and validation that help the caller, EF Core without the performance traps, and integration tests that exercise the real thing.",
+    "estimatedHours": 40,
+    "level": "Foundational",
+    "minimumTrack": "FastTrack",
+    "outcomes": [
+      "Explain how a request becomes a response in ASP.NET Core",
+      "Return status codes and validation errors a caller can act on",
+      "Map a model to tables with EF Core and keep entities out of the API contract",
+      "Detect and fix the N+1 query problem",
+      "Configure secrets and logging, and test through the real request pipeline"
+    ],
+    "skillSlugs": [
+      "dotnet",
+      "rest-api",
+      "csharp",
+      "sql",
+      "database-design",
+      "testing"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "HTTP and Your First API",
+        "summary": "The pipeline, and responses that tell the caller what to do.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "How a Request Becomes a Response in ASP.NET Core",
+            "slug": "how-a-request-becomes-a-response-in-asp-net-core",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## A pipeline of middleware\n\nA request arrives and passes through an ordered sequence of components. Each one can act on the request, pass it along, and act on the response coming back. Routing matches a URL to an endpoint; your handler runs; the response travels back out through the same components in reverse.\n\nAlmost every confusing ASP.NET Core problem is an ordering problem. Authentication placed after authorisation means nobody is ever authenticated. Exception handling placed late means early failures are not caught.\n\n## Where your code sits\n\nYour controller or minimal-API handler is at the end of the pipeline. By the time it runs, routing has matched, the body has been bound to your parameter, and authentication has established who is calling.\n\n## Model binding, then validation\n\nThe framework reads the request body, query string and route values and populates your parameters. If JSON does not match the target type, binding fails before your code runs and the caller gets a 400.\n\nValidation attributes are then checked, and in an API controller a failure is automatically turned into a 400 with the field details. You do not write that code.\n\n## Minimal APIs or controllers\n\nMinimal APIs declare endpoints as lambdas — less ceremony, good for small services. Controllers group related endpoints in a class — more structure, better when there are many.\n\nBoth use the same pipeline and the same binding. Pick one and be consistent; the choice matters far less than people argue.\n\n## Keep handlers thin\n\nA handler should bind input, call a service, and map the result to a response. Business logic in a controller cannot be tested without the web stack and cannot be reused by anything else.",
+            "codeExample": "var builder = WebApplication.CreateBuilder(args);\n\nbuilder.Services.AddDbContext<LibraryDbContext>(o =>\n    o.UseSqlServer(builder.Configuration.GetConnectionString(\"Library\")));\nbuilder.Services.AddScoped<LoanService>();\nbuilder.Services.AddControllers();\nbuilder.Services.AddProblemDetails();\n\nvar app = builder.Build();\n\n// ORDER IS THE WHOLE GAME. Each of these wraps everything below it.\napp.UseExceptionHandler();      // first: must wrap everything to catch it\napp.UseHttpsRedirection();\napp.UseAuthentication();        // establishes WHO the caller is\napp.UseAuthorization();         // then decides what they may do — never before\napp.MapControllers();           // last: your endpoints\n\napp.Run();\n\n\n// --- the handler stays thin ----------------------------------------------\n[ApiController]\n[Route(\"api/loans\")]\npublic class LoansController(LoanService loans) : ControllerBase\n{\n    // [ApiController] turns a validation failure into a 400 with field details\n    // automatically — there is no `if (!ModelState.IsValid)` to write.\n    [HttpPost]\n    public async Task<ActionResult<LoanResponse>> Borrow(\n        BorrowRequest request, CancellationToken ct)\n    {\n        // Bind, delegate, map. No business logic here.\n        var result = await loans.BorrowAsync(request.BookId, request.MemberId, ct);\n\n        return result switch\n        {\n            { IsSuccess: true } => CreatedAtAction(nameof(Get), new { id = result.Loan!.Id },\n                                                   LoanResponse.From(result.Loan)),\n            { Reason: BorrowFailure.BookNotFound } => NotFound(),\n            { Reason: BorrowFailure.AlreadyOnLoan } => Conflict(\n                new ProblemDetails { Title = \"Book is already on loan\", Status = 409 }),\n            _ => Problem()\n        };\n    }\n\n    [HttpGet(\"{id:guid}\")]\n    public async Task<ActionResult<LoanResponse>> Get(Guid id, CancellationToken ct) =>\n        await loans.FindAsync(id, ct) is { } loan\n            ? LoanResponse.From(loan)\n            : NotFound();\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart LR\n  A[Request] --> B[Exception handler]\n  B --> C[HTTPS redirect]\n  C --> D[Authentication]\n  D --> E[Authorization]\n  E --> F[Routing + model binding]\n  F --> G[Your handler]\n  G --> H[Service]\n  H --> G\n  G --> I[Response back out<br/>through the same layers]",
+            "keyTakeaways": [
+              "A request passes through ordered middleware; most confusing bugs are ordering bugs",
+              "By the time your handler runs, routing, binding and authentication have happened",
+              "Binding failures produce a 400 before your code runs; validation attributes do the same",
+              "Minimal APIs and controllers share the pipeline — pick one and be consistent",
+              "Handlers bind, delegate and map; logic belongs in a service"
+            ],
+            "quiz": {
+              "title": "The request pipeline",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why must `UseAuthentication` be registered before `UseAuthorization`?",
+                  "explanation": "Authentication establishes who the caller is. Authorisation decides what they may do. Reversed, the authorisation check runs against no identity.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Authorisation needs the identity that authentication establishes",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "They can be registered in either order",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Authorisation is faster and should run second for performance",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Authentication requires the routing table, which authorisation builds",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "In an `[ApiController]`, what happens when a request body fails validation attributes?",
+                  "explanation": "The attribute wires up automatic model-state validation: a 400 with per-field details is returned before the action method runs.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A 400 with per-field details is returned automatically before the action runs",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The action runs and you must check ModelState yourself",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A 500 is returned",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The invalid fields are set to their default values and the action runs",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Status Codes, Validation and Error Responses That Help",
+            "slug": "status-codes-validation-and-error-responses-that-help",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The status code is part of the contract\n\nCallers branch on it. Returning 200 with `{\"error\": \"not found\"}` forces every client to parse the body to discover whether it worked, and most will not — they will treat it as success.\n\nThe ones that carry most of the load:\n\n- **200 OK** — it worked.\n- **201 Created** — a resource was created; include its location.\n- **204 No Content** — it worked and there is nothing to return. Common for delete.\n- **400 Bad Request** — the request itself is malformed or invalid.\n- **401 / 403** — not authenticated / authenticated but not permitted. Different things.\n- **404 Not Found** — the resource does not exist.\n- **409 Conflict** — valid request, but it conflicts with current state. Borrowing a borrowed book.\n- **422** — well-formed but semantically wrong. Optional; 400 is usually enough.\n- **500** — you broke, not them. Never return this for a predictable case.\n\n## 400 versus 409 is worth getting right\n\n400 means \"fix your request\". 409 means \"your request is fine, the world is not in the right state\". A caller can retry a 409 later; retrying a 400 unchanged is pointless.\n\n## Say which field is wrong\n\nAn error body naming the offending fields turns a support ticket into a self-service fix. ASP.NET Core produces this automatically from validation attributes, in the standard `ProblemDetails` shape.\n\n## Never return exception details\n\nStack traces and connection strings in an error response are an information leak. Log the detail server-side with a correlation id, and return the id. Then \"error 4f2a\" lets you find everything in one query.\n\n## Do not leak entities\n\nReturn a response model, not your EF entity. An entity carries navigation properties, database concerns and fields the caller should not see, and changing your database schema should not silently change your public API.",
+            "codeExample": "// --- request and response models: the public contract --------------------\npublic record BorrowRequest(\n    [Required] Guid BookId,\n    [Required] Guid MemberId,\n    [Range(1, 30, ErrorMessage = \"Loan length must be between 1 and 30 days.\")]\n    int Days = 14);\n\n// Deliberately NOT the EF entity: no navigation properties, no internal fields.\npublic record LoanResponse(Guid Id, string BookTitle, string MemberName, DateOnly DueOn)\n{\n    public static LoanResponse From(Loan loan) =>\n        new(loan.Id, loan.Book!.Title, loan.Member!.Name, loan.DueOn);\n}\n\n[ApiController]\n[Route(\"api/loans\")]\npublic class LoansController(LoanService loans, ILogger<LoansController> log) : ControllerBase\n{\n    [HttpPost]\n    [ProducesResponseType<LoanResponse>(StatusCodes.Status201Created)]\n    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]\n    [ProducesResponseType(StatusCodes.Status404NotFound)]\n    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]\n    public async Task<IActionResult> Borrow(BorrowRequest request, CancellationToken ct)\n    {\n        // A malformed body or a Days of 99 never reaches here: [ApiController]\n        // already returned 400 with the field names.\n        try\n        {\n            var result = await loans.BorrowAsync(request.BookId, request.MemberId, request.Days, ct);\n\n            if (result.Reason == BorrowFailure.BookNotFound)\n                return NotFound();\n\n            // 409, not 400: the request is perfectly valid, the world is not in\n            // the right state. The caller can retry this later; they cannot\n            // usefully retry a 400 unchanged.\n            if (result.Reason == BorrowFailure.AlreadyOnLoan)\n                return Conflict(new ProblemDetails\n                {\n                    Title  = \"Book is already on loan\",\n                    Detail = $\"Book {request.BookId} is due back on {result.DueOn:yyyy-MM-dd}.\",\n                    Status = StatusCodes.Status409Conflict\n                });\n\n            var response = LoanResponse.From(result.Loan!);\n            return CreatedAtAction(nameof(Get), new { id = response.Id }, response);\n        }\n        catch (Exception ex)\n        {\n            // The caller gets an id, never the stack trace. \"error 4f2a1c\" then\n            // finds the whole story in the logs.\n            var correlationId = HttpContext.TraceIdentifier;\n            log.LogError(ex, \"borrow failed {CorrelationId}\", correlationId);\n            return Problem(title: \"Unable to complete the loan\",\n                           detail: $\"Reference: {correlationId}\",\n                           statusCode: StatusCodes.Status500InternalServerError);\n        }\n    }\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "The status code is the contract; never signal failure with 200",
+              "400 means fix your request, 409 means the state conflicts — only one is retryable",
+              "Name the invalid fields; `ProblemDetails` is the standard shape",
+              "Never return exception detail; log it with a correlation id and return the id",
+              "Return response models, not EF entities — schema changes must not alter the public API"
+            ],
+            "quiz": {
+              "title": "Status codes and errors",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "A caller asks to borrow a book that exists but is already on loan. Which status code is correct?",
+                  "explanation": "The request is valid; the current state conflicts with it. That is 409, and unlike a 400 it is meaningfully retryable later.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "409 Conflict",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "400 Bad Request",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "404 Not Found",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "200 OK with an error message in the body",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why return a response model rather than the EF entity?",
+                  "explanation": "An entity exposes navigation properties and internal fields, and couples your public API to your database schema so a migration silently changes the contract.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It keeps internal fields hidden and stops schema changes silently altering the public API",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Entities cannot be serialised to JSON",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Response models are faster to construct",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Entities always cause circular reference errors",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "Data with EF Core",
+        "summary": "Mapping objects to tables, and the query traps that turn a fast endpoint into a slow one.",
+        "estimatedHours": 1.7,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Mapping Your Model to Tables with EF Core",
+            "slug": "mapping-your-model-to-tables-with-ef-core",
+            "type": "Coding",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## What an ORM is doing\n\nEF Core translates your C# classes into tables, your LINQ into SQL, and the rows back into objects. It also tracks what you changed so `SaveChanges` can work out the right `UPDATE` statements.\n\nUseful to know: it is not magic, and the SQL it generates is inspectable. Anyone who cannot see the SQL their ORM is producing will eventually be surprised by it.\n\n## DbContext is your unit of work\n\nA `DbContext` represents one conversation with the database. Register it as scoped so each web request gets its own, and never share one across threads — it is not thread-safe, and the resulting errors are confusing.\n\n## Configure explicitly\n\nConventions get you started, but the important constraints should be stated: required fields, maximum lengths, decimal precision, unique indexes, delete behaviour.\n\nTwo that matter especially. **Decimal precision**: money defaulting to a low-precision column silently rounds. **Delete behaviour**: cascade delete is the default for required relationships, and can remove far more than you intended.\n\n## Migrations are your schema history\n\n`dotnet ef migrations add` generates a versioned change script; `dotnet ef database update` applies it. Commit migrations with the code that needs them, so any checkout can build the database from scratch.\n\nReview the generated SQL before applying it to anything real. EF occasionally produces a destructive step — dropping and recreating a column — where you expected an alter.\n\n## Never call EnsureCreated in production\n\nIt creates the schema once and then does nothing forever, so your first schema change silently fails to apply. Use migrations.",
+            "codeExample": "public class LibraryDbContext(DbContextOptions<LibraryDbContext> options) : DbContext(options)\n{\n    public DbSet<Book> Books => Set<Book>();\n    public DbSet<Member> Members => Set<Member>();\n    public DbSet<Loan> Loans => Set<Loan>();\n\n    protected override void OnModelCreating(ModelBuilder b)\n    {\n        b.Entity<Book>(e =>\n        {\n            e.Property(x => x.Title).HasMaxLength(300).IsRequired();\n            e.Property(x => x.Isbn).HasMaxLength(17).IsRequired();\n            e.HasIndex(x => x.Isbn).IsUnique();            // enforced by the database\n\n            // Money. Without this, some providers default to a precision that\n            // silently rounds, and nobody notices until an audit.\n            e.Property(x => x.ReplacementCost).HasPrecision(18, 2);\n        });\n\n        b.Entity<Loan>(e =>\n        {\n            e.HasOne(x => x.Book).WithMany(x => x.Loans)\n             .HasForeignKey(x => x.BookId)\n             // Default here would be Cascade: deleting a book would delete its\n             // entire loan history, which is exactly the record we need to keep.\n             .OnDelete(DeleteBehavior.Restrict);\n\n            e.HasOne(x => x.Member).WithMany(x => x.Loans)\n             .HasForeignKey(x => x.MemberId)\n             .OnDelete(DeleteBehavior.Restrict);\n\n            // Only one open loan per book — the rule enforced in the database\n            // as well as the service, so a race cannot bypass it.\n            e.HasIndex(x => x.BookId)\n             .IsUnique()\n             .HasFilter(\"[ReturnedOn] IS NULL\");\n        });\n    }\n}\n\n// dotnet ef migrations add AddLoanUniqueIndex\n// dotnet ef migrations script          <- READ THIS before applying it anywhere real\n// dotnet ef database update",
+            "codeLanguage": "csharp",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "EF Core maps classes to tables and LINQ to SQL; always be able to see the SQL",
+              "DbContext is a unit of work — scoped per request, never shared across threads",
+              "State required fields, lengths, decimal precision, indexes and delete behaviour explicitly",
+              "Commit migrations with the code; review the generated SQL before applying it",
+              "`EnsureCreated` never applies later changes — use migrations"
+            ],
+            "quiz": {
+              "title": "EF Core mapping",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why should `EnsureCreated` not be used in production?",
+                  "explanation": "It creates the schema once if it is absent and then does nothing. Every later model change silently fails to reach an existing database.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It creates the schema once and never applies later changes",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It is slower than migrations",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It only works with SQLite",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It drops existing tables on every start",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why configure decimal precision explicitly for monetary columns?",
+                  "explanation": "Left to a provider default, the column may hold fewer decimal places than the value requires and round silently — typically discovered during an audit.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A default precision can silently round monetary values",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Decimals are not supported without explicit configuration",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It makes queries measurably faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "EF Core throws at startup without it",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Querying Efficiently, and the N+1 Trap",
+            "slug": "querying-efficiently-and-the-n-plus1-trap",
+            "type": "Coding",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The N+1 problem\n\nYou fetch 100 loans. Then, rendering each one, you touch `loan.Book.Title`. If `Book` was not loaded, EF issues a query for it — once per loan. One query became 101, and the endpoint that was fast with test data crawls in production.\n\nThis is the single most common performance defect in ORM code.\n\n## Eager loading fixes it\n\n`Include` tells EF to fetch the related data as part of the original query. One round trip instead of a hundred and one.\n\nBe selective: `Include` everything and you pull large object graphs you do not need. Include what you will actually touch.\n\n## Project instead, when you can\n\nBetter still, select only the columns you need with `Select`. EF translates this into a SQL projection, so the database returns four columns rather than whole rows with all their text fields.\n\nThis is usually the biggest single win available, and it removes the N+1 question entirely because there is nothing lazy left to load.\n\n## AsNoTracking for reads\n\nBy default EF tracks every entity it returns so it can detect changes. For a read-only query that is pure overhead — memory and time spent watching objects nobody will modify.\n\nAdd `AsNoTracking()` to every query whose results you will not save. On list endpoints the difference is easily measurable.\n\n## Do the filtering in the database\n\n`ToList()` then `Where()` downloads the whole table and filters in memory. `Where()` then `ToList()` filters in SQL. The line that materialises is the line where the query runs, and everything after it happens on your server.\n\n## Look at the SQL\n\nLog generated SQL in development. Almost every ORM performance surprise is visible the moment you look, and invisible until you do.",
+            "codeExample": "// --- N+1: one query for the loans, then one per loan for the book --------\nvar loans = await db.Loans.Where(l => l.ReturnedOn == null).ToListAsync(ct);\nforeach (var loan in loans)\n    Console.WriteLine(loan.Book!.Title);      // a SELECT per loan. 100 loans = 101 queries.\n\n// --- eager loading: one round trip ---------------------------------------\nvar withBooks = await db.Loans\n    .Where(l => l.ReturnedOn == null)\n    .Include(l => l.Book)\n    .Include(l => l.Member)\n    .AsNoTracking()                            // read-only: skip change tracking\n    .ToListAsync(ct);\n\n// --- better: project to exactly what the response needs ------------------\n// SQL selects four columns instead of whole rows, and there is nothing lazy\n// left to load, so N+1 cannot occur.\nvar summaries = await db.Loans\n    .Where(l => l.ReturnedOn == null)\n    .Select(l => new LoanSummary(l.Id, l.Book!.Title, l.Member!.Name, l.DueOn))\n    .AsNoTracking()\n    .ToListAsync(ct);\n\n// --- filtering in the wrong place ----------------------------------------\nvar wrong = (await db.Books.ToListAsync(ct))           // downloads EVERY book\n            .Where(b => b.PublishedYear > 2020)\n            .ToList();                                  // filters in memory\n\nvar right = await db.Books\n    .Where(b => b.PublishedYear > 2020)                 // filters in SQL\n    .AsNoTracking()\n    .ToListAsync(ct);\n\n// --- see the SQL in development ------------------------------------------\nbuilder.Services.AddDbContext<LibraryDbContext>(o =>\n{\n    o.UseSqlServer(connectionString);\n    if (builder.Environment.IsDevelopment())\n    {\n        o.LogTo(Console.WriteLine, LogLevel.Information);\n        o.EnableSensitiveDataLogging();     // shows parameter values — development ONLY\n    }\n});",
+            "codeLanguage": "csharp",
+            "diagramMermaid": "flowchart TB\n  subgraph Bad[\"N+1 — 101 round trips\"]\n    A[SELECT loans] --> B[SELECT book WHERE id=1]\n    A --> C[SELECT book WHERE id=2]\n    A --> D[... 98 more]\n  end\n  subgraph Good[\"Projection — 1 round trip\"]\n    E[\"SELECT l.Id, b.Title, m.Name, l.DueOn<br/>FROM Loans l JOIN Books b JOIN Members m\"]\n  end",
+            "keyTakeaways": [
+              "N+1: touching a navigation property per row issues one query per row",
+              "`Include` eagerly loads related data in a single round trip — but only what you need",
+              "Projecting with `Select` returns only the required columns and removes N+1 entirely",
+              "`AsNoTracking()` on read-only queries avoids change-tracking overhead",
+              "Filter before materialising; log the generated SQL in development"
+            ],
+            "quiz": {
+              "title": "Query efficiency",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What causes the N+1 query problem?",
+                  "explanation": "Each row's navigation property is resolved with its own query when it was not loaded up front, turning one query into one per row plus the original.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Accessing an unloaded navigation property once per row, issuing a query each time",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Using too many joins in a single query",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Fetching more columns than needed",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Opening a new DbContext per request",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why add `AsNoTracking()` to read-only queries?",
+                  "explanation": "Change tracking exists so SaveChanges can compute updates. For results you will never save it is pure memory and CPU overhead.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Change tracking is wasted work when nothing will be saved",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It prevents other users from modifying the rows",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is required before calling Include",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It makes the query results immutable",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Shipping It",
+        "summary": "Configuration, secrets, logging, and testing through the real pipeline.",
+        "estimatedHours": 1.4,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Configuration, Secrets and Logging",
+            "slug": "configuration-secrets-and-logging",
+            "type": "Lab",
+            "estimatedMinutes": 40,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Configuration comes from layers\n\n`appsettings.json`, then `appsettings.{Environment}.json`, then environment variables, then command-line arguments — each overriding the last. This is what lets one build run in three environments without recompiling.\n\n## Never commit a secret\n\nConnection strings with passwords, API keys and certificates do not belong in `appsettings.json`, because that file is in Git and Git remembers forever. A key committed and then removed is still a leaked key.\n\nIn development use `dotnet user-secrets`, which stores values outside the repository. In production use environment variables or the platform's secret store.\n\n## Bind to typed options\n\nReading `Configuration[\"Storage:Path\"]` scatters string keys through the codebase and fails at runtime when one is wrong. Binding a section to a class gives you compile-time names, and validation on startup turns a misconfigured deployment into an immediate, clear failure rather than a mysterious null two hours later.\n\n## Structured logging\n\n`log.LogInformation(\"Borrowed book {BookId} for member {MemberId}\", bookId, memberId)` keeps the values as searchable fields, not just text. You can then query for every event with a given book id, which string-interpolated logs do not allow.\n\nUse the message template with placeholders — never interpolate the values into the string yourself.\n\n## Log levels mean something\n\n**Information** for events worth knowing about in production. **Warning** for something recoverable that a human should eventually see. **Error** for a failed operation. **Debug** for development detail.\n\nLogging everything at Information produces a volume nobody reads, which is the same as no logging.\n\n## Never log secrets or personal data\n\nPasswords, tokens, full card numbers and personal details must not reach the log. Logs are widely readable, retained for a long time and frequently exported.",
+            "codeExample": "// --- typed options, validated at startup ---------------------------------\npublic sealed class LibraryOptions\n{\n    public const string Section = \"Library\";\n\n    [Required]\n    public string ConnectionString { get; init; } = \"\";\n\n    [Range(1, 60)]\n    public int DefaultLoanDays { get; init; } = 14;\n}\n\nbuilder.Services\n    .AddOptions<LibraryOptions>()\n    .Bind(builder.Configuration.GetSection(LibraryOptions.Section))\n    .ValidateDataAnnotations()\n    .ValidateOnStart();     // a misconfigured deployment fails immediately and\n                            // clearly, rather than throwing a null two hours later\n\n// --- secrets stay out of the repository ----------------------------------\n// Development:\n//   dotnet user-secrets init\n//   dotnet user-secrets set \"Library:ConnectionString\" \"Server=...;Password=...\"\n//\n// Production: environment variable. The double underscore maps to the colon.\n//   Library__ConnectionString=Server=...;Password=...\n//\n// appsettings.json holds only non-secret defaults:\n// { \"Library\": { \"DefaultLoanDays\": 14 } }\n\n// --- structured logging ---------------------------------------------------\npublic sealed class LoanService(LibraryDbContext db, ILogger<LoanService> log,\n                                IOptions<LibraryOptions> options)\n{\n    public async Task<BorrowResult> BorrowAsync(Guid bookId, Guid memberId, CancellationToken ct)\n    {\n        // Placeholders, not interpolation: BookId and MemberId stay searchable\n        // fields, so \"every event for this book\" is a query rather than a grep.\n        log.LogInformation(\"Borrow requested for book {BookId} by member {MemberId}\",\n                           bookId, memberId);\n\n        var onLoan = await db.Loans.AnyAsync(l => l.BookId == bookId && l.ReturnedOn == null, ct);\n        if (onLoan)\n        {\n            // Warning: recoverable, expected occasionally, but worth seeing if\n            // it starts happening constantly.\n            log.LogWarning(\"Book {BookId} already on loan\", bookId);\n            return BorrowResult.Conflict();\n        }\n\n        // Never: log.LogInformation(\"Member {Email} {Password}\", email, password);\n        return BorrowResult.Success(await CreateLoanAsync(bookId, memberId, ct));\n    }\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Configuration layers: appsettings, environment file, environment variables, command line",
+              "Never commit secrets — use user-secrets in development and a secret store in production",
+              "Bind configuration to typed options and validate at startup",
+              "Use structured logging templates so values stay searchable fields",
+              "Match the level to the audience, and never log secrets or personal data"
+            ],
+            "quiz": {
+              "title": "Configuration and logging",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why use `log.LogInformation(\"Borrowed {BookId}\", id)` rather than interpolating the id into the string?",
+                  "explanation": "The template keeps BookId as a structured field, so logs can be queried by it. An interpolated string is only text and must be grepped.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The value stays a searchable structured field rather than becoming plain text",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Interpolation does not compile inside logging calls",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Templates produce shorter log lines",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Interpolation is slower to format",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "A connection string with a password was committed to appsettings.json and removed in the next commit. What is the situation?",
+                  "explanation": "Git retains history. The credential is still recoverable from the repository and must be rotated, not merely deleted.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The credential is still in Git history and must be rotated",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Removing it in a later commit is sufficient",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is safe as long as the repository is private",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Only a force-push is needed to make it safe",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Integration Tests Over the Real Pipeline",
+            "slug": "integration-tests-over-the-real-pipeline",
+            "type": "Lab",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## What unit tests cannot catch\n\nUnit tests exercise your logic with everything external replaced. That leaves a whole category untested: routing that does not match, a service that is not registered, middleware in the wrong order, a JSON property name the client does not expect, a migration that has not been applied.\n\nEvery one of those passes a full unit test suite and fails on first contact with a real request.\n\n## WebApplicationFactory starts the real thing\n\nIt boots your application in memory, with the real pipeline, the real dependency injection and the real routing, and gives you an `HttpClient` that talks to it without a network port.\n\nTests then make real HTTP requests and assert on real responses — including the status code, which is the part a unit test never sees.\n\n## Swap only what you must\n\nReplace the database with something test-friendly and leave everything else alone. The more you substitute, the less you are testing.\n\nAn in-memory SQLite connection is a good choice: it is a real relational database, so constraints and your actual SQL are exercised, but it is created and discarded per test.\n\n## Test the contract, not the internals\n\nAssert on status codes, response shape and the effect on state. Do not assert on which internal method ran — that is what unit tests are for, and it makes the integration test brittle.\n\n## Cover the failure paths\n\nThe 404 and the 409 are more likely to be wrong than the 200, because nobody exercises them by hand. They are also the paths clients depend on to behave correctly.\n\n## A few, not hundreds\n\nIntegration tests are slower. A handful covering the important journeys, plus thorough unit tests underneath, is the right shape. Hundreds of integration tests produce a suite nobody waits for.",
+            "codeExample": "public class LibraryApiFactory : WebApplicationFactory<Program>\n{\n    private SqliteConnection _connection = null!;\n\n    protected override void ConfigureWebHost(IWebHostBuilder builder)\n    {\n        builder.ConfigureServices(services =>\n        {\n            // Swap ONLY the database. Routing, DI, middleware order, model\n            // binding and serialisation all stay real — they are what we are testing.\n            services.RemoveAll<DbContextOptions<LibraryDbContext>>();\n\n            _connection = new SqliteConnection(\"DataSource=:memory:\");\n            _connection.Open();     // in-memory SQLite lives as long as the connection\n            services.AddDbContext<LibraryDbContext>(o => o.UseSqlite(_connection));\n\n            using var scope = services.BuildServiceProvider().CreateScope();\n            scope.ServiceProvider.GetRequiredService<LibraryDbContext>().Database.Migrate();\n        });\n    }\n\n    protected override void Dispose(bool disposing)\n    {\n        _connection?.Dispose();\n        base.Dispose(disposing);\n    }\n}\n\npublic class BorrowEndpointTests(LibraryApiFactory factory) : IClassFixture<LibraryApiFactory>\n{\n    [Fact]\n    public async Task Borrow_GivenAvailableBook_Returns201WithLocation()\n    {\n        var client = factory.CreateClient();\n        var (bookId, memberId) = await SeedAsync(factory);\n\n        var response = await client.PostAsJsonAsync(\"/api/loans\",\n            new { bookId, memberId, days = 14 });\n\n        Assert.Equal(HttpStatusCode.Created, response.StatusCode);\n        Assert.NotNull(response.Headers.Location);      // a unit test never sees this\n\n        var loan = await response.Content.ReadFromJsonAsync<LoanResponse>();\n        Assert.NotNull(loan);       // also proves the JSON property names match\n    }\n\n    [Fact]\n    public async Task Borrow_GivenBookAlreadyOnLoan_Returns409()\n    {\n        var client = factory.CreateClient();\n        var (bookId, memberId) = await SeedAsync(factory);\n        await client.PostAsJsonAsync(\"/api/loans\", new { bookId, memberId, days = 14 });\n\n        var second = await client.PostAsJsonAsync(\"/api/loans\", new { bookId, memberId, days = 14 });\n\n        // The conflict path: more likely to be wrong than the happy path,\n        // because nobody exercises it by hand.\n        Assert.Equal(HttpStatusCode.Conflict, second.StatusCode);\n    }\n\n    [Fact]\n    public async Task Borrow_GivenDaysOutOfRange_Returns400WithFieldName()\n    {\n        var client = factory.CreateClient();\n        var (bookId, memberId) = await SeedAsync(factory);\n\n        var response = await client.PostAsJsonAsync(\"/api/loans\",\n            new { bookId, memberId, days = 99 });\n\n        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);\n        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();\n        Assert.Contains(\"Days\", problem!.Errors.Keys, StringComparer.OrdinalIgnoreCase);\n    }\n}",
+            "codeLanguage": "csharp",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Unit tests cannot catch routing, registration, middleware order or serialisation mistakes",
+              "`WebApplicationFactory` boots the real pipeline in memory with a working HttpClient",
+              "Substitute only the database; the more you replace, the less you test",
+              "Assert on status codes, response shape and state — not on internal calls",
+              "Cover 404 and 409 especially, and keep the suite small enough that people run it"
+            ],
+            "quiz": {
+              "title": "Integration testing",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Which class of defect do integration tests catch that unit tests cannot?",
+                  "explanation": "Routing, service registration, middleware order and serialisation live in the wiring. Unit tests replace all of it, so they cannot see any of it.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Wiring defects: routing, DI registration, middleware order, JSON property names",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Incorrect business rules",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Null reference exceptions in domain logic",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Off-by-one errors in calculations",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why replace only the database in a `WebApplicationFactory` test?",
+                  "explanation": "Everything you substitute stops being tested. Keeping the real pipeline is the entire reason for writing the test.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Everything substituted stops being tested, and the pipeline is the point",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The database is the only replaceable service",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Replacing more services makes tests slower",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Other services cannot be resolved in a test host",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

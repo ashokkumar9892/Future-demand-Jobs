@@ -1,0 +1,1433 @@
+[
+  {
+    "careerSlug": "forward-deployed-engineer",
+    "order": 1,
+    "phaseNumber": 1,
+    "title": "Phase 1 — Discovery & the Customer Problem",
+    "slug": "phase-1-discovery-and-the-customer-problem",
+    "summary": "The half of the role that is not code. How to find the problem worth solving inside a business you have known for three days, scope it into something deliverable, and prototype in front of the people who will have to live with it.",
+    "estimatedHours": 70,
+    "level": "Intermediate",
+    "minimumTrack": "FastTrack",
+    "outcomes": [
+      "Run a discovery session that surfaces the workflow rather than the wish list",
+      "Separate the problem the sponsor describes from the problem the operators have",
+      "Scope an engagement into a deliverable with an agreed success measure",
+      "Build and show a proof of concept inside a week without painting yourself into a corner",
+      "Say no to a request early, in a way that keeps the relationship"
+    ],
+    "skillSlugs": [
+      "discovery",
+      "communication",
+      "prototyping",
+      "leadership"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "Reading the Business",
+        "summary": "What the role is for, and how to find the real problem rather than the stated one.",
+        "estimatedHours": 1.7,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "What a Forward Deployed Engineer Is Actually For",
+            "slug": "what-a-forward-deployed-engineer-is-actually-for",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The gap the role exists to close\n\nSoftware companies keep discovering the same uncomfortable fact: the product works in the demo and stalls in the customer's environment. Not because it is broken, but because the customer's data is shaped differently, their process has an undocumented step, and the person who has to use it every day was not in the room when it was bought.\n\nA Forward Deployed Engineer is the person sent to close that gap. You sit inside the customer's business, find out what actually happens there, and make the product work in that reality — building whatever integration, transformation or glue the situation needs.\n\n## What makes it different from consulting\n\nA consultant delivers a project and leaves. You are accountable to two masters: the customer, who wants their problem solved, and your own product team, who need the solution to generalise. A bespoke thing that works for one customer and teaches the company nothing is a failure even when the customer is delighted.\n\nThat tension is the job. Every engagement, you are deciding what to build specially and what to push back into the product.\n\n## What you are actually measured on\n\nNot lines of code. Not even uptime. You are measured on whether the customer's workflow changed — whether the analyst who used to spend three hours on a task now spends twenty minutes and trusts the result.\n\nThis is worth internalising early, because it changes what you do on day one. An engineer optimises the system. A Forward Deployed Engineer optimises the user's Tuesday.\n\n## Why the pay is what it is\n\nThe premium is not for the coding. It is for the willingness to sit in a room with a sceptical operations lead and stay there until you understand their job. Most strong engineers will not do this. That scarcity is the whole compensation story, and it is also why the role is unusually safe from automation.",
+            "codeExample": null,
+            "codeLanguage": null,
+            "diagramMermaid": "flowchart LR\n  A[Product Team] -->|ships a product| B[FDE]\n  C[Customer Reality] -->|messy data, undocumented process| B\n  B --> D[Working Deployment]\n  B -->|generalised requirements| A",
+            "keyTakeaways": [
+              "The role exists because products work in demos and stall in customer environments",
+              "You answer to the customer and to your own product team, and those goals conflict",
+              "Success is a changed user workflow, not a shipped feature",
+              "The premium is paid for the customer-facing half, which is the half most engineers avoid"
+            ],
+            "quiz": {
+              "title": "What the role is for",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "A customer's executive sponsor is delighted with a bespoke solution you built, but nothing you learned went back to the product team. How should this engagement be judged?",
+                  "explanation": "A Forward Deployed Engineer serves two masters. A happy customer and zero product learning is half a job — the company paid field-engineering rates for a one-off.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A partial success at best — the customer is served but the company learned nothing that generalises",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "A complete success, because customer satisfaction is the only measure",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A failure, because bespoke work is never justified",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Neutral — product feedback is the product manager's responsibility",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Which of these best describes how a Forward Deployed Engineer's work is measured?",
+                  "explanation": "The output is a changed workflow. Systems metrics matter only insofar as they serve it.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Whether the user's day-to-day workflow measurably changed",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Volume of code shipped during the engagement",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Number of integrations built",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Uptime of the deployed service",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Discovery That Finds the Real Problem",
+            "slug": "discovery-that-finds-the-real-problem",
+            "type": "Concept",
+            "estimatedMinutes": 55,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The stated problem is rarely the problem\n\nThe sponsor who signed the contract will tell you what they think is wrong. They are describing the problem from two levels up, filtered through what they believe software can do. The operators three levels down have a different account, and theirs is usually closer to the truth.\n\nBoth are data. Neither is the answer.\n\n## Watch the work, do not ask about it\n\nThe single highest-value hour of any engagement is sitting behind someone while they do the task. Not a meeting about the task — the task itself.\n\nYou will see things nobody would have told you: the spreadsheet they keep on the side because the system is too slow, the field they fill with a sentinel value because it is required and they do not have it, the colleague they message to check something the system should have told them.\n\nThose workarounds are the map. Each one marks a place where the official process and the real process have diverged, and that divergence is where value lives.\n\n## Questions that work\n\nAsk for specifics and history, not opinions:\n\n- *\"Walk me through the last time you did this. Not the usual case — the last one.\"*\n- *\"What do you do when the data is wrong?\"*\n- *\"What happens if you just don't do this step?\"*\n- *\"Who chases you when this is late, and what do they say?\"*\n- *\"What did you try before, and why did it stop?\"*\n\nThe last one matters more than it looks. Almost every process you meet has a graveyard of previous attempts, and the reasons they died are the constraints nobody will state directly.\n\n## Write it down where they can see it\n\nEnd discovery by writing the workflow back to them, in their words, and asking what you got wrong. Being corrected is the point. A customer who corrects your draft has started collaborating; one who nods at your summary has not read it.",
+            "codeExample": "Discovery log — Renewals team, day 2\n\nOBSERVED (sat with M., renewals analyst, 90 min)\n  09:10  Opens CRM, filters renewals in next 90 days -> 47 accounts\n  09:18  Copies account list into a personal spreadsheet\n         ^ WORKAROUND: CRM export is \"too slow and drops the usage column\"\n  09:25  For each account, opens the usage dashboard in a second tab\n  09:40  Opens contract PDF from a shared drive, Ctrl-F for \"auto-renew\"\n         ^ WORKAROUND: no link from CRM to the contract; finds it by customer name\n  10:15  Messages Legal to confirm a notice period\n         ^ WORKAROUND: contract language is ambiguous; this happens ~3x/week\n  10:30  Has reviewed 6 of 47 accounts\n\nSTATED BY SPONSOR (VP Revenue)\n  \"We need AI to predict churn.\"\n\nSTATED BY OPERATOR (M.)\n  \"I don't need a prediction. I need to stop opening four systems per account.\"\n\nCONSTRAINT FOUND (not volunteered)\n  Previous churn-scoring tool was abandoned in 2024 — M.: \"it gave us a number\n  with no reason attached, so nobody trusted it.\" Any score we produce must\n  show its evidence.\n\nOPEN QUESTION FOR TOMORROW\n  What happens today when the usage data and the contract disagree?",
+            "codeLanguage": "text",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "The sponsor's problem and the operator's problem are different; collect both",
+              "Watch the task being done rather than asking about it — workarounds are the map",
+              "Ask about the last specific instance, not the general case",
+              "Ask what was tried before; the graveyard holds the unstated constraints",
+              "Write the workflow back and invite correction"
+            ],
+            "quiz": {
+              "title": "Discovery",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "During discovery you notice an analyst maintains a private spreadsheet alongside the official system. What is the most useful interpretation?",
+                  "explanation": "A workaround is evidence that the official process diverged from the real one. That gap is where the value is.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A signal that the official system fails them somewhere worth investigating",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "A training problem to be corrected",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A data-governance violation to escalate",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Noise — personal preference, not a system issue",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Which discovery questions tend to surface unstated constraints?",
+                  "explanation": "Specific past instances and previous failed attempts reveal constraints nobody will volunteer. Hypotheticals invite speculation.",
+                  "allowsMultiple": true,
+                  "options": [
+                    {
+                      "text": "Walk me through the last time you did this",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "What did you try before, and why did it stop?",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "What do you do when the data is wrong?",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "If you could have anything, what would the ideal system look like?",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "Scoping and Saying No",
+        "summary": "Turning what you found into a deliverable both sides can be held to, and handling the politics that decide whether it gets used.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "From Ambiguity to a Scoped Deliverable",
+            "slug": "from-ambiguity-to-a-scoped-deliverable",
+            "type": "Architecture",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Scope is a promise about what you will not do\n\nMost failed deployments were scoped as a list of features. Feature lists have no edges: every conversation adds one, and by week six the deliverable has quietly doubled while the date has not moved.\n\nScope well and you write down three things: the outcome, the measure, and the exclusions. The exclusions are the part people skip and the part that saves the engagement.\n\n## Write the success measure first\n\nBefore anything else, agree the sentence that will be true if this worked. Not \"improve the renewal process\" — something countable:\n\n> *An analyst can complete a renewal review in under 20 minutes, from a starting list of at-risk accounts, without opening the contract drive.*\n\nNow you have an edge. Anything that serves that sentence is in scope. Anything that does not is a conversation, and you are having it in week one rather than week six.\n\n## Name the exclusions out loud\n\nWrite them into the same document:\n\n> *Not in scope: predicting churn probability; changes to the CRM; anything touching the billing system; mobile access.*\n\nThis feels confrontational the first time. It is the opposite — it is the thing that lets you say yes enthusiastically to everything that is in.\n\n## Size against the riskiest unknown\n\nThe schedule risk is almost never the part you understand. It is the source system nobody can describe, the security review of unknown length, the data-access approval that has to go through a committee.\n\nFind those in week one and put them first. An engagement that discovers an eight-week security review in week seven is over.\n\n## Re-scope openly when you learn something\n\nDiscovery continues after discovery ends. When week three teaches you the original measure was wrong, say so immediately and propose the new one. Customers forgive a changed plan explained early. They do not forgive a plan that was quietly wrong for a month.",
+            "codeExample": "# Engagement scope — Renewals Copilot (2 weeks)\n\n## Success measure\nAn analyst completes a renewal review in under 20 minutes, starting from a\nranked at-risk list, without opening the contract drive.\nBaseline measured on day 1: 28 minutes median across 6 observed reviews.\n\n## In scope\n- Ranked at-risk account list, refreshed nightly\n- Contract clause lookup with the clause quoted inline\n- Usage summary per account, joined from the existing warehouse extract\n\n## Explicitly NOT in scope\n- Churn probability prediction        (previous attempt failed on trust; needs its own engagement)\n- Any write-back into the CRM         (requires a change-control board we cannot reach in 2 weeks)\n- Billing system integration\n- Mobile access\n\n## Riskiest unknowns — resolve in week 1\n1. Read access to the contract drive          owner: IT Security   status: REQUESTED day 1\n2. Schema of the nightly warehouse extract    owner: Data team     status: UNKNOWN\n3. Whether contract PDFs are text or scanned  owner: us            status: sampling today\n\n## Agreed review points\nDay 3  — walkthrough of the ranked list with M. and one other analyst\nDay 7  — working prototype, scope re-confirmed or renegotiated in writing\nDay 14 — handover and measurement against the baseline",
+            "codeLanguage": "markdown",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Scope is defined by exclusions as much as inclusions — write both down",
+              "Agree a countable success sentence before agreeing any feature",
+              "Schedule risk lives in the unknowns: approvals, access, undocumented systems. Front-load them",
+              "Re-scope out loud the moment you learn the plan was wrong"
+            ],
+            "quiz": {
+              "title": "Scoping",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why are explicit exclusions considered the most valuable part of a scope document?",
+                  "explanation": "Inclusions expand silently under pressure. A written exclusion turns each addition into a deliberate, dated conversation rather than quiet scope creep.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "They make every addition an explicit conversation rather than silent creep",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "They reduce the customer's expectations of quality",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "They shift legal liability onto the customer",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "They shorten the scope document",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "You have two weeks. One task is a well-understood data transformation; the other depends on a security approval of unknown duration. What do you sequence first?",
+                  "explanation": "Unknowns are where schedule risk lives. Discovering an eight-week approval in week seven ends the engagement; discovering it in week one lets you re-plan.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The security approval, because unknown duration is the real schedule risk",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The transformation, to show early progress",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Both in parallel at half speed",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Whichever the sponsor considers more visible",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "The Politics of a Deployment",
+            "slug": "the-politics-of-a-deployment",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## The sponsor is not the user\n\nThe person who bought the software and the person who must use it are rarely the same, and their incentives can be opposed. The sponsor wants a visible win. The user wants their day not to get worse. A deployment that delights the first and irritates the second dies quietly about a month after you leave.\n\nYou need both. Practically, that means spending your political capital on the sponsor and your hours on the users.\n\n## Find out what the tool threatens\n\nEvery tool that automates part of a job implies something about the person doing that job. Sometimes that implication is fine. Sometimes the analyst you are sitting with is reasonably wondering whether they are training their replacement.\n\nPretending this is not happening is the worst available option. Say plainly what the tool does and does not do, and mean it. If the honest answer is that the role changes, say that too — people can handle an uncomfortable truth far better than a cheerful evasion they do not believe.\n\n## Recruit one operator early\n\nFind the person who is respected by their peers, is a bit frustrated with the current process, and is willing to tell you when something is wrong. Give them the prototype before it is good. Credit them in the demo.\n\nThat person is worth more than the sponsor's enthusiasm, because they are who everyone else will ask.\n\n## Identify the quiet blocker\n\nThere is usually someone whose cooperation you need and whose objection has not been raised in a meeting: the data owner who is not convinced, the security lead who was told rather than asked, the team lead whose process you are changing.\n\nGo and see them before you need something from them. The meeting costs half an hour in week one and can cost three weeks in week five.\n\n## Leave the credit behind\n\nThe engagement ends. What persists is whether the customer's own people feel the thing is theirs. Put their names on it, teach them to change it, and let them present it. Your win is that it is still running in six months.",
+            "codeExample": null,
+            "codeLanguage": null,
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "The sponsor and the user have different incentives; you need both",
+              "Be direct about what the tool means for people's roles — evasion is transparent",
+              "Recruit one respected operator early and let them shape it",
+              "Meet the quiet blocker in week one, before you need anything",
+              "Hand over the credit; longevity depends on ownership"
+            ],
+            "quiz": {
+              "title": "Deployment politics",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "An operator asks, half-joking, whether your tool is going to eliminate their job. What is the best response?",
+                  "explanation": "People read evasion accurately and it costs you the cooperation you need. An honest answer, including an uncomfortable one, is both more ethical and more effective.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Answer plainly what the tool does and does not change, including if the role does change",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Reassure them it definitely will not, to keep the engagement moving",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Redirect the question to their manager",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Avoid the topic; it is outside your remit",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Who is most valuable to recruit early in a deployment?",
+                  "explanation": "Peers ask the respected, slightly frustrated operator what they think. Their verdict travels further than the sponsor's enthusiasm.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A respected operator who is frustrated with the current process and will tell you when something is wrong",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The most senior executive available",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The most technically capable person in IT",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Whoever is most enthusiastic in the kickoff meeting",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Prototyping in the Room",
+        "summary": "Building something real inside a week, and showing it to the people whose opinion decides whether it survives.",
+        "estimatedHours": 1.7,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "The One-Week Proof of Concept",
+            "slug": "the-one-week-proof-of-concept",
+            "type": "Lab",
+            "estimatedMinutes": 60,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The point of a prototype is to be wrong quickly\n\nA proof of concept exists to convert an argument into an observation. Until someone uses it, everything you both believe about the workflow is a hypothesis.\n\nSo build the smallest thing that can be wrong in a useful way, and get it in front of a real user with real-shaped data inside a week.\n\n## Real-shaped data or nothing\n\nA prototype on clean invented data proves nothing, because every hard problem in the deployment lives in the dirt: the duplicate customer records, the three date formats, the accounts with no usage history at all.\n\nIf you cannot get the real data yet — and often you cannot, for good reasons — generate synthetic data that reproduces the *defects* you observed, not just the schema. A generator that only produces well-formed rows is a generator that hides your problems until week four.\n\n## Build the spine, fake the limbs\n\nMake one path work completely, end to end, and stub everything else visibly. A user can react to one real path. They cannot react to five half-paths, and neither can you.\n\nStub with something obviously fake — a labelled placeholder — rather than something plausible. A plausible stub gets mistaken for working software and you will be asked why it broke.\n\n## Keep the seam where production will need it\n\nThe one piece of engineering discipline worth paying for in a prototype: keep the business logic separate from the transport and the model call. Pure functions in the middle, integrations at the edges.\n\nThis costs an hour and is the difference between a prototype that extends into production and one that must be thrown away. It also means you can test the logic without a network call, which you will want by day three.\n\n## Timebox and demo on the day you said\n\nDemo on the agreed day even if it is not ready. A prototype shown late and polished teaches you less than one shown on time and rough, and the date you keep is itself evidence about how the rest of the engagement will go.",
+            "codeExample": "# generate_data.py — synthetic customers that reproduce the defects we OBSERVED,\n# not an idealised schema. Every problem below was seen in the real extract.\nimport json, random\nfrom datetime import date, timedelta\n\nrandom.seed(42)  # reproducible: the same dataset gives the same risk ranking\n\nREGIONS = [\"EMEA\", \"NA\", \"APAC\"]\n\ndef make(i):\n    row = {\n        \"customer_id\": f\"CUST-{i:04d}\",\n        \"name\": f\"Customer {i}\",\n        \"region\": random.choice(REGIONS),\n        \"arr\": round(random.uniform(10_000, 500_000), 2),\n        \"renewal_date\": (date.today() + timedelta(days=random.randint(-30, 180))).isoformat(),\n        \"logins_last_30d\": random.randint(0, 400),\n        \"open_tickets\": random.randint(0, 12),\n    }\n\n    # --- observed defect 1: ~8% of accounts have no usage history at all.\n    # The first prototype silently scored these as \"zero usage = high risk\",\n    # which was wrong: they are new accounts, not dying ones.\n    if random.random() < 0.08:\n        row[\"logins_last_30d\"] = None\n\n    # --- observed defect 2: three date formats in the live extract.\n    if random.random() < 0.15:\n        y, m, d = row[\"renewal_date\"].split(\"-\")\n        row[\"renewal_date\"] = f\"{d}/{m}/{y}\"\n\n    # --- observed defect 3: duplicate customer_id with differing ARR.\n    # Discovered on day 2; the warehouse join fans out on these.\n    return row\n\nrows = [make(i) for i in range(1, 51)]\nrows.append({**rows[7], \"arr\": rows[7][\"arr\"] * 1.2})  # the duplicate\n\njson.dump(rows, open(\"data/customers.json\", \"w\"), indent=2)\nprint(f\"wrote {len(rows)} rows, including {sum(1 for r in rows if r['logins_last_30d'] is None)} \"\n      f\"with no usage history and 1 duplicate id\")",
+            "codeLanguage": "python",
+            "diagramMermaid": "flowchart LR\n  A[Observed defects in discovery] --> B[Synthetic generator]\n  B --> C[Prototype]\n  C --> D[Real user, real reaction]\n  D -->|corrections| A\n  C -.->|pure logic kept separate| E[Extends into production]",
+            "keyTakeaways": [
+              "A prototype exists to be wrong quickly in front of a real user",
+              "Synthetic data must reproduce the observed defects, not just the schema",
+              "Make one path work completely; stub the rest visibly rather than plausibly",
+              "Keep business logic in pure functions from day one — it costs an hour and saves the rewrite",
+              "Demo on the agreed date even when it is rough"
+            ],
+            "quiz": {
+              "title": "Prototyping",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why should synthetic prototype data reproduce the defects you observed rather than only the schema?",
+                  "explanation": "The hard problems live in the dirt. Clean synthetic data postpones every real difficulty until production, when it is expensive.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Because the hard problems are in the dirty data, and clean data hides them until late",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Because it makes the dataset larger",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Because customers expect realistic-looking demos",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Because defective data trains better models",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Which is the better way to stub an unfinished part of a prototype?",
+                  "explanation": "A plausible stub gets mistaken for working software; you then get asked why it broke. An obviously fake placeholder keeps the conversation honest.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "An obviously labelled placeholder",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Plausible hard-coded output that looks real",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "An empty screen with no explanation",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "An error message",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Demoing to People Who Will Have to Use It",
+            "slug": "demoing-to-people-who-will-have-to-use-it",
+            "type": "Review",
+            "estimatedMinutes": 40,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Demo the workflow, not the software\n\nThe instinct is to show what you built: here is the API, here is the pipeline, here is the clever bit. Resist it. Open with the user's task and complete it in front of them.\n\n> *\"M., this is the review you did on Tuesday that took twenty-eight minutes. Let's do it again.\"*\n\nThen do it. Everything you built is visible in passing, and now it is in a frame where the audience can judge it.\n\n## Use their data and their vocabulary\n\nTheir account names. Their region codes. The words they use for their own process — if they say \"notice window\" and your UI says \"termination period\", change the UI.\n\nThis sounds cosmetic. It is not: the moment a user sees their own world represented accurately, they start critiquing the substance instead of the surface. That critique is what the demo is for.\n\n## Show a failure on purpose\n\nInclude one case where the tool does not know the answer, and show it saying so. This is the single most trust-building thing you can do, especially with a group that has been burned by a previous tool that produced confident nonsense.\n\nA tool that admits uncertainty gets believed when it does not.\n\n## Leave silence\n\nAsk \"what's wrong with this?\" and then stop talking. Count to ten if you have to. The first answer is politeness; the second answer, which only arrives if you wait, is the useful one.\n\n## Write down the objections verbatim\n\nNot your paraphrase — their words. Read them back at the end and confirm. Half of them will turn out to be the same underlying issue, and finding that is often the most valuable output of the session.\n\n## Close with what happens next and when\n\nEnd every demo with a date and a named owner for each action. A demo that ends in general enthusiasm produces nothing; one that ends with three dated commitments produces three things.",
+            "codeExample": null,
+            "codeLanguage": null,
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Open with the user's task and complete it, rather than touring the architecture",
+              "Use their data and their vocabulary; it moves critique from surface to substance",
+              "Deliberately show the tool admitting it does not know — it is the strongest trust signal",
+              "Ask what is wrong and then be silent; the second answer is the real one",
+              "Record objections verbatim and close with dated, owned actions"
+            ],
+            "quiz": {
+              "title": "Demoing",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why deliberately include a case where the tool cannot answer?",
+                  "explanation": "A tool that visibly admits uncertainty earns belief for the cases where it is confident, especially with users burned by a previous tool that bluffed.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It earns trust for the answers the tool does give",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It lowers expectations so later problems are forgiven",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It demonstrates technical depth",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It fills demo time",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "You ask a group what is wrong with the prototype and get a polite, minor comment. What should you do?",
+                  "explanation": "The first answer is politeness. Silence is uncomfortable enough that someone fills it with the real objection.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Stay silent and wait; the second answer is usually the substantive one",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Move on, since no serious objection was raised",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Defend the design decision they questioned",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Ask the sponsor for their view instead",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "careerSlug": "forward-deployed-engineer",
+    "order": 2,
+    "phaseNumber": 2,
+    "title": "Phase 2 — Integration & Deployment in Someone Else's Environment",
+    "slug": "phase-2-integration-and-deployment-in-someone-else-s-environment",
+    "summary": "The engineering that deployments actually fail on: source systems you cannot change, data you are not allowed to copy, an environment you did not build, and an operations team who will own it after you leave.",
+    "estimatedHours": 85,
+    "level": "Advanced",
+    "minimumTrack": "FastTrack",
+    "outcomes": [
+      "Integrate against a source system whose owner will not change anything for you",
+      "Make ingestion idempotent and prove what landed with a reconciliation report",
+      "Work inside data residency and PII constraints rather than around them",
+      "Deploy into an environment with rules you did not set",
+      "Hand over to an operations team so the system survives your departure"
+    ],
+    "skillSlugs": [
+      "integration",
+      "rest-api",
+      "sql",
+      "docker",
+      "observability",
+      "security",
+      "testing"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "Systems You Do Not Control",
+        "summary": "Ingesting from sources that are inconsistent, undocumented and not going to change.",
+        "estimatedHours": 1.8,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Integrating Against an Unwilling Source",
+            "slug": "integrating-against-an-unwilling-source",
+            "type": "Architecture",
+            "estimatedMinutes": 55,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Assume nothing will be fixed for you\n\nThe source system belongs to a team with their own roadmap, and your engagement is not on it. The export will keep having three date formats. The customer ID will keep not being unique. Nobody is going to add the field you need.\n\nDesign from that assumption and you build something that works. Design from a promised fix and you build something that works in the demo.\n\n## Find the contract that actually exists\n\nBefore writing a connector, establish four things and write them down:\n\n1. **Cardinality** — is the key actually unique? Check, do not ask. Count distinct against count.\n2. **Volume and growth** — how many rows today, how many next year.\n3. **Freshness** — when is it written, and is it complete at the moment you read it? A nightly job you read at 02:00 may be half-written.\n4. **Failure mode** — what does the source do when *it* fails? Silence, a partial file, and a zero-row file are three very different problems and you must tell them apart.\n\nThe fourth is the one people skip and the one that causes the 3 a.m. call.\n\n## Zero rows is not the same as no file\n\nA source that produces an empty export because the upstream job failed will, in a naive pipeline, look exactly like a day with no activity. Your system will happily write \"no at-risk accounts today\" and be believed.\n\nTreat a suspiciously empty load as a failure requiring a decision, not a normal result.\n\n## Isolate the mess at the boundary\n\nPut every source-specific quirk in one layer, and let nothing past it. Downstream code should never contain a comment about how this particular customer formats dates.\n\nThat boundary is also what makes the second customer cheap. If parsing quirks are scattered through your business logic, every new deployment is a rewrite.\n\n## Detect drift, do not absorb it\n\nWhen a column appears, disappears or changes type, the pipeline should stop and say so. Silent absorption means the tool quietly stops using a field and nobody notices for a quarter.",
+            "codeExample": "-- Establish the contract that actually exists, before writing any connector.\n-- Run these against the source. Do not accept verbal answers.\n\n-- 1. Is the key actually unique? (It was not, in three of my last four engagements.)\nSELECT COUNT(*) AS total_rows,\n       COUNT(DISTINCT customer_id) AS distinct_ids,\n       COUNT(*) - COUNT(DISTINCT customer_id) AS duplicate_rows\nFROM   source_customers;\n\n-- 2. Which of these columns is actually populated? \"Required\" in a spec means nothing.\nSELECT COUNT(*) AS rows_total,\n       COUNT(renewal_date)      AS has_renewal_date,\n       COUNT(usage_last_30d)    AS has_usage,\n       COUNT(contract_ref)      AS has_contract_ref\nFROM   source_customers;\n\n-- 3. Freshness: when was this data actually written, and is the window complete?\nSELECT MIN(last_modified) AS oldest,\n       MAX(last_modified) AS newest,\n       COUNT(*) FILTER (WHERE last_modified >= CURRENT_DATE) AS written_today\nFROM   source_customers;\n\n-- 4. Distribution, so a \"suspiciously empty\" load can be defined numerically\n--    rather than by feel. Anything below ~60% of the trailing median is a stop.\nSELECT load_date, COUNT(*) AS rows_loaded\nFROM   ingest_audit\nGROUP  BY load_date\nORDER  BY load_date DESC\nLIMIT  30;",
+            "codeLanguage": "sql",
+            "diagramMermaid": "flowchart LR\n  A[Source you cannot change] --> B[Boundary layer<br/>all quirks live here]\n  B --> C{Drift check}\n  C -->|changed| D[Halt + report]\n  C -->|ok| E{Volume sane?}\n  E -->|suspiciously empty| D\n  E -->|ok| F[Clean domain model]\n  F --> G[Business logic<br/>knows nothing about the source]",
+            "keyTakeaways": [
+              "Assume the source will never be fixed for you, and design accordingly",
+              "Verify key uniqueness, volume, freshness and failure mode before writing a connector",
+              "An empty load and a quiet day look identical — treat suspicious emptiness as a failure",
+              "Confine every source quirk to one boundary layer; downstream code stays clean",
+              "Schema drift must halt and report, never be silently absorbed"
+            ],
+            "quiz": {
+              "title": "Integrating with uncontrolled sources",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "A nightly export arrives with zero rows. Why is this dangerous to treat as a normal result?",
+                  "explanation": "Zero rows from a failed upstream job is indistinguishable from a genuinely quiet day. The system will publish a confident, wrong answer.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A failed upstream job and a genuinely quiet day are indistinguishable, so a wrong answer gets published confidently",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Empty files waste storage",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It will cause a divide-by-zero in the aggregation",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is not dangerous; zero rows means no work to do",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What should happen when a source column changes type between loads?",
+                  "explanation": "Silent absorption means a field quietly stops being used and nobody notices for a quarter. Drift must be loud.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The load halts and reports the drift before writing anything",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The value is coerced to the expected type and loading continues",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The column is dropped and loading continues",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A warning is logged and loading continues",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Idempotency, Reconciliation and Proving the Data Landed",
+            "slug": "idempotency-reconciliation-and-proving-the-data-landed",
+            "type": "Coding",
+            "estimatedMinutes": 55,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Everything runs twice eventually\n\nA network blip, a retried job, an operator who clicks the button again because nothing seemed to happen. Your ingest will run twice on the same input, and the only question is whether that is harmless.\n\nMake it harmless. Upsert on a natural key rather than inserting, so the same export applied twice leaves exactly the same state as applying it once.\n\n## Reject loudly, keep the evidence\n\nRows will fail validation. The temptation is to log and skip; the consequence is a number that is quietly wrong and unexplainable three weeks later when someone asks why their account is missing.\n\nWrite rejected rows to a table with the reason. Two things follow: you can answer \"where is my account?\" in thirty seconds, and the rejection rate becomes a metric you can alert on.\n\n## The three numbers must agree\n\nEvery load produces a reconciliation record: rows read, rows accepted, rows rejected. If read does not equal accepted plus rejected, something is being lost silently and you have a bug, not a report.\n\nThis sounds trivially obvious. It is also the check that catches most pipeline defects, because almost every silent-loss bug breaks it.\n\n## Make the report customer-facing\n\nWrite the reconciliation as something you could send to the customer without editing. This constraint is doing real work: it forces reasons to be human-readable, and it means that when the customer asks whether the data is right, you send a report instead of starting an investigation.\n\n## Retry with limits, then stop\n\nTransient failures deserve a retry with backoff. Permanent ones deserve a clear failure. A pipeline that retries forever is a pipeline that hangs, and a hung pipeline gets noticed much later than a failed one.",
+            "codeExample": "from dataclasses import dataclass, field\n\n@dataclass\nclass LoadResult:\n    \"\"\"The three numbers that must agree. If they don't, we have a bug, not a report.\"\"\"\n    read: int = 0\n    accepted: int = 0\n    rejected: list = field(default_factory=list)   # (natural_key, reason)\n\n    def balances(self) -> bool:\n        return self.read == self.accepted + len(self.rejected)\n\n\ndef load(rows, conn) -> LoadResult:\n    result = LoadResult()\n\n    for row in rows:\n        result.read += 1\n\n        problem = validate(row)\n        if problem:\n            # Kept, not dropped. \"Where is my account?\" is now a 30-second answer.\n            conn.execute(\n                \"INSERT INTO ingest_rejected (natural_key, reason, payload, load_id) \"\n                \"VALUES (%s, %s, %s, %s)\",\n                (row.get(\"customer_id\"), problem, json_dumps(row), conn.load_id))\n            result.rejected.append((row.get(\"customer_id\"), problem))\n            continue\n\n        # Idempotent: the same export applied twice leaves the same state as once.\n        conn.execute(\n            \"\"\"INSERT INTO customer (customer_id, name, region, arr, renewal_date)\n               VALUES (%(customer_id)s, %(name)s, %(region)s, %(arr)s, %(renewal_date)s)\n               ON CONFLICT (customer_id) DO UPDATE SET\n                 name          = EXCLUDED.name,\n                 region        = EXCLUDED.region,\n                 arr           = EXCLUDED.arr,\n                 renewal_date  = EXCLUDED.renewal_date,\n                 updated_at    = NOW()\"\"\", row)\n        result.accepted += 1\n\n    if not result.balances():\n        # Never publish a report whose own arithmetic is wrong.\n        raise RuntimeError(\n            f\"load does not balance: read={result.read} \"\n            f\"accepted={result.accepted} rejected={len(result.rejected)}\")\n\n    return result",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Every ingest runs twice eventually; upsert on a natural key so it is harmless",
+              "Retain rejected rows with reasons rather than logging and skipping",
+              "Read must equal accepted plus rejected — this check catches most silent-loss bugs",
+              "Write the reconciliation report to be sent to the customer unedited",
+              "Retry transient failures with backoff and a bound; never retry forever"
+            ],
+            "quiz": {
+              "title": "Idempotency and reconciliation",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What does upserting on a natural key buy an ingestion pipeline?",
+                  "explanation": "Retries, duplicate triggers and nervous operators all cause double runs. Upsert makes the second run a no-op instead of a duplication.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Running the same export twice leaves the same state as running it once",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Faster inserts than a plain INSERT",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Automatic schema migration",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Guaranteed ordering of rows",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "A load reports 1,000 rows read, 940 accepted and 40 rejected. What is the correct response?",
+                  "explanation": "Read must equal accepted plus rejected. 940 + 40 = 980, so twenty rows vanished silently. That is a defect, not a reportable result.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Treat it as a bug — twenty rows were lost silently",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Publish it; a 94% acceptance rate is healthy",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Re-run the load and publish whichever result balances",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Adjust the rejected count to 60 so the report balances",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "The Customer's Constraints",
+        "summary": "Data you may not copy, environments you did not build, and rules that are not negotiable.",
+        "estimatedHours": 1.7,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Data Residency, PII and What You Cannot Copy",
+            "slug": "data-residency-pii-and-what-you-cannot-copy",
+            "type": "Concept",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Find the rules before you need them\n\nEvery regulated customer has constraints on where their data may live, who may see it and what may leave the building. These are usually discoverable on day one and catastrophic to discover in week five, after you have built a pipeline that copies everything into your own cloud account.\n\nAsk early and specifically: *Which of this data may leave your network? Which region must it stay in? Who is allowed to see production records — am I?*\n\n## Assume you are not allowed to see production data\n\nPlan for the case where you cannot. It is common, it is reasonable, and it is entirely workable if you design for it: develop against synthetic data that mirrors the observed defects, and run against real data only inside their environment.\n\nEngineers who have not worked this way find it constraining. Engineers who have find it clarifying — it forces the data contract to be explicit rather than discovered by looking.\n\n## Minimise rather than mask\n\nThe safest personal data is the data you did not ingest. Before reaching for masking or tokenisation, ask whether you need the field at all. A renewal-risk model needs usage counts and contract terms; it does not need names, email addresses or phone numbers.\n\nDropping a column at the boundary is simpler, cheaper and more defensible than protecting it everywhere downstream.\n\n## Watch what leaves in a prompt\n\nThis is the constraint that catches teams out. A model call hosted outside the customer's boundary is an egress of whatever is in the prompt — including the retrieved context the user never sees.\n\nEstablish before you build: which provider, in which region, with what retention, and what exactly may appear in a prompt. Log prompts in a way that lets you answer \"what did we send?\" later, and treat that log as sensitive because it is.\n\n## Write it down and get it confirmed\n\nWhatever you agree, restate it in writing and have their security contact confirm. Not for bureaucracy — because the person who told you verbally in week one will have moved teams by the audit.",
+            "codeExample": null,
+            "codeLanguage": null,
+            "diagramMermaid": "flowchart TB\n  subgraph Customer[Customer boundary]\n    A[(Production data)] --> B[Ingest + minimise]\n    B --> C[Business logic]\n    C --> D[Deployed app]\n  end\n  subgraph Us[Our environment]\n    E[(Synthetic data<br/>same defects, no PII)] --> F[Development + tests]\n  end\n  C -.->|approved fields only<br/>region + retention agreed| G[External model provider]\n  F -.->|code, never data| D",
+            "keyTakeaways": [
+              "Find residency, access and egress rules on day one; they are fatal to discover late",
+              "Plan to develop without production data access; synthetic data with real defects makes it workable",
+              "Minimise first — the field you never ingest needs no protection",
+              "A prompt to an external model is an egress, including its retrieved context",
+              "Restate agreed constraints in writing and get security to confirm"
+            ],
+            "quiz": {
+              "title": "Data constraints",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why is minimising ingested fields preferable to masking them?",
+                  "explanation": "Protection has to hold everywhere downstream and forever. A field you never ingested has no attack surface and no compliance burden.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A field never ingested needs no protection anywhere downstream",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Masking is computationally expensive",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Masked data cannot be used in analytics",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Regulators do not recognise masking",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Which of these count as data leaving the customer's boundary?",
+                  "explanation": "Everything sent to an externally hosted model is an egress, including retrieved context the user never sees and the prompt logs you keep.",
+                  "allowsMultiple": true,
+                  "options": [
+                    {
+                      "text": "Retrieved document context included in a prompt to an external model",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "The user's typed question sent to an external model",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Prompt logs stored in your own cloud account",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Aggregated row counts computed and kept inside their network",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Deploying Into an Environment You Did Not Build",
+            "slug": "deploying-into-an-environment-you-did-not-build",
+            "type": "Lab",
+            "estimatedMinutes": 50,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Their rules, not your preferences\n\nYou will meet a base image you must use, a registry you must push to, a network with no outbound access, a change window on Thursdays, and an approval step involving a person you have not met.\n\nNone of this is negotiable in the timeframe you have. Find it in week one, build to it, and stop wishing it were otherwise.\n\n## Package so it runs anywhere\n\nContainerise, and keep every environment-specific value in configuration rather than in the image. The same artifact should run on your laptop, in their staging environment and in their production, differing only by what is injected at start.\n\nThe test: can you point the container at a different database with an environment variable, and nothing else?\n\n## Health and readiness are not the same\n\n*Health* says the process is alive. *Readiness* says it can serve traffic — dependencies reachable, migrations applied, cache warm.\n\nConflating them means a deploy that routes traffic to an instance that is running but cannot answer, and the resulting five minutes of errors look exactly like an outage.\n\n## No outbound network is normal\n\nMany secure environments do not allow the container to reach the internet. That breaks anything that downloads at startup: package installs, model weights, remote configuration.\n\nBake it into the image or mount it. Discovering this during the deployment window is how one-hour deployments become three-day deployments.\n\n## Rehearse the rollback before you need it\n\nDeploy to their staging, then roll back, before you go near production. If you have never executed the rollback, you do not have one — you have an intention.\n\n## Make the first production deploy boring\n\nAim for the deployment to be the least interesting event of the engagement. Everything surprising should already have happened in staging, in week two, when there was time.",
+            "codeExample": "# Multi-stage build: dependencies resolved at build time, because the runtime\n# environment has no outbound network access. Nothing downloads at startup.\nFROM python:3.12-slim AS build\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir --prefix=/install -r requirements.txt\n\nFROM python:3.12-slim\n# Their standard: non-root, no shell tooling left in the final image.\nRUN useradd --create-home --shell /usr/sbin/nologin appuser\nCOPY --from=build /install /usr/local\nWORKDIR /app\nCOPY --chown=appuser:appuser . .\nUSER appuser\n\n# Every environment-specific value is injected, never baked. The same image\n# runs on a laptop and in their production, differing only by these.\nENV APP_DB_URL=\"\" \\\n    APP_MODEL_ENDPOINT=\"\" \\\n    APP_LOG_LEVEL=INFO\n\nEXPOSE 8000\n\n# Liveness: is the process alive? Restart if not.\nHEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \\\n  CMD python -c \"import urllib.request;urllib.request.urlopen('http://localhost:8000/health')\"\n\n# /ready is separate and checked by the load balancer, not by Docker: it\n# verifies the database is reachable and migrations are applied. An instance\n# that is healthy but not ready must NOT receive traffic.\nCMD [\"uvicorn\", \"app.main:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\"]",
+            "codeLanguage": "dockerfile",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Their base images, registries, networks and change windows are constraints, not preferences",
+              "One artifact, configuration injected — test by repointing it with an environment variable",
+              "Health and readiness are different checks; conflating them routes traffic to instances that cannot serve",
+              "Assume no outbound network: bake in or mount anything you would otherwise download",
+              "Rehearse the rollback in staging, or you do not have one"
+            ],
+            "quiz": {
+              "title": "Deploying into a customer environment",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why must health and readiness be separate checks?",
+                  "explanation": "A process can be alive but unable to serve — migrations pending, database unreachable. Routing traffic to it produces errors that look like an outage.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A process can be alive but unable to serve; routing traffic to it causes errors",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Because orchestrators require exactly two endpoints",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Readiness is a faster check than health",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Health checks are for developers and readiness for operators",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "The customer's production network has no outbound internet access. What does this most affect?",
+                  "explanation": "Anything resolved at startup — package installs, model weights, remote config — will fail. It must be baked into the image or mounted.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Anything downloaded at container startup must instead be baked in or mounted",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Only the ability to send telemetry",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Nothing, since containers are self-contained by definition",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Only the container registry pull",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Operating and Handing Over",
+        "summary": "Making the system legible to the people who will own it after you leave.",
+        "estimatedHours": 1.4,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Observability for Someone Else's Operations Team",
+            "slug": "observability-for-someone-else-s-operations-team",
+            "type": "Architecture",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Instrument for the person who will be woken up\n\nYour logs are not for you. They are for an operator at 3 a.m. who has never read the code, does not know your abstractions, and needs to decide in five minutes whether this is their problem.\n\nWrite every error message so that person can act on it. \"Validation failed\" tells them nothing. \"Rejected 412 of 1,000 rows from the nightly customer export: unparseable renewal_date. Source file: customers-2026-09-19.csv\" tells them what happened, how big it is, and who to call.\n\n## Three signals earn their place\n\nFor a field deployment, instrument:\n\n- **Did the pipeline run?** A job that silently stops running is the most common and least detected failure of all. Alert on *absence*, not only on errors.\n- **Did the volume look normal?** Compare against a trailing median. A load at 30% of typical is a failure wearing a success costume.\n- **Is the rejection rate stable?** A jump means the source changed.\n\nEverything else is nice to have. These three catch most of what actually goes wrong.\n\n## Correlate across the request\n\nGive every ingest run and every user request an id, put it in every log line and return it in error responses. When the customer reports a problem, they quote the id and you find the whole story in one query.\n\nWithout this you are grepping by timestamp across three services, which is a twenty-minute job that should be a ten-second one.\n\n## A runbook, not a diagram\n\nArchitecture diagrams are for the design review. What operations needs is a page per alert: what it means, how to check, what to do, who to escalate to.\n\nIf you write one artifact at handover, write this one.\n\n## Alert on what needs a human\n\nEvery alert that does not require action trains the team to ignore alerts — including the one that matters. Be ruthless: if nobody would do anything at 3 a.m., it is a dashboard metric, not an alert.",
+            "codeExample": "import logging, uuid, statistics\n\nlog = logging.getLogger(\"ingest\")\n\ndef run_ingest(source, conn):\n    run_id = str(uuid.uuid4())[:8]   # quoted by the customer, found in one query\n    log.info(\"ingest.start run_id=%s source=%s\", run_id, source.name)\n\n    result = load(source.rows(), conn)\n\n    # Signal 2: volume against the trailing median. A load at 30% of normal is a\n    # failure wearing a success costume, and nothing else will catch it.\n    history = conn.fetch_scalars(\n        \"SELECT rows_accepted FROM ingest_audit \"\n        \"WHERE source = %s ORDER BY load_date DESC LIMIT 14\", (source.name,))\n    if history:\n        median = statistics.median(history)\n        if median and result.accepted < median * 0.6:\n            log.error(\n                \"ingest.volume_low run_id=%s source=%s accepted=%d median_14d=%.0f \"\n                \"ACTION: check whether the upstream export completed; do not publish \"\n                \"today's report until confirmed. Escalate to: data-platform on-call.\",\n                run_id, source.name, result.accepted, median)\n\n    # Signal 3: rejection rate. A jump means the source changed under us.\n    rate = len(result.rejected) / result.read if result.read else 0\n    if rate > 0.05:\n        top = collections.Counter(r for _, r in result.rejected).most_common(1)[0]\n        log.error(\n            \"ingest.reject_rate_high run_id=%s source=%s rate=%.1f%% top_reason=%r (%d rows) \"\n            \"ACTION: compare today's file header against docs/source-contract.md — \"\n            \"this usually means a column changed. Runbook: docs/runbook.md#reject-rate\",\n            run_id, source.name, rate * 100, top[0], top[1])\n\n    conn.execute(\n        \"INSERT INTO ingest_audit (run_id, source, rows_read, rows_accepted, rows_rejected) \"\n        \"VALUES (%s, %s, %s, %s, %s)\",\n        (run_id, source.name, result.read, result.accepted, len(result.rejected)))\n\n    # Signal 1 is the absence of this line. A separate watchdog alerts when no\n    # successful run has been recorded in 26 hours — silent stoppage is the\n    # most common failure and the least likely to be noticed.\n    log.info(\"ingest.done run_id=%s read=%d accepted=%d rejected=%d\",\n             run_id, result.read, result.accepted, len(result.rejected))\n    return result",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Write errors for a 3 a.m. operator who has never read the code",
+              "Alert on absence of a run, not only on failures — silent stoppage is the commonest failure",
+              "Compare load volume against a trailing median; an undersized load is a failure in disguise",
+              "Thread a correlation id through every log line and error response",
+              "Ship a runbook page per alert; and delete any alert nobody would act on"
+            ],
+            "quiz": {
+              "title": "Observability in the field",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why alert on the absence of a successful run rather than only on errors?",
+                  "explanation": "A job that stops being scheduled produces no errors at all. Error-only alerting is blind to the most common silent failure.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A job that silently stops running produces no errors to alert on",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Absence alerts are cheaper to compute",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Error alerts are unreliable in containers",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It satisfies audit requirements",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What makes an error message useful to an operator who has never read the code?",
+                  "explanation": "Scale, source and next action let someone decide in five minutes whether it is theirs. A category name alone does not.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It states what happened, at what scale, in which source, and what to do next",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It includes the full stack trace and nothing else",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It names the class and method that raised it",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is short enough to fit on one line",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Handover That Survives Your Departure",
+            "slug": "handover-that-survives-your-departure",
+            "type": "Review",
+            "estimatedMinutes": 40,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## The real deliverable is their capability\n\nSix months after you leave, one of two things is true. Either the customer's own people are changing, running and trusting the system, or it has quietly stopped being used and nobody wants to say so.\n\nWhich one happens is decided by how you spent the last two weeks, not the first two.\n\n## Teach by making them drive\n\nDo not demo the deployment process. Sit next to someone while *they* do it, with you answering questions. Then have them do it again with you in the room but silent. Then have them do it without you.\n\nThree repetitions, escalating independence. This takes half a day and is the single highest-return activity of the engagement.\n\n## Hand over the failure paths, not the happy path\n\nAnyone can run the working case. What they need from you is the broken ones: what the three most likely failures look like, how to tell them apart, and what to do about each.\n\nCause one deliberately in front of them. A team that has seen the alert fire and followed the runbook once will handle it at 3 a.m.; a team that has only read about it will call you.\n\n## Document the decisions, not the code\n\nThe code says what it does. What disappears when you leave is *why*: why the risk threshold is 0.6, why usage is weighted below contract terms, why the previous churn tool failed and what that constrains.\n\nA short decisions file is worth more than extensive API documentation, because the API documentation can be regenerated and the reasoning cannot.\n\n## Name an owner, in writing\n\nA system owned by \"the team\" is owned by nobody. Get a name against it before you leave, and make sure that person has been through the three repetitions.\n\n## Agree how success gets measured after you go\n\nYou set a baseline in week one. Agree who re-measures it, and when. Without that, the question of whether this worked becomes a matter of opinion, and opinion drifts toward whoever is loudest.",
+            "codeExample": null,
+            "codeLanguage": null,
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "The deliverable is the customer's capability, not the running system",
+              "Teach by three escalating repetitions until they can deploy without you",
+              "Rehearse the failure paths deliberately; the happy path teaches nothing",
+              "Document decisions and their reasons — code cannot regenerate why",
+              "Name an individual owner and agree who re-measures the baseline, and when"
+            ],
+            "quiz": {
+              "title": "Handover",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What is the most effective way to hand over operational knowledge?",
+                  "explanation": "Escalating repetitions build actual capability. Watching a demo produces recognition, not competence.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Have them perform the operation three times with decreasing help from you",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Demo the process carefully while they take notes",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Record a video walkthrough they can rewatch",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Write thorough step-by-step documentation",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why document decisions rather than the code itself?",
+                  "explanation": "Why the threshold is 0.6, and what previous attempt constrained it, exists only in your head. The code's behaviour can always be re-read.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The reasoning behind a choice cannot be recovered from the code; the behaviour can",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Code documentation is always auto-generated",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Decisions are required for compliance",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Code changes too often to document",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "careerSlug": "forward-deployed-engineer",
+    "order": 3,
+    "phaseNumber": 3,
+    "title": "Phase 3 — Applied AI in the Field",
+    "slug": "phase-3-applied-ai-in-the-field",
+    "summary": "Using models where they genuinely help a customer workflow, grounding what they say in the customer's own documents, measuring quality before claiming it, and turning what you learn on site into product requirements that land.",
+    "estimatedHours": 85,
+    "level": "Advanced",
+    "minimumTrack": "Balanced",
+    "outcomes": [
+      "Judge where an LLM helps a workflow and where it adds risk for no gain",
+      "Ground answers in the customer's documents with citations, and refuse when unsupported",
+      "Build an evaluation set from the customer's own examples before claiming quality",
+      "Quote cost and latency as numbers you have measured",
+      "Turn field evidence into product requirements the core team will act on"
+    ],
+    "skillSlugs": [
+      "llm",
+      "rag",
+      "prompt-engineering",
+      "testing",
+      "cost-optimisation",
+      "communication"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "LLM Features That Hold Up",
+        "summary": "Where a model earns its place in a workflow, and how to make its output trustworthy.",
+        "estimatedHours": 1.7,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Where an LLM Actually Helps a Customer Workflow",
+            "slug": "where-an-llm-actually-helps-a-customer-workflow",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## The question is not \"can we use AI here\"\n\nYou will be asked to. The useful question is narrower: *which step in this workflow is slow because a human is reading unstructured text, and what happens if the answer is occasionally wrong?*\n\nThose two dimensions — unstructured input, tolerable error — decide almost everything.\n\n## Where models earn their place\n\n- **Reading long documents to find a specific thing.** The analyst who Ctrl-Fs a contract for a notice period is doing work a model does well, and the answer is checkable against the quoted clause.\n- **Normalising messy free text into structure.** Support tickets into categories, notes into fields. Errors are visible and correctable.\n- **Drafting something a human will edit.** A first draft that is 80% right saves real time because the human is already reviewing.\n\nThe common thread: the human stays in the loop and can see the evidence.\n\n## Where they do not\n\n- **Arithmetic and aggregation.** If the answer is a sum, compute it. A model that usually gets the total right is worse than useless, because the failures are silent and plausible.\n- **Decisions with no review step.** Anything that acts without a human seeing it needs a much higher bar than a two-week engagement can establish.\n- **Things a rule handles.** If the logic is \"flag accounts where usage dropped 40% and renewal is inside 60 days\", that is a WHERE clause. It is faster, free, explainable and correct.\n\nThat last one is the most common mistake in the field, and resisting it is a large part of your value.\n\n## Deterministic core, model at the edges\n\nThe pattern that survives: compute the facts deterministically, and use the model to explain, summarise or extract — never to calculate.\n\nIn a renewal copilot, the risk score is arithmetic on usage and contract data. The model explains what the contract says about notice periods and cites the clause. Ask the model for the score and you have built something you cannot defend when the customer asks why an account moved.",
+            "codeExample": null,
+            "codeLanguage": null,
+            "diagramMermaid": "flowchart LR\n  A[(Usage + contract data)] --> B[Deterministic risk score<br/>pure functions, tested]\n  B --> C[Ranked account list]\n  D[(Contract text)] --> E[Retrieval]\n  E --> F[LLM: explain + cite clause]\n  C --> G[Analyst review]\n  F --> G\n  B -.->|never ask the model<br/>for the number| F",
+            "keyTakeaways": [
+              "Ask which step is slow because a human reads unstructured text, and what a wrong answer costs",
+              "Models earn their place on document search, text-to-structure and reviewable drafts",
+              "Never use a model for arithmetic — silent plausible failures are the worst kind",
+              "If a rule expresses the logic, write the rule; it is faster, free and explainable",
+              "Deterministic core, model at the edges: compute facts, generate explanations"
+            ],
+            "quiz": {
+              "title": "Where models help",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "A customer wants the renewal risk score generated by an LLM. Why push back?",
+                  "explanation": "A score is arithmetic. A model that is usually right produces silent, plausible errors you cannot explain when an account moves unexpectedly.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A score is computable, and a model's plausible-but-wrong numbers cannot be defended or explained",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "LLMs are too slow for scoring",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It would cost too much per request",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Scores require training data the customer does not have",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Which tasks are good candidates for a model in a customer workflow?",
+                  "explanation": "Unstructured input with a human review step and visible evidence. Aggregation and unreviewed automated decisions are not.",
+                  "allowsMultiple": true,
+                  "options": [
+                    {
+                      "text": "Finding and quoting the relevant clause in a long contract",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Turning free-text support notes into structured fields",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Totalling annual recurring revenue across accounts",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Automatically cancelling accounts with no human review",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Grounding, Citations and Refusal",
+            "slug": "grounding-citations-and-refusal",
+            "type": "Coding",
+            "estimatedMinutes": 55,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Trust is lost once\n\nThe renewals team in our worked example abandoned a previous tool because \"it gave us a number with no reason attached\". That is the normal outcome. A tool that is confidently wrong twice in front of a sceptical user is finished, and no amount of subsequent accuracy recovers it.\n\nSo the design constraint comes first: every statement the system makes about the customer's documents must be traceable to a passage in those documents, shown alongside the claim.\n\n## Retrieve, then constrain\n\nGround the answer in retrieved passages and instruct the model to use nothing else. Pass the passages with identifiers, require the identifier in the output, and validate that the identifier it cited actually exists before showing anything.\n\nThat last check matters. A model will occasionally cite a passage id that was never in the context, and an unvalidated citation is worse than none — it looks like evidence.\n\n## Make refusal a first-class output\n\nThe system must be able to say *\"the contract does not address this\"*. Design the response shape so refusal is a normal value rather than a failure, and make refusing cheap and unremarkable in the prompt.\n\nIf the only way to satisfy the output format is to produce an answer, the model will produce one.\n\n## Show the passage, not just a link\n\nQuote the text inline. The reviewer should be able to judge the claim without navigating anywhere. A footnote reference that requires a click is a footnote nobody checks, and unchecked citations are decoration.\n\n## Test the refusal path hardest\n\nYour evaluation set needs questions the documents genuinely cannot answer, and the system must refuse all of them. This is the test people skip, and it is the one that predicts whether the tool survives contact with real users.",
+            "codeExample": "from dataclasses import dataclass\n\n@dataclass\nclass Grounded:\n    answer: str | None       # None means: the documents do not address this\n    clause_id: str | None\n    quote: str | None\n\nSYSTEM = \"\"\"Answer only from the numbered clauses provided.\n\nReturn JSON: {\"clause_id\": \"<id or null>\", \"quote\": \"<verbatim text or null>\",\n              \"answer\": \"<one sentence, or null>\"}\n\nIf the clauses do not address the question, return all three as null. Returning\nnull is a correct and expected outcome — do not infer, generalise from similar\nclauses, or answer from general knowledge about contracts.\"\"\"\n\ndef ask(question: str, clauses: list[dict], client) -> Grounded:\n    context = \"\\n\\n\".join(f\"[{c['id']}] {c['text']}\" for c in clauses)\n    raw = client.complete(system=SYSTEM,\n                          user=f\"Clauses:\\n{context}\\n\\nQuestion: {question}\",\n                          response_format=\"json\")\n\n    if not raw.get(\"clause_id\"):\n        return Grounded(None, None, None)          # refusal: a normal result\n\n    # A model will occasionally cite an id that was never in the context. An\n    # unvalidated citation is worse than none, because it looks like evidence.\n    by_id = {c[\"id\"]: c[\"text\"] for c in clauses}\n    if raw[\"clause_id\"] not in by_id:\n        log.warning(\"hallucinated clause id %r for question %r\", raw[\"clause_id\"], question)\n        return Grounded(None, None, None)\n\n    # The quote must actually appear in the cited clause, not merely resemble it.\n    source = by_id[raw[\"clause_id\"]]\n    quote = (raw.get(\"quote\") or \"\").strip()\n    if not quote or quote not in source:\n        log.warning(\"quote not found verbatim in clause %s\", raw[\"clause_id\"])\n        return Grounded(None, None, None)\n\n    return Grounded(raw[\"answer\"], raw[\"clause_id\"], quote)\n\n\n# The renderer has no way to show an uncited claim — the type makes it impossible.\ndef render(g: Grounded) -> str:\n    if g.answer is None:\n        return \"Not stated in the contract.\"\n    return f\"{g.answer}\\n\\n> [{g.clause_id}] {g.quote}\"",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "A tool that is confidently wrong twice in front of users does not recover",
+              "Every claim must carry the passage it came from, quoted inline",
+              "Validate that cited identifiers actually existed in the context before displaying",
+              "Make refusal a normal, cheap output — otherwise the format forces an answer",
+              "Test unanswerable questions hardest; refusal quality predicts survival"
+            ],
+            "quiz": {
+              "title": "Grounding and refusal",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why validate that a cited passage identifier appeared in the supplied context?",
+                  "explanation": "Models occasionally cite identifiers that were never provided. An unvalidated citation looks like evidence while being fabricated — worse than showing none.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Models sometimes cite identifiers that were never in the context, and a fake citation looks like evidence",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "To keep the context window small",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "To reduce token cost",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Because identifiers must be sequential",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why must refusal be an explicitly supported output shape?",
+                  "explanation": "If every valid response requires an answer, the format itself pressures the model into inventing one. Refusal has to be cheap and normal.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "If the output format requires an answer, the model will produce one rather than refuse",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Because refusals are cheaper to generate",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Because regulators require a refusal path",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Because users prefer short responses",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "Evaluation Before Confidence",
+        "summary": "Measuring quality with the customer's own examples, and knowing the cost and latency numbers before you are asked for them.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Building an Eval Set From the Customer's Own Examples",
+            "slug": "building-an-eval-set-from-the-customer-s-own-examples",
+            "type": "Lab",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Their examples, not yours\n\nGeneric benchmarks tell you nothing about whether this works here. What matters is the customer's own hard cases: the contract with the unusual notice clause, the account that everyone agrees is at risk for a reason the data does not show, the question that has three defensible answers.\n\nCollect these during discovery. Ask directly: *\"Give me ten cases where this is hard, and tell me the right answer for each.\"* You will get better test data in an hour than you could construct in a week, and the act of collecting it is itself discovery.\n\n## Include the unanswerable\n\nAt least a quarter of the set should be questions the documents genuinely do not address. The system must refuse every one.\n\nWithout these, you are measuring only how well it answers, which is exactly the half that fails safely. The dangerous failure is the confident answer to a question with no basis.\n\n## Run it on every change\n\nAn eval set that runs on demand is an eval set that stops being run. Put it in CI. When a prompt change improves one case and breaks two, you want to know in three minutes, not at the demo.\n\nPrompt changes are unusually prone to this: they feel local and behave globally.\n\n## Score what the customer cares about\n\nFor a grounded question-answering system, three numbers:\n\n- **Correct with a valid citation** — the only fully good outcome.\n- **Refused** — good when the answer is not in the documents, bad when it is.\n- **Answered without valid grounding** — the one that must be zero.\n\nReport these separately. A single accuracy percentage hides the distinction between a system that is cautious and one that is dangerous.\n\n## Show the customer the failures\n\nWalk them through the cases that fail. This is counterintuitive and it works: a customer who has seen the honest failure profile trusts the successes, and they will often tell you that two of the five failures do not matter and one of them matters enormously. That is information you cannot get any other way.",
+            "codeExample": "# evals/test_grounded_answers.py — runs in CI on every change to a prompt.\nimport json, pytest\nfrom app.grounding import ask\n\nCASES = json.load(open(\"evals/customer_cases.json\"))\n# Collected with the renewals team in week 1. 40 cases: 28 answerable from the\n# contracts, 12 deliberately not. Their answers, not ours.\n\n@pytest.mark.parametrize(\"case\", [c for c in CASES if c[\"answerable\"]],\n                         ids=lambda c: c[\"id\"])\ndef test_answerable(case, client, clauses_for):\n    got = ask(case[\"question\"], clauses_for(case[\"contract\"]), client)\n    assert got.answer is not None, f\"refused an answerable question: {case['question']}\"\n    assert got.clause_id == case[\"expected_clause\"], (\n        f\"cited {got.clause_id}, expected {case['expected_clause']}\")\n\n@pytest.mark.parametrize(\"case\", [c for c in CASES if not c[\"answerable\"]],\n                         ids=lambda c: c[\"id\"])\ndef test_unanswerable_is_refused(case, client, clauses_for):\n    got = ask(case[\"question\"], clauses_for(case[\"contract\"]), client)\n    # The failure that ends deployments: a confident answer with no basis.\n    assert got.answer is None, (\n        f\"answered an unanswerable question: {case['question']!r} -> {got.answer!r}\")\n\ndef test_report(client, clauses_for, record_property):\n    \"\"\"Three numbers, reported separately. A single accuracy figure would hide\n    the difference between a cautious system and a dangerous one.\"\"\"\n    correct = refused = ungrounded = 0\n    for case in CASES:\n        got = ask(case[\"question\"], clauses_for(case[\"contract\"]), client)\n        if got.answer is None:\n            refused += 1\n        elif got.clause_id == case[\"expected_clause\"]:\n            correct += 1\n        else:\n            ungrounded += 1\n\n    record_property(\"correct_with_citation\", correct)\n    record_property(\"refused\", refused)\n    record_property(\"answered_without_valid_grounding\", ungrounded)\n    assert ungrounded == 0, f\"{ungrounded} answers had no valid grounding\"\n",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Collect hard cases from the customer during discovery, with their correct answers",
+              "A quarter of the set should be unanswerable; the system must refuse all of them",
+              "Run evals in CI — prompt changes feel local and behave globally",
+              "Report correct-with-citation, refused and ungrounded-answer separately; the last must be zero",
+              "Show the customer the failures; it builds trust and reprioritises the work"
+            ],
+            "quiz": {
+              "title": "Evaluation",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why must an evaluation set include questions the documents cannot answer?",
+                  "explanation": "Answerable-only evaluation measures the half that fails safely. The dangerous failure is a confident answer with no basis, and only unanswerable cases detect it.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Without them you only measure answering, and miss confident answers with no basis",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "To increase the size of the test set",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Because refusals are faster to evaluate",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "To satisfy the customer's compliance team",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why report correct, refused and ungrounded separately rather than one accuracy figure?",
+                  "explanation": "One number cannot distinguish a cautious system from a dangerous one — both can score identically while failing in opposite directions.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A single figure cannot distinguish an over-cautious system from a dangerous one",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Because accuracy is hard to compute",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Because customers prefer more metrics",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Because refusals should not count as failures in any context",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Cost, Latency and the Numbers You Will Be Asked For",
+            "slug": "cost-latency-and-the-numbers-you-will-be-asked-for",
+            "type": "Architecture",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## You will be asked, and \"it depends\" is not an answer\n\nAt some point — usually in front of someone senior — you will be asked what this costs to run. Arrive with a number, its basis, and the assumption that moves it most.\n\n> *\"About \\$340 a month at the current volume: roughly 1,200 reviews, averaging 8,000 input and 400 output tokens. The input side dominates, so retrieving fewer passages is the lever. Halving retrieved context takes it to about \\$200.\"*\n\nThat answer ends the conversation constructively. \"It depends on usage\" starts a worse one.\n\n## Measure per unit of work, not per call\n\nA single review may involve several model calls. The customer does not think in calls; they think in reviews. Instrument at the level of the user's unit of work and you can quote a cost per review, which is the number that can be compared to the time it saves.\n\n## Input tokens usually dominate\n\nIn a retrieval system, the retrieved context is typically far larger than the question or the answer. That means your cost lever is retrieval: how many passages, how large, and whether they are needed.\n\nHalving retrieved passages often halves cost and sometimes improves accuracy, because there is less irrelevant material to be distracted by. Measure both when you change it — the eval set exists for exactly this.\n\n## Latency is a workflow property\n\nTwo seconds is fine when the analyst is reading the previous answer. Two seconds is not fine when it blocks a list from rendering. Ask where in the workflow the wait lands before optimising anything.\n\nOften the best latency work is not making the call faster but moving it: precompute the nightly ranking, and the interactive path only pays for the one question the user actually asks.\n\n## Log usage from the first day\n\nToken counts per request, with the correlation id. Retrofitting this is tedious and you will want the history the first time someone asks whether costs are growing.",
+            "codeExample": "# Cost per REVIEW, not per call. A review is what the customer thinks in, and\n# it is the number that can be weighed against the 20 minutes it saves them.\nfrom dataclasses import dataclass, field\n\nPRICING = {  # USD per 1M tokens — confirm against current provider pricing\n    \"input\": 3.00,\n    \"output\": 15.00,\n}\n\n@dataclass\nclass ReviewUsage:\n    review_id: str\n    calls: list = field(default_factory=list)      # (purpose, in_tokens, out_tokens)\n\n    def record(self, purpose, usage):\n        self.calls.append((purpose, usage.input_tokens, usage.output_tokens))\n\n    def cost_usd(self) -> float:\n        tin = sum(c[1] for c in self.calls)\n        tout = sum(c[2] for c in self.calls)\n        return tin / 1e6 * PRICING[\"input\"] + tout / 1e6 * PRICING[\"output\"]\n\n    def breakdown(self) -> str:\n        \"\"\"Which call dominates. Almost always the one carrying retrieved context.\"\"\"\n        lines = []\n        for purpose, tin, tout in sorted(self.calls, key=lambda c: -c[1]):\n            share = tin / 1e6 * PRICING[\"input\"] + tout / 1e6 * PRICING[\"output\"]\n            lines.append(f\"  {purpose:<24} in={tin:>6} out={tout:>5}  ${share:.4f}\")\n        return \"\\n\".join(lines)\n\n\n# Example output after one review:\n#   clause_qa (6 passages)     in=  8140 out=  380  $0.0301\n#   summarise_usage            in=   920 out=  210  $0.0059\n#   -> $0.036 per review; at 1,200 reviews/month = $43/month\n#\n# The lever is visible: clause_qa carries the retrieved passages and is 84% of\n# the cost. Dropping from 6 passages to 3 was tested against the eval set —\n# cost fell to $0.019 and correct-with-citation was unchanged at 26/28.",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Arrive with a cost figure, its basis and the assumption that moves it most",
+              "Measure cost per unit of the user's work, not per model call",
+              "Retrieved context usually dominates input cost — retrieval is the main lever",
+              "Fewer passages can cut cost and improve accuracy; measure both against the eval set",
+              "Latency matters where it lands in the workflow; often the fix is precomputation, not speed"
+            ],
+            "quiz": {
+              "title": "Cost and latency",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "In a retrieval-augmented feature, where does input token cost usually concentrate?",
+                  "explanation": "Retrieved passages are typically far larger than the question or answer, which makes retrieval breadth the main cost lever.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "In the retrieved context passed as context",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "In the user's question",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "In the system prompt",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "In the generated answer",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why measure cost per review rather than per model call?",
+                  "explanation": "The customer weighs cost against time saved, and both are per review. A per-call figure cannot be compared to anything they care about.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It is the unit the customer thinks in and can be weighed against time saved",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Per-call measurement is technically harder",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Providers bill per session rather than per call",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It produces a smaller number",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Closing the Loop",
+        "summary": "Carrying what the field taught you back into the product, and interviewing for the role.",
+        "estimatedHours": 1.4,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Turning Field Evidence Into Product Requirements",
+            "slug": "turning-field-evidence-into-product-requirements",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## The half of the job that is easy to skip\n\nYou are busy, the customer is happy, the engagement is ending. Writing up what you learned feels like overhead.\n\nIt is the difference between a field engineer and an expensive contractor. The company is paying field rates partly to learn what it cannot learn from a dashboard, and you are the only channel.\n\n## Count before you recommend\n\n\"Customers keep struggling with X\" is an anecdote and will be treated as one. \"Four of the last six deployments needed a custom connector for the same class of source system, costing eleven engineer-days total\" is a requirement with a business case attached.\n\nKeep a running tally across engagements. The pattern that justifies a product change is almost never visible inside one deployment.\n\n## Separate the one-off from the recurring\n\nSome of what you build genuinely belongs to one customer: their org chart, their peculiar approval flow. Some of it is the same thing you built last time with different field names.\n\nThe second category is the product's backlog, and you are the only person positioned to tell them apart. Be honest about it — arguing that a bespoke thing should be productised because you enjoyed building it wastes everyone's time.\n\n## Bring the artifact, not just the story\n\nProduct teams act on evidence they can hold: the actual connector code, the discovery log, the eval case that fails, the customer's words verbatim. Three real quotes from three customers saying the same thing moves a roadmap. A summary of your impression does not.\n\n## Say what it cost\n\nFrame in engineering days. \"This gap cost eleven days across four deployments, and will cost roughly three days per future deployment\" is a sentence a product manager can prioritise against. \"This is painful\" is not.\n\n## Accept when the answer is no\n\nSometimes the product team will decline, correctly, because your four customers are not representative. Take it, log it, and raise it again when the count is twelve. Being the person who reports reality rather than lobbying for it is what makes you believed the next time.",
+            "codeExample": "# field-report/2026-09-renewals.md\n\n## Pattern: nightly CSV sources with drifting schemas\nSeen in 4 of the last 6 deployments (Acme, Northwind, Contoso, Fabrikam).\n\n### Evidence\n| Deployment | Custom connector? | Days spent | Drift incidents in first 90d |\n|------------|-------------------|-----------:|-----------------------------:|\n| Acme       | yes               |        3.0 |                            2 |\n| Northwind  | yes               |        2.5 |                            1 |\n| Contoso    | yes               |        3.5 |                            4 |\n| Fabrikam   | yes               |        2.0 |                            1 |\n| **Total**  |                   |   **11.0** |                        **8** |\n\n### What we built four times\nThe same three things with different field names: drift detection against a\ndeclared contract, rejected-row retention with reasons, and an idempotent\nupsert on a natural key. Attached: the four connectors, diffed — 68% identical.\n\n### Customer words (verbatim)\n- Acme, data lead: \"We can't promise the export won't change. Nobody owns it.\"\n- Contoso, ops:    \"It stopped using the region field for a month and we only\n                    found out because a report looked odd.\"\n- Northwind, IT:   \"Every vendor asks us to fix the export. None of them do.\"\n\n### Recommendation\nA declarative source-contract feature in the product: declare expected columns\nand types, get drift detection, rejection retention and reconciliation for free.\n\n### Cost of not doing it\n~11 engineer-days already spent; ~3 days per future deployment of this shape,\nwhich is roughly two thirds of the pipeline we are currently selling into.\n\n### What would change my mind\nIf the next three deployments are API-based rather than file-based, this is a\nshrinking problem and should not be built. Re-check at six more deployments.",
+            "codeLanguage": "markdown",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Field learning is the reason the company pays field rates; writing it up is the job",
+              "Count across engagements — the pattern is rarely visible inside one deployment",
+              "Distinguish genuinely bespoke work from the thing you have now built three times",
+              "Bring artifacts and verbatim customer words, not impressions",
+              "Frame in engineering days saved; accept a no and re-raise with a larger count"
+            ],
+            "quiz": {
+              "title": "Closing the loop",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What makes a field observation actionable for a product team?",
+                  "explanation": "A counted pattern with a day-cost attached can be prioritised. An impression cannot, however strongly felt.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A count across multiple deployments with the engineering days it cost",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "A strongly worded description of how painful it was",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A design proposal for the fix",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The sponsor's endorsement of the idea",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Your recommendation is declined because four customers are not considered representative. What is the right response?",
+                  "explanation": "Reporting reality rather than lobbying for it is what makes you credible next time. Log it and re-raise with a larger count.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Log it and re-raise when the count is larger",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Escalate above the product manager",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Build it into the next deployment anyway as bespoke work",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Stop writing field reports, since they are not acted on",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "The Forward Deployed Interview",
+            "slug": "the-forward-deployed-interview",
+            "type": "Review",
+            "estimatedMinutes": 40,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## What they are actually testing\n\nForward deployed interviews are unusual: the coding bar is real but rarely the deciding factor. What is being tested is whether you can be trusted alone in front of a customer.\n\nConcretely, four things:\n\n1. **Do you find the real problem, or build what you are told?**\n2. **What do you do when the customer is wrong?**\n3. **Can you make progress with incomplete information?**\n4. **Do you tell the truth when it is inconvenient?**\n\n## Have three stories ready\n\nFor each: a deployment that went well, one that went badly, and one where you changed the customer's mind. Rehearse them to about two minutes each.\n\nThe failure story carries the most weight. Choose a real one, name what you missed, and say what you now do differently. A candidate with no failure story has either not deployed anything or is not being straight, and interviewers for this role are unusually good at detecting the second.\n\n## Expect the ambiguous scenario\n\nYou will get something like: *\"The customer says they need a dashboard. After two days you believe a dashboard will not help. What do you do?\"*\n\nThey are not looking for a clever answer. They want to hear you gather evidence, show it rather than argue it, offer an alternative, and — crucially — accept that they may still want the dashboard and that it is their business.\n\nThe failure mode they are screening for is the engineer who is right and ignored.\n\n## The coding round is about pragmatism\n\nExpect messy data and an ambiguous requirement rather than an algorithm puzzle. Ask clarifying questions out loud — that *is* part of the test. Handle the malformed input. Say what you would do with more time.\n\nPerfect code that ignored the ambiguity scores worse than working code that named it.\n\n## Ask what their deployments actually look like\n\nHow long is a typical engagement? How much of what gets built is bespoke? What happens to field feedback? How often does the field team say no to a customer?\n\nThe last one tells you the most. A company where the field team can never say no is a company where you will be underwater by month three.",
+            "codeExample": null,
+            "codeLanguage": null,
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "The bar is whether you can be trusted alone with a customer, not raw coding speed",
+              "Prepare three two-minute stories: success, failure, and changing a customer's mind",
+              "For ambiguous scenarios: gather evidence, show it, offer an alternative, accept their call",
+              "In the coding round, ask clarifying questions aloud and handle the messy input",
+              "Ask how often their field team says no to a customer — the answer predicts your workload"
+            ],
+            "quiz": {
+              "title": "Interviewing",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "In a scenario where you believe the customer's requested solution is wrong, what is the interviewer most looking for?",
+                  "explanation": "They are screening out the engineer who is right and ignored. Evidence, a shown alternative, and acceptance that it is the customer's business.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Evidence gathered, an alternative shown rather than argued, and acceptance that the decision is theirs",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "A firm refusal to build something you believe is wrong",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Building exactly what was asked without comment",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Escalating the disagreement to the sponsor",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why does the failure story carry unusual weight in these interviews?",
+                  "explanation": "Honesty under inconvenience is a core requirement of the role, and a candidate with no failure story has either not deployed or is not being straight.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It tests honesty when it is inconvenient, which is a core requirement of the role",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It shows you have worked for a long time",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It gives the interviewer something to disqualify you on",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is a standard question with a standard answer",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -8,11 +8,14 @@ import { Badge, Card, Disclaimer, ErrorPanel, Input, LoadingPanel, Pill, Progres
 import { cn, DEMAND_TONE, money, RISK_TONE } from '@/lib/format';
 import type { CareerSummary } from '@/types/api';
 
-type SortKey = 'rank' | 'salary' | 'hours';
+type SortKey = 'category' | 'rank' | 'salary' | 'hours';
 
 export default function Careers() {
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<SortKey>('rank');
+  // Grouped by default: a flat ranking put every Foundations path below
+  // thirteen architect roles, which is the wrong first impression for the
+  // people those paths exist for.
+  const [sort, setSort] = useState<SortKey>('category');
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['careers', sort],
@@ -29,11 +32,23 @@ export default function Careers() {
     );
   }, [data, search]);
 
+  // The API already orders by categoryOrder then rank, so first-seen order is
+  // the intended one and no second sort is needed here.
+  const groups = useMemo(() => {
+    const byCategory = new Map<string, CareerSummary[]>();
+    for (const career of filtered) {
+      const list = byCategory.get(career.category) ?? [];
+      list.push(career);
+      byCategory.set(career.category, list);
+    }
+    return Array.from(byCategory.entries());
+  }, [filtered]);
+
   return (
     <>
       <PageHeader
         title="Career paths"
-        description="Ranked by realistic USA compensation for an experienced enterprise engineer. Salary figures are aggregated public estimates and are updatable through Admin."
+        description="Grouped from entry-level Foundations through to senior and architect roles. Salary figures are aggregated public estimates for the selected market and are updatable through Admin."
         actions={
           <div className="relative">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />
@@ -50,6 +65,7 @@ export default function Careers() {
       <div className="mb-5">
         <Tabs
           tabs={[
+            { key: 'category', label: 'By category' },
             { key: 'rank', label: 'By rank' },
             { key: 'salary', label: 'By salary' },
             { key: 'hours', label: 'By training hours' },
@@ -62,11 +78,38 @@ export default function Careers() {
       {isLoading && <LoadingPanel label="Loading career paths" />}
       {error && <ErrorPanel message={(error as Error).message} />}
 
-      <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-3">
-        {filtered.map((career) => (
-          <CareerCard key={career.id} career={career} />
-        ))}
-      </div>
+      {sort === 'category' ? (
+        <div className="space-y-7">
+          {groups.map(([category, careers]) => (
+            <section key={category}>
+              <div className="mb-3 flex items-baseline gap-3">
+                <h2 className="text-sm font-semibold tracking-tight text-ink">{category}</h2>
+                <span className="text-[11px] text-ink-faint">
+                  {careers.length} path{careers.length === 1 ? '' : 's'}
+                </span>
+                <span className="h-px flex-1 bg-line" />
+              </div>
+              <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-3">
+                {careers.map((career) => (
+                  <CareerCard key={career.id} career={career} />
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-3">
+          {filtered.map((career) => (
+            <CareerCard key={career.id} career={career} />
+          ))}
+        </div>
+      )}
+
+      {!isLoading && !error && filtered.length === 0 && (
+        <Card className="card-pad">
+          <p className="text-sm text-ink-muted">No career path matches "{search}".</p>
+        </Card>
+      )}
 
       <Disclaimer className="mt-6">
         Salary bands are aggregated public estimates for the United States, reviewed against the

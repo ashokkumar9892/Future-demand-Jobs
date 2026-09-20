@@ -38,5 +38,17 @@
   { "name": "Stakeholder Communication", "slug": "communication", "category": "Soft", "baselineLevel": 75 },
   { "name": "Technical Leadership", "slug": "leadership", "category": "Soft", "baselineLevel": 65 },
   { "name": "Robotics & Autonomous Systems", "slug": "robotics", "category": "Ai", "baselineLevel": 5 },
-  { "name": "IoT & Edge Computing", "slug": "iot-edge", "category": "Cloud", "baselineLevel": 20 }
+  { "name": "IoT & Edge Computing", "slug": "iot-edge", "category": "Cloud", "baselineLevel": 20 },
+  { "name": "Java", "slug": "java", "category": "Language", "baselineLevel": 25 },
+  { "name": "Spring Boot", "slug": "spring-boot", "category": "Framework", "baselineLevel": 15 },
+  { "name": "Object-Oriented Design", "slug": "oop", "category": "Architecture", "baselineLevel": 85 },
+  { "name": "HTML & CSS", "slug": "html-css", "category": "Framework", "baselineLevel": 75 },
+  { "name": "Git & Version Control", "slug": "git", "category": "DevOps", "baselineLevel": 80 },
+  { "name": "Automated Testing", "slug": "testing", "category": "DevOps", "baselineLevel": 55 },
+  { "name": "Relational Database Design", "slug": "database-design", "category": "Data", "baselineLevel": 70 },
+  { "name": "NoSQL & Document Stores", "slug": "nosql", "category": "Data", "baselineLevel": 25 },
+  { "name": "Linux & the Command Line", "slug": "linux", "category": "DevOps", "baselineLevel": 40 },
+  { "name": "Customer Discovery", "slug": "discovery", "category": "Soft", "baselineLevel": 50 },
+  { "name": "Systems Integration", "slug": "integration", "category": "Architecture", "baselineLevel": 75 },
+  { "name": "Solution Prototyping", "slug": "prototyping", "category": "Soft", "baselineLevel": 60 }
 ]

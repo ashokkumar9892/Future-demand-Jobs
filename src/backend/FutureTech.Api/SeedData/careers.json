@@ -19,10 +19,25 @@
     "estimatedHours": 305,
     "isPrimaryRecommended": true,
     "resumeKeywords": [
-      "Azure OpenAI", "Retrieval Augmented Generation (RAG)", "Azure AI Search", "LLM Integration",
-      "AI Agents", "Function / Tool Calling", "Vector Databases", "Enterprise Architecture",
-      "Solution Architecture", "Azure Functions", "AKS", "Docker", "API Architecture",
-      "Prompt Engineering", "AI Governance", "Responsible AI", "Cost Optimisation", ".NET 8", "Angular"
+      "Azure OpenAI",
+      "Retrieval Augmented Generation (RAG)",
+      "Azure AI Search",
+      "LLM Integration",
+      "AI Agents",
+      "Function / Tool Calling",
+      "Vector Databases",
+      "Enterprise Architecture",
+      "Solution Architecture",
+      "Azure Functions",
+      "AKS",
+      "Docker",
+      "API Architecture",
+      "Prompt Engineering",
+      "AI Governance",
+      "Responsible AI",
+      "Cost Optimisation",
+      ".NET 8",
+      "Angular"
     ],
     "responsibilities": [
       "Translate business problems into AI solution architectures with explicit assumptions and success measures",
@@ -43,30 +58,126 @@
       "How do you measure whether an AI feature got better or worse between releases?"
     ],
     "skills": [
-      { "slug": "architecture", "targetLevel": 95, "importance": "Core" },
-      { "slug": "system-design", "targetLevel": 90, "importance": "Core" },
-      { "slug": "llm", "targetLevel": 95, "importance": "Core" },
-      { "slug": "rag", "targetLevel": 95, "importance": "Core" },
-      { "slug": "ai-agents", "targetLevel": 90, "importance": "Core" },
-      { "slug": "azure", "targetLevel": 90, "importance": "Core" },
-      { "slug": "ai-security", "targetLevel": 85, "importance": "Core" },
-      { "slug": "vector-db", "targetLevel": 85, "importance": "Core" },
-      { "slug": "prompt-engineering", "targetLevel": 85, "importance": "Core" },
-      { "slug": "ai-fundamentals", "targetLevel": 85, "importance": "Core" },
-      { "slug": "dotnet", "targetLevel": 85, "importance": "Important" },
-      { "slug": "aws", "targetLevel": 75, "importance": "Important" },
-      { "slug": "cost-optimisation", "targetLevel": 80, "importance": "Important" },
-      { "slug": "observability", "targetLevel": 75, "importance": "Important" },
-      { "slug": "docker", "targetLevel": 80, "importance": "Important" },
-      { "slug": "kubernetes", "targetLevel": 75, "importance": "Important" },
-      { "slug": "terraform", "targetLevel": 70, "importance": "Important" },
-      { "slug": "python", "targetLevel": 60, "importance": "Important" },
-      { "slug": "security", "targetLevel": 85, "importance": "Core" },
-      { "slug": "communication", "targetLevel": 90, "importance": "Core" },
-      { "slug": "angular", "targetLevel": 70, "importance": "NiceToHave" },
-      { "slug": "sql", "targetLevel": 70, "importance": "NiceToHave" },
-      { "slug": "identity", "targetLevel": 80, "importance": "Important" },
-      { "slug": "event-driven", "targetLevel": 80, "importance": "Important" }
+      {
+        "slug": "architecture",
+        "targetLevel": 95,
+        "importance": "Core"
+      },
+      {
+        "slug": "system-design",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "llm",
+        "targetLevel": 95,
+        "importance": "Core"
+      },
+      {
+        "slug": "rag",
+        "targetLevel": 95,
+        "importance": "Core"
+      },
+      {
+        "slug": "ai-agents",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "azure",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "ai-security",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "vector-db",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "prompt-engineering",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "ai-fundamentals",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "dotnet",
+        "targetLevel": 85,
+        "importance": "Important"
+      },
+      {
+        "slug": "aws",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "cost-optimisation",
+        "targetLevel": 80,
+        "importance": "Important"
+      },
+      {
+        "slug": "observability",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "docker",
+        "targetLevel": 80,
+        "importance": "Important"
+      },
+      {
+        "slug": "kubernetes",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "terraform",
+        "targetLevel": 70,
+        "importance": "Important"
+      },
+      {
+        "slug": "python",
+        "targetLevel": 60,
+        "importance": "Important"
+      },
+      {
+        "slug": "security",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "communication",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "angular",
+        "targetLevel": 70,
+        "importance": "NiceToHave"
+      },
+      {
+        "slug": "sql",
+        "targetLevel": 70,
+        "importance": "NiceToHave"
+      },
+      {
+        "slug": "identity",
+        "targetLevel": 80,
+        "importance": "Important"
+      },
+      {
+        "slug": "event-driven",
+        "targetLevel": 80,
+        "importance": "Important"
+      }
     ],
     "ladder": [
       {
@@ -77,7 +188,9 @@
         "salaryMinUsd": 110000,
         "salaryMaxUsd": 150000,
         "durationMonths": 0,
-        "milestones": ["Existing production experience across .NET, Angular, SQL Server, Azure and AWS"],
+        "milestones": [
+          "Existing production experience across .NET, Angular, SQL Server, Azure and AWS"
+        ],
         "isCurrentPosition": true
       },
       {
@@ -162,21 +275,98 @@
       }
     ],
     "readinessDimensions": [
-      { "name": "Architecture", "weight": 0.22, "skillSlugs": ["architecture", "system-design", "microservices", "event-driven", "ddd"] },
-      { "name": "Azure", "weight": 0.18, "skillSlugs": ["azure", "identity", "networking", "cicd"] },
-      { "name": "AWS", "weight": 0.08, "skillSlugs": ["aws"] },
-      { "name": "AI", "weight": 0.16, "skillSlugs": ["ai-fundamentals", "llm", "prompt-engineering", "machine-learning"] },
-      { "name": "RAG", "weight": 0.14, "skillSlugs": ["rag", "vector-db"] },
-      { "name": "Agents", "weight": 0.08, "skillSlugs": ["ai-agents"] },
-      { "name": "Security", "weight": 0.09, "skillSlugs": ["security", "ai-security", "identity"] },
-      { "name": "Communication", "weight": 0.05, "skillSlugs": ["communication", "leadership"] }
+      {
+        "name": "Architecture",
+        "weight": 0.22,
+        "skillSlugs": [
+          "architecture",
+          "system-design",
+          "microservices",
+          "event-driven",
+          "ddd"
+        ]
+      },
+      {
+        "name": "Azure",
+        "weight": 0.18,
+        "skillSlugs": [
+          "azure",
+          "identity",
+          "networking",
+          "cicd"
+        ]
+      },
+      {
+        "name": "AWS",
+        "weight": 0.08,
+        "skillSlugs": [
+          "aws"
+        ]
+      },
+      {
+        "name": "AI",
+        "weight": 0.16,
+        "skillSlugs": [
+          "ai-fundamentals",
+          "llm",
+          "prompt-engineering",
+          "machine-learning"
+        ]
+      },
+      {
+        "name": "RAG",
+        "weight": 0.14,
+        "skillSlugs": [
+          "rag",
+          "vector-db"
+        ]
+      },
+      {
+        "name": "Agents",
+        "weight": 0.08,
+        "skillSlugs": [
+          "ai-agents"
+        ]
+      },
+      {
+        "name": "Security",
+        "weight": 0.09,
+        "skillSlugs": [
+          "security",
+          "ai-security",
+          "identity"
+        ]
+      },
+      {
+        "name": "Communication",
+        "weight": 0.05,
+        "skillSlugs": [
+          "communication",
+          "leadership"
+        ]
+      }
     ],
-    "certifications": ["AI-102", "AZ-305", "AZ-204", "AWS-SAA", "AZ-900"],
+    "certifications": [
+      "AI-102",
+      "AZ-305",
+      "AZ-204",
+      "AWS-SAA",
+      "AZ-900"
+    ],
     "projects": [
-      "ai-chat-application", "enterprise-document-chat", "ai-customer-service-agent", "ai-email-assistant",
-      "ai-sql-assistant", "ai-help-desk", "ai-invoice-processing", "ai-business-automation-agent",
-      "enterprise-rag-system", "capstone-ai-solutions-architect"
-    ]
+      "ai-chat-application",
+      "enterprise-document-chat",
+      "ai-customer-service-agent",
+      "ai-email-assistant",
+      "ai-sql-assistant",
+      "ai-help-desk",
+      "ai-invoice-processing",
+      "ai-business-automation-agent",
+      "enterprise-rag-system",
+      "capstone-ai-solutions-architect"
+    ],
+    "category": "AI Engineering",
+    "categoryOrder": 2
   },
   {
     "rank": 2,
@@ -197,7 +387,19 @@
     "difficulty": "Expert",
     "estimatedHours": 290,
     "isPrimaryRecommended": false,
-    "resumeKeywords": ["Zero Trust", "Entra ID", "Azure Security", "AWS IAM", "Threat Modelling", "Key Vault", "Private Endpoints", "SIEM", "Compliance", "SC-100", "AZ-500"],
+    "resumeKeywords": [
+      "Zero Trust",
+      "Entra ID",
+      "Azure Security",
+      "AWS IAM",
+      "Threat Modelling",
+      "Key Vault",
+      "Private Endpoints",
+      "SIEM",
+      "Compliance",
+      "SC-100",
+      "AZ-500"
+    ],
     "responsibilities": [
       "Design zero-trust identity and network architecture across cloud estates",
       "Threat model applications and platforms, including AI workloads",
@@ -213,33 +415,174 @@
       "Walk through a threat model for a payment processing pipeline"
     ],
     "skills": [
-      { "slug": "security", "targetLevel": 95, "importance": "Core" },
-      { "slug": "identity", "targetLevel": 95, "importance": "Core" },
-      { "slug": "azure", "targetLevel": 90, "importance": "Core" },
-      { "slug": "aws", "targetLevel": 85, "importance": "Core" },
-      { "slug": "networking", "targetLevel": 85, "importance": "Core" },
-      { "slug": "architecture", "targetLevel": 90, "importance": "Core" },
-      { "slug": "ai-security", "targetLevel": 80, "importance": "Important" },
-      { "slug": "terraform", "targetLevel": 75, "importance": "Important" },
-      { "slug": "kubernetes", "targetLevel": 70, "importance": "Important" },
-      { "slug": "observability", "targetLevel": 75, "importance": "Important" },
-      { "slug": "communication", "targetLevel": 85, "importance": "Core" }
+      {
+        "slug": "security",
+        "targetLevel": 95,
+        "importance": "Core"
+      },
+      {
+        "slug": "identity",
+        "targetLevel": 95,
+        "importance": "Core"
+      },
+      {
+        "slug": "azure",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "aws",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "networking",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "architecture",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "ai-security",
+        "targetLevel": 80,
+        "importance": "Important"
+      },
+      {
+        "slug": "terraform",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "kubernetes",
+        "targetLevel": 70,
+        "importance": "Important"
+      },
+      {
+        "slug": "observability",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "communication",
+        "targetLevel": 85,
+        "importance": "Core"
+      }
     ],
     "ladder": [
-      { "stageOrder": 1, "title": "Current", "roleTitle": "Full Stack / Cloud Developer", "description": "Strong application and cloud delivery background with working security knowledge.", "salaryMinUsd": 110000, "salaryMaxUsd": 150000, "durationMonths": 0, "milestones": ["Production cloud application experience"], "isCurrentPosition": true },
-      { "stageOrder": 2, "title": "Stage 1", "roleTitle": "Cloud Security Engineer", "description": "Hands-on security engineering: identity, secrets, network controls, scanning and remediation.", "salaryMinUsd": 140000, "salaryMaxUsd": 180000, "durationMonths": 6, "milestones": ["AZ-500 passed", "Entra ID and Key Vault in production use", "First threat model authored"], "isCurrentPosition": false },
-      { "stageOrder": 3, "title": "Stage 2", "roleTitle": "Senior Cloud Security Engineer", "description": "Owns the security posture of a platform, leads reviews and detection engineering.", "salaryMinUsd": 160000, "salaryMaxUsd": 205000, "durationMonths": 9, "milestones": ["Zero-trust design delivered", "AWS Security Specialty or CISSP underway"], "isCurrentPosition": false },
-      { "stageOrder": 4, "title": "Stage 3", "roleTitle": "Cloud Security Architect", "description": "Sets security architecture and standards across the organisation.", "salaryMinUsd": 175000, "salaryMaxUsd": 245000, "durationMonths": 12, "milestones": ["SC-100 or CISSP passed", "Enterprise zero-trust programme led"], "isCurrentPosition": false }
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Full Stack / Cloud Developer",
+        "description": "Strong application and cloud delivery background with working security knowledge.",
+        "salaryMinUsd": 110000,
+        "salaryMaxUsd": 150000,
+        "durationMonths": 0,
+        "milestones": [
+          "Production cloud application experience"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "Cloud Security Engineer",
+        "description": "Hands-on security engineering: identity, secrets, network controls, scanning and remediation.",
+        "salaryMinUsd": 140000,
+        "salaryMaxUsd": 180000,
+        "durationMonths": 6,
+        "milestones": [
+          "AZ-500 passed",
+          "Entra ID and Key Vault in production use",
+          "First threat model authored"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "Senior Cloud Security Engineer",
+        "description": "Owns the security posture of a platform, leads reviews and detection engineering.",
+        "salaryMinUsd": 160000,
+        "salaryMaxUsd": 205000,
+        "durationMonths": 9,
+        "milestones": [
+          "Zero-trust design delivered",
+          "AWS Security Specialty or CISSP underway"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Cloud Security Architect",
+        "description": "Sets security architecture and standards across the organisation.",
+        "salaryMinUsd": 175000,
+        "salaryMaxUsd": 245000,
+        "durationMonths": 12,
+        "milestones": [
+          "SC-100 or CISSP passed",
+          "Enterprise zero-trust programme led"
+        ],
+        "isCurrentPosition": false
+      }
     ],
     "readinessDimensions": [
-      { "name": "Security", "weight": 0.32, "skillSlugs": ["security", "ai-security"] },
-      { "name": "Identity", "weight": 0.2, "skillSlugs": ["identity"] },
-      { "name": "Cloud", "weight": 0.2, "skillSlugs": ["azure", "aws", "networking"] },
-      { "name": "Architecture", "weight": 0.18, "skillSlugs": ["architecture", "system-design"] },
-      { "name": "Communication", "weight": 0.1, "skillSlugs": ["communication", "leadership"] }
+      {
+        "name": "Security",
+        "weight": 0.32,
+        "skillSlugs": [
+          "security",
+          "ai-security"
+        ]
+      },
+      {
+        "name": "Identity",
+        "weight": 0.2,
+        "skillSlugs": [
+          "identity"
+        ]
+      },
+      {
+        "name": "Cloud",
+        "weight": 0.2,
+        "skillSlugs": [
+          "azure",
+          "aws",
+          "networking"
+        ]
+      },
+      {
+        "name": "Architecture",
+        "weight": 0.18,
+        "skillSlugs": [
+          "architecture",
+          "system-design"
+        ]
+      },
+      {
+        "name": "Communication",
+        "weight": 0.1,
+        "skillSlugs": [
+          "communication",
+          "leadership"
+        ]
+      }
     ],
-    "certifications": ["AZ-500", "SC-100", "AWS-SCS", "CISSP"],
-    "projects": ["enterprise-rag-system", "capstone-ai-solutions-architect"]
+    "certifications": [
+      "AZ-500",
+      "SC-100",
+      "AWS-SCS",
+      "CISSP"
+    ],
+    "projects": [
+      "enterprise-rag-system",
+      "capstone-ai-solutions-architect"
+    ],
+    "category": "Security",
+    "categoryOrder": 4
   },
   {
     "rank": 3,
@@ -260,7 +603,16 @@
     "difficulty": "Expert",
     "estimatedHours": 300,
     "isPrimaryRecommended": false,
-    "resumeKeywords": ["Enterprise Architecture", "TOGAF", "Platform Strategy", "AI Governance", "Reference Architecture", "Build vs Buy", "Technology Roadmap", "Architecture Review Board"],
+    "resumeKeywords": [
+      "Enterprise Architecture",
+      "TOGAF",
+      "Platform Strategy",
+      "AI Governance",
+      "Reference Architecture",
+      "Build vs Buy",
+      "Technology Roadmap",
+      "Architecture Review Board"
+    ],
     "responsibilities": [
       "Own the enterprise reference architecture and the standards teams build against",
       "Set AI governance: approved models, data handling rules, evaluation requirements",
@@ -274,33 +626,179 @@
       "How do you enforce architecture standards without becoming a bottleneck?"
     ],
     "skills": [
-      { "slug": "architecture", "targetLevel": 95, "importance": "Core" },
-      { "slug": "system-design", "targetLevel": 92, "importance": "Core" },
-      { "slug": "llm", "targetLevel": 85, "importance": "Core" },
-      { "slug": "rag", "targetLevel": 80, "importance": "Important" },
-      { "slug": "azure", "targetLevel": 85, "importance": "Core" },
-      { "slug": "aws", "targetLevel": 80, "importance": "Important" },
-      { "slug": "security", "targetLevel": 85, "importance": "Core" },
-      { "slug": "cost-optimisation", "targetLevel": 85, "importance": "Core" },
-      { "slug": "leadership", "targetLevel": 90, "importance": "Core" },
-      { "slug": "communication", "targetLevel": 95, "importance": "Core" },
-      { "slug": "data-governance", "targetLevel": 80, "importance": "Important" }
+      {
+        "slug": "architecture",
+        "targetLevel": 95,
+        "importance": "Core"
+      },
+      {
+        "slug": "system-design",
+        "targetLevel": 92,
+        "importance": "Core"
+      },
+      {
+        "slug": "llm",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "rag",
+        "targetLevel": 80,
+        "importance": "Important"
+      },
+      {
+        "slug": "azure",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "aws",
+        "targetLevel": 80,
+        "importance": "Important"
+      },
+      {
+        "slug": "security",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "cost-optimisation",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "leadership",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "communication",
+        "targetLevel": 95,
+        "importance": "Core"
+      },
+      {
+        "slug": "data-governance",
+        "targetLevel": 80,
+        "importance": "Important"
+      }
     ],
     "ladder": [
-      { "stageOrder": 1, "title": "Current", "roleTitle": "Full Stack Developer / Tech Lead", "description": "Deep delivery experience with informal architecture influence.", "salaryMinUsd": 110000, "salaryMaxUsd": 150000, "durationMonths": 0, "milestones": ["Recognised technical authority within a team"], "isCurrentPosition": true },
-      { "stageOrder": 2, "title": "Stage 1", "roleTitle": "Solution Architect", "description": "Owns architecture for a product or programme.", "salaryMinUsd": 150000, "salaryMaxUsd": 190000, "durationMonths": 9, "milestones": ["Solution architecture owned end to end", "ADR practice established"], "isCurrentPosition": false },
-      { "stageOrder": 3, "title": "Stage 2", "roleTitle": "AI Solutions Architect", "description": "Adds the AI platform dimension to solution architecture.", "salaryMinUsd": 180000, "salaryMaxUsd": 250000, "durationMonths": 12, "milestones": ["Enterprise AI system delivered", "AI-102 passed"], "isCurrentPosition": false },
-      { "stageOrder": 4, "title": "Stage 3", "roleTitle": "Enterprise / Principal AI Architect", "description": "Sets direction across the portfolio.", "salaryMinUsd": 220000, "salaryMaxUsd": 340000, "durationMonths": 18, "milestones": ["Enterprise reference architecture adopted", "AI governance in force"], "isCurrentPosition": false }
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Full Stack Developer / Tech Lead",
+        "description": "Deep delivery experience with informal architecture influence.",
+        "salaryMinUsd": 110000,
+        "salaryMaxUsd": 150000,
+        "durationMonths": 0,
+        "milestones": [
+          "Recognised technical authority within a team"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "Solution Architect",
+        "description": "Owns architecture for a product or programme.",
+        "salaryMinUsd": 150000,
+        "salaryMaxUsd": 190000,
+        "durationMonths": 9,
+        "milestones": [
+          "Solution architecture owned end to end",
+          "ADR practice established"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "AI Solutions Architect",
+        "description": "Adds the AI platform dimension to solution architecture.",
+        "salaryMinUsd": 180000,
+        "salaryMaxUsd": 250000,
+        "durationMonths": 12,
+        "milestones": [
+          "Enterprise AI system delivered",
+          "AI-102 passed"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Enterprise / Principal AI Architect",
+        "description": "Sets direction across the portfolio.",
+        "salaryMinUsd": 220000,
+        "salaryMaxUsd": 340000,
+        "durationMonths": 18,
+        "milestones": [
+          "Enterprise reference architecture adopted",
+          "AI governance in force"
+        ],
+        "isCurrentPosition": false
+      }
     ],
     "readinessDimensions": [
-      { "name": "Architecture", "weight": 0.35, "skillSlugs": ["architecture", "system-design", "microservices", "event-driven", "ddd"] },
-      { "name": "AI Platform", "weight": 0.22, "skillSlugs": ["llm", "rag", "ai-agents", "ai-fundamentals"] },
-      { "name": "Cloud", "weight": 0.18, "skillSlugs": ["azure", "aws"] },
-      { "name": "Governance & Cost", "weight": 0.13, "skillSlugs": ["cost-optimisation", "data-governance", "security"] },
-      { "name": "Leadership", "weight": 0.12, "skillSlugs": ["leadership", "communication"] }
+      {
+        "name": "Architecture",
+        "weight": 0.35,
+        "skillSlugs": [
+          "architecture",
+          "system-design",
+          "microservices",
+          "event-driven",
+          "ddd"
+        ]
+      },
+      {
+        "name": "AI Platform",
+        "weight": 0.22,
+        "skillSlugs": [
+          "llm",
+          "rag",
+          "ai-agents",
+          "ai-fundamentals"
+        ]
+      },
+      {
+        "name": "Cloud",
+        "weight": 0.18,
+        "skillSlugs": [
+          "azure",
+          "aws"
+        ]
+      },
+      {
+        "name": "Governance & Cost",
+        "weight": 0.13,
+        "skillSlugs": [
+          "cost-optimisation",
+          "data-governance",
+          "security"
+        ]
+      },
+      {
+        "name": "Leadership",
+        "weight": 0.12,
+        "skillSlugs": [
+          "leadership",
+          "communication"
+        ]
+      }
     ],
-    "certifications": ["AZ-305", "AI-102", "AWS-SAP"],
-    "projects": ["enterprise-rag-system", "ai-business-automation-agent", "capstone-ai-solutions-architect"]
+    "certifications": [
+      "AZ-305",
+      "AI-102",
+      "AWS-SAP"
+    ],
+    "projects": [
+      "enterprise-rag-system",
+      "ai-business-automation-agent",
+      "capstone-ai-solutions-architect"
+    ],
+    "category": "AI Engineering",
+    "categoryOrder": 2
   },
   {
     "rank": 4,
@@ -321,7 +819,16 @@
     "difficulty": "Advanced",
     "estimatedHours": 250,
     "isPrimaryRecommended": false,
-    "resumeKeywords": ["Engineering Management", "Technical Leadership", "AI Delivery", "Hiring", "Roadmap", "Agile Delivery", "Mentoring", "Stakeholder Management"],
+    "resumeKeywords": [
+      "Engineering Management",
+      "Technical Leadership",
+      "AI Delivery",
+      "Hiring",
+      "Roadmap",
+      "Agile Delivery",
+      "Mentoring",
+      "Stakeholder Management"
+    ],
     "responsibilities": [
       "Lead and grow a team building AI-enabled products",
       "Own delivery commitments and the technical roadmap",
@@ -335,29 +842,151 @@
       "How do you handle an AI feature that demos well but fails in production?"
     ],
     "skills": [
-      { "slug": "leadership", "targetLevel": 95, "importance": "Core" },
-      { "slug": "communication", "targetLevel": 95, "importance": "Core" },
-      { "slug": "architecture", "targetLevel": 80, "importance": "Core" },
-      { "slug": "llm", "targetLevel": 75, "importance": "Important" },
-      { "slug": "rag", "targetLevel": 70, "importance": "Important" },
-      { "slug": "azure", "targetLevel": 70, "importance": "Important" },
-      { "slug": "cost-optimisation", "targetLevel": 80, "importance": "Important" },
-      { "slug": "cicd", "targetLevel": 75, "importance": "Important" }
+      {
+        "slug": "leadership",
+        "targetLevel": 95,
+        "importance": "Core"
+      },
+      {
+        "slug": "communication",
+        "targetLevel": 95,
+        "importance": "Core"
+      },
+      {
+        "slug": "architecture",
+        "targetLevel": 80,
+        "importance": "Core"
+      },
+      {
+        "slug": "llm",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "rag",
+        "targetLevel": 70,
+        "importance": "Important"
+      },
+      {
+        "slug": "azure",
+        "targetLevel": 70,
+        "importance": "Important"
+      },
+      {
+        "slug": "cost-optimisation",
+        "targetLevel": 80,
+        "importance": "Important"
+      },
+      {
+        "slug": "cicd",
+        "targetLevel": 75,
+        "importance": "Important"
+      }
     ],
     "ladder": [
-      { "stageOrder": 1, "title": "Current", "roleTitle": "Senior Developer", "description": "Deep individual-contributor experience.", "salaryMinUsd": 110000, "salaryMaxUsd": 150000, "durationMonths": 0, "milestones": ["Mentoring other engineers informally"], "isCurrentPosition": true },
-      { "stageOrder": 2, "title": "Stage 1", "roleTitle": "Tech Lead", "description": "Owns technical direction for a team while still coding.", "salaryMinUsd": 140000, "salaryMaxUsd": 175000, "durationMonths": 9, "milestones": ["Team technical direction owned", "Delivery commitments met"], "isCurrentPosition": false },
-      { "stageOrder": 3, "title": "Stage 2", "roleTitle": "Engineering Manager", "description": "Accountable for people and delivery.", "salaryMinUsd": 170000, "salaryMaxUsd": 215000, "durationMonths": 12, "milestones": ["Hired and grew a team", "Roadmap owned"], "isCurrentPosition": false },
-      { "stageOrder": 4, "title": "Stage 3", "roleTitle": "AI Engineering Manager / Director", "description": "Leads multiple AI teams.", "salaryMinUsd": 200000, "salaryMaxUsd": 330000, "durationMonths": 18, "milestones": ["Multiple teams led", "AI platform delivered at scale"], "isCurrentPosition": false }
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Senior Developer",
+        "description": "Deep individual-contributor experience.",
+        "salaryMinUsd": 110000,
+        "salaryMaxUsd": 150000,
+        "durationMonths": 0,
+        "milestones": [
+          "Mentoring other engineers informally"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "Tech Lead",
+        "description": "Owns technical direction for a team while still coding.",
+        "salaryMinUsd": 140000,
+        "salaryMaxUsd": 175000,
+        "durationMonths": 9,
+        "milestones": [
+          "Team technical direction owned",
+          "Delivery commitments met"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "Engineering Manager",
+        "description": "Accountable for people and delivery.",
+        "salaryMinUsd": 170000,
+        "salaryMaxUsd": 215000,
+        "durationMonths": 12,
+        "milestones": [
+          "Hired and grew a team",
+          "Roadmap owned"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "AI Engineering Manager / Director",
+        "description": "Leads multiple AI teams.",
+        "salaryMinUsd": 200000,
+        "salaryMaxUsd": 330000,
+        "durationMonths": 18,
+        "milestones": [
+          "Multiple teams led",
+          "AI platform delivered at scale"
+        ],
+        "isCurrentPosition": false
+      }
     ],
     "readinessDimensions": [
-      { "name": "Leadership", "weight": 0.35, "skillSlugs": ["leadership", "communication"] },
-      { "name": "Technical Depth", "weight": 0.25, "skillSlugs": ["architecture", "system-design", "dotnet"] },
-      { "name": "AI", "weight": 0.2, "skillSlugs": ["llm", "rag", "ai-fundamentals"] },
-      { "name": "Delivery", "weight": 0.2, "skillSlugs": ["cicd", "cost-optimisation", "observability"] }
+      {
+        "name": "Leadership",
+        "weight": 0.35,
+        "skillSlugs": [
+          "leadership",
+          "communication"
+        ]
+      },
+      {
+        "name": "Technical Depth",
+        "weight": 0.25,
+        "skillSlugs": [
+          "architecture",
+          "system-design",
+          "dotnet"
+        ]
+      },
+      {
+        "name": "AI",
+        "weight": 0.2,
+        "skillSlugs": [
+          "llm",
+          "rag",
+          "ai-fundamentals"
+        ]
+      },
+      {
+        "name": "Delivery",
+        "weight": 0.2,
+        "skillSlugs": [
+          "cicd",
+          "cost-optimisation",
+          "observability"
+        ]
+      }
     ],
-    "certifications": ["AI-102", "AZ-305"],
-    "projects": ["ai-business-automation-agent", "capstone-ai-solutions-architect"]
+    "certifications": [
+      "AI-102",
+      "AZ-305"
+    ],
+    "projects": [
+      "ai-business-automation-agent",
+      "capstone-ai-solutions-architect"
+    ],
+    "category": "Field & Leadership",
+    "categoryOrder": 6
   },
   {
     "rank": 5,
@@ -378,7 +1007,17 @@
     "difficulty": "Advanced",
     "estimatedHours": 240,
     "isPrimaryRecommended": false,
-    "resumeKeywords": ["Azure Architecture", "AWS Architecture", "AZ-305", "Well-Architected Framework", "Migration", "Landing Zones", "Cost Optimisation", "High Availability", "Disaster Recovery"],
+    "resumeKeywords": [
+      "Azure Architecture",
+      "AWS Architecture",
+      "AZ-305",
+      "Well-Architected Framework",
+      "Migration",
+      "Landing Zones",
+      "Cost Optimisation",
+      "High Availability",
+      "Disaster Recovery"
+    ],
     "responsibilities": [
       "Design cloud landing zones, network topology and workload placement",
       "Lead migration and modernisation programmes",
@@ -392,33 +1031,176 @@
       "Where would you look first to cut a $60K/month Azure bill?"
     ],
     "skills": [
-      { "slug": "azure", "targetLevel": 92, "importance": "Core" },
-      { "slug": "aws", "targetLevel": 85, "importance": "Core" },
-      { "slug": "architecture", "targetLevel": 90, "importance": "Core" },
-      { "slug": "system-design", "targetLevel": 88, "importance": "Core" },
-      { "slug": "networking", "targetLevel": 80, "importance": "Core" },
-      { "slug": "terraform", "targetLevel": 80, "importance": "Important" },
-      { "slug": "kubernetes", "targetLevel": 75, "importance": "Important" },
-      { "slug": "cost-optimisation", "targetLevel": 85, "importance": "Core" },
-      { "slug": "security", "targetLevel": 80, "importance": "Important" },
-      { "slug": "observability", "targetLevel": 75, "importance": "Important" },
-      { "slug": "communication", "targetLevel": 85, "importance": "Core" }
+      {
+        "slug": "azure",
+        "targetLevel": 92,
+        "importance": "Core"
+      },
+      {
+        "slug": "aws",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "architecture",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "system-design",
+        "targetLevel": 88,
+        "importance": "Core"
+      },
+      {
+        "slug": "networking",
+        "targetLevel": 80,
+        "importance": "Core"
+      },
+      {
+        "slug": "terraform",
+        "targetLevel": 80,
+        "importance": "Important"
+      },
+      {
+        "slug": "kubernetes",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "cost-optimisation",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "security",
+        "targetLevel": 80,
+        "importance": "Important"
+      },
+      {
+        "slug": "observability",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "communication",
+        "targetLevel": 85,
+        "importance": "Core"
+      }
     ],
     "ladder": [
-      { "stageOrder": 1, "title": "Current", "roleTitle": "Full Stack Developer", "description": "Cloud-adjacent application delivery.", "salaryMinUsd": 110000, "salaryMaxUsd": 150000, "durationMonths": 0, "milestones": ["Applications deployed to Azure and AWS"], "isCurrentPosition": true },
-      { "stageOrder": 2, "title": "Stage 1", "roleTitle": "Cloud Engineer", "description": "Owns infrastructure as code and platform services.", "salaryMinUsd": 135000, "salaryMaxUsd": 170000, "durationMonths": 6, "milestones": ["AZ-204 passed", "Terraform in production use"], "isCurrentPosition": false },
-      { "stageOrder": 3, "title": "Stage 2", "roleTitle": "Senior Cloud Engineer", "description": "Leads platform design for a business unit.", "salaryMinUsd": 150000, "salaryMaxUsd": 190000, "durationMonths": 9, "milestones": ["Landing zone designed", "DR plan tested"], "isCurrentPosition": false },
-      { "stageOrder": 4, "title": "Stage 3", "roleTitle": "Cloud Solutions Architect", "description": "Owns cloud architecture and client-facing design.", "salaryMinUsd": 160000, "salaryMaxUsd": 225000, "durationMonths": 12, "milestones": ["AZ-305 passed", "Migration programme led"], "isCurrentPosition": false }
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Full Stack Developer",
+        "description": "Cloud-adjacent application delivery.",
+        "salaryMinUsd": 110000,
+        "salaryMaxUsd": 150000,
+        "durationMonths": 0,
+        "milestones": [
+          "Applications deployed to Azure and AWS"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "Cloud Engineer",
+        "description": "Owns infrastructure as code and platform services.",
+        "salaryMinUsd": 135000,
+        "salaryMaxUsd": 170000,
+        "durationMonths": 6,
+        "milestones": [
+          "AZ-204 passed",
+          "Terraform in production use"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "Senior Cloud Engineer",
+        "description": "Leads platform design for a business unit.",
+        "salaryMinUsd": 150000,
+        "salaryMaxUsd": 190000,
+        "durationMonths": 9,
+        "milestones": [
+          "Landing zone designed",
+          "DR plan tested"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Cloud Solutions Architect",
+        "description": "Owns cloud architecture and client-facing design.",
+        "salaryMinUsd": 160000,
+        "salaryMaxUsd": 225000,
+        "durationMonths": 12,
+        "milestones": [
+          "AZ-305 passed",
+          "Migration programme led"
+        ],
+        "isCurrentPosition": false
+      }
     ],
     "readinessDimensions": [
-      { "name": "Azure", "weight": 0.3, "skillSlugs": ["azure", "identity", "networking"] },
-      { "name": "AWS", "weight": 0.2, "skillSlugs": ["aws"] },
-      { "name": "Architecture", "weight": 0.25, "skillSlugs": ["architecture", "system-design", "microservices"] },
-      { "name": "Automation", "weight": 0.15, "skillSlugs": ["terraform", "kubernetes", "cicd", "docker"] },
-      { "name": "Cost & Communication", "weight": 0.1, "skillSlugs": ["cost-optimisation", "communication"] }
+      {
+        "name": "Azure",
+        "weight": 0.3,
+        "skillSlugs": [
+          "azure",
+          "identity",
+          "networking"
+        ]
+      },
+      {
+        "name": "AWS",
+        "weight": 0.2,
+        "skillSlugs": [
+          "aws"
+        ]
+      },
+      {
+        "name": "Architecture",
+        "weight": 0.25,
+        "skillSlugs": [
+          "architecture",
+          "system-design",
+          "microservices"
+        ]
+      },
+      {
+        "name": "Automation",
+        "weight": 0.15,
+        "skillSlugs": [
+          "terraform",
+          "kubernetes",
+          "cicd",
+          "docker"
+        ]
+      },
+      {
+        "name": "Cost & Communication",
+        "weight": 0.1,
+        "skillSlugs": [
+          "cost-optimisation",
+          "communication"
+        ]
+      }
     ],
-    "certifications": ["AZ-305", "AWS-SAA", "AZ-204", "TF-ASSOC"],
-    "projects": ["enterprise-rag-system", "capstone-ai-solutions-architect"]
+    "certifications": [
+      "AZ-305",
+      "AWS-SAA",
+      "AZ-204",
+      "TF-ASSOC"
+    ],
+    "projects": [
+      "enterprise-rag-system",
+      "capstone-ai-solutions-architect"
+    ],
+    "category": "Cloud & Platform",
+    "categoryOrder": 3
   },
   {
     "rank": 6,
@@ -439,7 +1221,18 @@
     "difficulty": "Advanced",
     "estimatedHours": 220,
     "isPrimaryRecommended": false,
-    "resumeKeywords": ["LLM Integration", "RAG", "Tool Calling", "Function Calling", "Azure OpenAI", "Vector Search", "API Integration", "Structured Outputs", "MCP", "Human-in-the-loop"],
+    "resumeKeywords": [
+      "LLM Integration",
+      "RAG",
+      "Tool Calling",
+      "Function Calling",
+      "Azure OpenAI",
+      "Vector Search",
+      "API Integration",
+      "Structured Outputs",
+      "MCP",
+      "Human-in-the-loop"
+    ],
     "responsibilities": [
       "Integrate LLM capability into existing enterprise applications",
       "Build and tune retrieval pipelines over enterprise content",
@@ -453,33 +1246,176 @@
       "How do you make an AI workflow idempotent?"
     ],
     "skills": [
-      { "slug": "llm", "targetLevel": 90, "importance": "Core" },
-      { "slug": "rag", "targetLevel": 90, "importance": "Core" },
-      { "slug": "ai-agents", "targetLevel": 85, "importance": "Core" },
-      { "slug": "vector-db", "targetLevel": 80, "importance": "Core" },
-      { "slug": "dotnet", "targetLevel": 88, "importance": "Core" },
-      { "slug": "rest-api", "targetLevel": 88, "importance": "Core" },
-      { "slug": "azure", "targetLevel": 80, "importance": "Core" },
-      { "slug": "prompt-engineering", "targetLevel": 85, "importance": "Core" },
-      { "slug": "ai-security", "targetLevel": 75, "importance": "Important" },
-      { "slug": "python", "targetLevel": 60, "importance": "Important" },
-      { "slug": "observability", "targetLevel": 70, "importance": "Important" }
+      {
+        "slug": "llm",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "rag",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "ai-agents",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "vector-db",
+        "targetLevel": 80,
+        "importance": "Core"
+      },
+      {
+        "slug": "dotnet",
+        "targetLevel": 88,
+        "importance": "Core"
+      },
+      {
+        "slug": "rest-api",
+        "targetLevel": 88,
+        "importance": "Core"
+      },
+      {
+        "slug": "azure",
+        "targetLevel": 80,
+        "importance": "Core"
+      },
+      {
+        "slug": "prompt-engineering",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "ai-security",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "python",
+        "targetLevel": 60,
+        "importance": "Important"
+      },
+      {
+        "slug": "observability",
+        "targetLevel": 70,
+        "importance": "Important"
+      }
     ],
     "ladder": [
-      { "stageOrder": 1, "title": "Current", "roleTitle": "Full Stack Developer", "description": "Strong API and integration background.", "salaryMinUsd": 110000, "salaryMaxUsd": 150000, "durationMonths": 0, "milestones": ["Enterprise integration experience"], "isCurrentPosition": true },
-      { "stageOrder": 2, "title": "Stage 1", "roleTitle": "AI-Enabled Engineer", "description": "Ships features that call models safely.", "salaryMinUsd": 135000, "salaryMaxUsd": 170000, "durationMonths": 4, "milestones": ["Streaming chat shipped", "Structured outputs in production"], "isCurrentPosition": false },
-      { "stageOrder": 3, "title": "Stage 2", "roleTitle": "AI Integration Engineer", "description": "Owns RAG and agent integrations.", "salaryMinUsd": 150000, "salaryMaxUsd": 205000, "durationMonths": 8, "milestones": ["Enterprise RAG delivered", "AI-102 passed"], "isCurrentPosition": false },
-      { "stageOrder": 4, "title": "Stage 3", "roleTitle": "Senior AI Integration Engineer", "description": "Leads integration architecture for AI programmes.", "salaryMinUsd": 185000, "salaryMaxUsd": 250000, "durationMonths": 12, "milestones": ["Multi-system agent workflow in production"], "isCurrentPosition": false }
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Full Stack Developer",
+        "description": "Strong API and integration background.",
+        "salaryMinUsd": 110000,
+        "salaryMaxUsd": 150000,
+        "durationMonths": 0,
+        "milestones": [
+          "Enterprise integration experience"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "AI-Enabled Engineer",
+        "description": "Ships features that call models safely.",
+        "salaryMinUsd": 135000,
+        "salaryMaxUsd": 170000,
+        "durationMonths": 4,
+        "milestones": [
+          "Streaming chat shipped",
+          "Structured outputs in production"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "AI Integration Engineer",
+        "description": "Owns RAG and agent integrations.",
+        "salaryMinUsd": 150000,
+        "salaryMaxUsd": 205000,
+        "durationMonths": 8,
+        "milestones": [
+          "Enterprise RAG delivered",
+          "AI-102 passed"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Senior AI Integration Engineer",
+        "description": "Leads integration architecture for AI programmes.",
+        "salaryMinUsd": 185000,
+        "salaryMaxUsd": 250000,
+        "durationMonths": 12,
+        "milestones": [
+          "Multi-system agent workflow in production"
+        ],
+        "isCurrentPosition": false
+      }
     ],
     "readinessDimensions": [
-      { "name": "RAG", "weight": 0.28, "skillSlugs": ["rag", "vector-db"] },
-      { "name": "LLM Engineering", "weight": 0.25, "skillSlugs": ["llm", "prompt-engineering", "ai-fundamentals"] },
-      { "name": "Agents", "weight": 0.2, "skillSlugs": ["ai-agents"] },
-      { "name": "Integration", "weight": 0.17, "skillSlugs": ["dotnet", "rest-api", "event-driven"] },
-      { "name": "Security", "weight": 0.1, "skillSlugs": ["ai-security", "security"] }
+      {
+        "name": "RAG",
+        "weight": 0.28,
+        "skillSlugs": [
+          "rag",
+          "vector-db"
+        ]
+      },
+      {
+        "name": "LLM Engineering",
+        "weight": 0.25,
+        "skillSlugs": [
+          "llm",
+          "prompt-engineering",
+          "ai-fundamentals"
+        ]
+      },
+      {
+        "name": "Agents",
+        "weight": 0.2,
+        "skillSlugs": [
+          "ai-agents"
+        ]
+      },
+      {
+        "name": "Integration",
+        "weight": 0.17,
+        "skillSlugs": [
+          "dotnet",
+          "rest-api",
+          "event-driven"
+        ]
+      },
+      {
+        "name": "Security",
+        "weight": 0.1,
+        "skillSlugs": [
+          "ai-security",
+          "security"
+        ]
+      }
     ],
-    "certifications": ["AI-102", "AZ-204", "AI-900"],
-    "projects": ["ai-chat-application", "enterprise-document-chat", "ai-customer-service-agent", "ai-email-assistant", "ai-help-desk", "enterprise-rag-system"]
+    "certifications": [
+      "AI-102",
+      "AZ-204",
+      "AI-900"
+    ],
+    "projects": [
+      "ai-chat-application",
+      "enterprise-document-chat",
+      "ai-customer-service-agent",
+      "ai-email-assistant",
+      "ai-help-desk",
+      "enterprise-rag-system"
+    ],
+    "category": "AI Engineering",
+    "categoryOrder": 2
   },
   {
     "rank": 7,
@@ -500,7 +1436,17 @@
     "difficulty": "Expert",
     "estimatedHours": 330,
     "isPrimaryRecommended": false,
-    "resumeKeywords": ["Machine Learning", "PyTorch", "Fine-tuning", "MLOps", "Model Evaluation", "Feature Engineering", "Model Serving", "Python", "Vector Search"],
+    "resumeKeywords": [
+      "Machine Learning",
+      "PyTorch",
+      "Fine-tuning",
+      "MLOps",
+      "Model Evaluation",
+      "Feature Engineering",
+      "Model Serving",
+      "Python",
+      "Vector Search"
+    ],
     "responsibilities": [
       "Build, fine-tune and evaluate models against defined metrics",
       "Design evaluation harnesses and guard against regression",
@@ -514,32 +1460,169 @@
       "How do you detect and respond to model drift in production?"
     ],
     "skills": [
-      { "slug": "python", "targetLevel": 90, "importance": "Core" },
-      { "slug": "machine-learning", "targetLevel": 90, "importance": "Core" },
-      { "slug": "ai-fundamentals", "targetLevel": 90, "importance": "Core" },
-      { "slug": "llm", "targetLevel": 88, "importance": "Core" },
-      { "slug": "mlops", "targetLevel": 85, "importance": "Core" },
-      { "slug": "data-engineering", "targetLevel": 80, "importance": "Core" },
-      { "slug": "vector-db", "targetLevel": 75, "importance": "Important" },
-      { "slug": "docker", "targetLevel": 80, "importance": "Important" },
-      { "slug": "kubernetes", "targetLevel": 75, "importance": "Important" },
-      { "slug": "azure", "targetLevel": 75, "importance": "Important" }
+      {
+        "slug": "python",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "machine-learning",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "ai-fundamentals",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "llm",
+        "targetLevel": 88,
+        "importance": "Core"
+      },
+      {
+        "slug": "mlops",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "data-engineering",
+        "targetLevel": 80,
+        "importance": "Core"
+      },
+      {
+        "slug": "vector-db",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "docker",
+        "targetLevel": 80,
+        "importance": "Important"
+      },
+      {
+        "slug": "kubernetes",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "azure",
+        "targetLevel": 75,
+        "importance": "Important"
+      }
     ],
     "ladder": [
-      { "stageOrder": 1, "title": "Current", "roleTitle": "Full Stack Developer", "description": "Strong engineering, limited ML depth.", "salaryMinUsd": 110000, "salaryMaxUsd": 150000, "durationMonths": 0, "milestones": ["Production software engineering"], "isCurrentPosition": true },
-      { "stageOrder": 2, "title": "Stage 1", "roleTitle": "ML-Adjacent Engineer", "description": "Python fluency, data pipelines, model consumption.", "salaryMinUsd": 135000, "salaryMaxUsd": 170000, "durationMonths": 8, "milestones": ["Python and PyTorch fundamentals", "First evaluation harness built"], "isCurrentPosition": false },
-      { "stageOrder": 3, "title": "Stage 2", "roleTitle": "AI / ML Engineer", "description": "Owns model development and serving.", "salaryMinUsd": 150000, "salaryMaxUsd": 210000, "durationMonths": 12, "milestones": ["Model fine-tuned and served in production", "Drift monitoring in place"], "isCurrentPosition": false },
-      { "stageOrder": 4, "title": "Stage 3", "roleTitle": "Senior AI / ML Engineer", "description": "Leads ML systems design.", "salaryMinUsd": 190000, "salaryMaxUsd": 280000, "durationMonths": 18, "milestones": ["ML platform owned", "Published evaluation methodology"], "isCurrentPosition": false }
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Full Stack Developer",
+        "description": "Strong engineering, limited ML depth.",
+        "salaryMinUsd": 110000,
+        "salaryMaxUsd": 150000,
+        "durationMonths": 0,
+        "milestones": [
+          "Production software engineering"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "ML-Adjacent Engineer",
+        "description": "Python fluency, data pipelines, model consumption.",
+        "salaryMinUsd": 135000,
+        "salaryMaxUsd": 170000,
+        "durationMonths": 8,
+        "milestones": [
+          "Python and PyTorch fundamentals",
+          "First evaluation harness built"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "AI / ML Engineer",
+        "description": "Owns model development and serving.",
+        "salaryMinUsd": 150000,
+        "salaryMaxUsd": 210000,
+        "durationMonths": 12,
+        "milestones": [
+          "Model fine-tuned and served in production",
+          "Drift monitoring in place"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Senior AI / ML Engineer",
+        "description": "Leads ML systems design.",
+        "salaryMinUsd": 190000,
+        "salaryMaxUsd": 280000,
+        "durationMonths": 18,
+        "milestones": [
+          "ML platform owned",
+          "Published evaluation methodology"
+        ],
+        "isCurrentPosition": false
+      }
     ],
     "readinessDimensions": [
-      { "name": "ML Foundations", "weight": 0.3, "skillSlugs": ["machine-learning", "ai-fundamentals"] },
-      { "name": "Python & Tooling", "weight": 0.22, "skillSlugs": ["python"] },
-      { "name": "LLM Engineering", "weight": 0.2, "skillSlugs": ["llm", "prompt-engineering", "rag"] },
-      { "name": "MLOps", "weight": 0.18, "skillSlugs": ["mlops", "docker", "kubernetes", "cicd"] },
-      { "name": "Data", "weight": 0.1, "skillSlugs": ["data-engineering", "sql"] }
+      {
+        "name": "ML Foundations",
+        "weight": 0.3,
+        "skillSlugs": [
+          "machine-learning",
+          "ai-fundamentals"
+        ]
+      },
+      {
+        "name": "Python & Tooling",
+        "weight": 0.22,
+        "skillSlugs": [
+          "python"
+        ]
+      },
+      {
+        "name": "LLM Engineering",
+        "weight": 0.2,
+        "skillSlugs": [
+          "llm",
+          "prompt-engineering",
+          "rag"
+        ]
+      },
+      {
+        "name": "MLOps",
+        "weight": 0.18,
+        "skillSlugs": [
+          "mlops",
+          "docker",
+          "kubernetes",
+          "cicd"
+        ]
+      },
+      {
+        "name": "Data",
+        "weight": 0.1,
+        "skillSlugs": [
+          "data-engineering",
+          "sql"
+        ]
+      }
     ],
-    "certifications": ["AWS-MLA", "AI-102", "AWS-AIP"],
-    "projects": ["enterprise-document-chat", "enterprise-rag-system"]
+    "certifications": [
+      "AWS-MLA",
+      "AI-102",
+      "AWS-AIP"
+    ],
+    "projects": [
+      "enterprise-document-chat",
+      "enterprise-rag-system"
+    ],
+    "category": "AI Engineering",
+    "categoryOrder": 2
   },
   {
     "rank": 8,
@@ -560,7 +1643,18 @@
     "difficulty": "Advanced",
     "estimatedHours": 250,
     "isPrimaryRecommended": false,
-    "resumeKeywords": ["Kubernetes", "Terraform", "GitHub Actions", "Azure DevOps", "Helm", "Policy as Code", "Observability", "SRE", "DevSecOps", "Supply Chain Security"],
+    "resumeKeywords": [
+      "Kubernetes",
+      "Terraform",
+      "GitHub Actions",
+      "Azure DevOps",
+      "Helm",
+      "Policy as Code",
+      "Observability",
+      "SRE",
+      "DevSecOps",
+      "Supply Chain Security"
+    ],
     "responsibilities": [
       "Build and operate the internal developer platform",
       "Own CI/CD, artefact management and release safety",
@@ -574,32 +1668,168 @@
       "Secure the software supply chain for 40 microservices"
     ],
     "skills": [
-      { "slug": "kubernetes", "targetLevel": 90, "importance": "Core" },
-      { "slug": "terraform", "targetLevel": 88, "importance": "Core" },
-      { "slug": "docker", "targetLevel": 90, "importance": "Core" },
-      { "slug": "cicd", "targetLevel": 90, "importance": "Core" },
-      { "slug": "observability", "targetLevel": 85, "importance": "Core" },
-      { "slug": "security", "targetLevel": 82, "importance": "Core" },
-      { "slug": "azure", "targetLevel": 80, "importance": "Core" },
-      { "slug": "aws", "targetLevel": 75, "importance": "Important" },
-      { "slug": "networking", "targetLevel": 75, "importance": "Important" },
-      { "slug": "python", "targetLevel": 60, "importance": "Important" }
+      {
+        "slug": "kubernetes",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "terraform",
+        "targetLevel": 88,
+        "importance": "Core"
+      },
+      {
+        "slug": "docker",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "cicd",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "observability",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "security",
+        "targetLevel": 82,
+        "importance": "Core"
+      },
+      {
+        "slug": "azure",
+        "targetLevel": 80,
+        "importance": "Core"
+      },
+      {
+        "slug": "aws",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "networking",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "python",
+        "targetLevel": 60,
+        "importance": "Important"
+      }
     ],
     "ladder": [
-      { "stageOrder": 1, "title": "Current", "roleTitle": "Full Stack Developer", "description": "Uses pipelines rather than owning them.", "salaryMinUsd": 110000, "salaryMaxUsd": 150000, "durationMonths": 0, "milestones": ["CI/CD consumer experience"], "isCurrentPosition": true },
-      { "stageOrder": 2, "title": "Stage 1", "roleTitle": "DevOps Engineer", "description": "Owns pipelines and infrastructure as code.", "salaryMinUsd": 130000, "salaryMaxUsd": 165000, "durationMonths": 6, "milestones": ["Terraform Associate passed", "Pipelines owned end to end"], "isCurrentPosition": false },
-      { "stageOrder": 3, "title": "Stage 2", "roleTitle": "Platform Engineer", "description": "Builds the internal developer platform.", "salaryMinUsd": 145000, "salaryMaxUsd": 185000, "durationMonths": 9, "milestones": ["CKA passed", "Self-service platform shipped"], "isCurrentPosition": false },
-      { "stageOrder": 4, "title": "Stage 3", "roleTitle": "Senior Platform / DevSecOps Engineer", "description": "Owns platform and security automation.", "salaryMinUsd": 180000, "salaryMaxUsd": 245000, "durationMonths": 12, "milestones": ["Policy as code in force", "SLOs defined and met"], "isCurrentPosition": false }
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Full Stack Developer",
+        "description": "Uses pipelines rather than owning them.",
+        "salaryMinUsd": 110000,
+        "salaryMaxUsd": 150000,
+        "durationMonths": 0,
+        "milestones": [
+          "CI/CD consumer experience"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "DevOps Engineer",
+        "description": "Owns pipelines and infrastructure as code.",
+        "salaryMinUsd": 130000,
+        "salaryMaxUsd": 165000,
+        "durationMonths": 6,
+        "milestones": [
+          "Terraform Associate passed",
+          "Pipelines owned end to end"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "Platform Engineer",
+        "description": "Builds the internal developer platform.",
+        "salaryMinUsd": 145000,
+        "salaryMaxUsd": 185000,
+        "durationMonths": 9,
+        "milestones": [
+          "CKA passed",
+          "Self-service platform shipped"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Senior Platform / DevSecOps Engineer",
+        "description": "Owns platform and security automation.",
+        "salaryMinUsd": 180000,
+        "salaryMaxUsd": 245000,
+        "durationMonths": 12,
+        "milestones": [
+          "Policy as code in force",
+          "SLOs defined and met"
+        ],
+        "isCurrentPosition": false
+      }
     ],
     "readinessDimensions": [
-      { "name": "Kubernetes & Containers", "weight": 0.3, "skillSlugs": ["kubernetes", "docker"] },
-      { "name": "IaC & CI/CD", "weight": 0.28, "skillSlugs": ["terraform", "cicd"] },
-      { "name": "Security", "weight": 0.2, "skillSlugs": ["security", "identity"] },
-      { "name": "Cloud", "weight": 0.12, "skillSlugs": ["azure", "aws", "networking"] },
-      { "name": "Observability", "weight": 0.1, "skillSlugs": ["observability"] }
+      {
+        "name": "Kubernetes & Containers",
+        "weight": 0.3,
+        "skillSlugs": [
+          "kubernetes",
+          "docker"
+        ]
+      },
+      {
+        "name": "IaC & CI/CD",
+        "weight": 0.28,
+        "skillSlugs": [
+          "terraform",
+          "cicd"
+        ]
+      },
+      {
+        "name": "Security",
+        "weight": 0.2,
+        "skillSlugs": [
+          "security",
+          "identity"
+        ]
+      },
+      {
+        "name": "Cloud",
+        "weight": 0.12,
+        "skillSlugs": [
+          "azure",
+          "aws",
+          "networking"
+        ]
+      },
+      {
+        "name": "Observability",
+        "weight": 0.1,
+        "skillSlugs": [
+          "observability"
+        ]
+      }
     ],
-    "certifications": ["CKA", "TF-ASSOC", "AZ-500", "AZ-204"],
-    "projects": ["ai-business-automation-agent", "capstone-ai-solutions-architect"]
+    "certifications": [
+      "CKA",
+      "TF-ASSOC",
+      "AZ-500",
+      "AZ-204"
+    ],
+    "projects": [
+      "ai-business-automation-agent",
+      "capstone-ai-solutions-architect"
+    ],
+    "category": "Cloud & Platform",
+    "categoryOrder": 3
   },
   {
     "rank": 9,
@@ -620,7 +1850,18 @@
     "difficulty": "Advanced",
     "estimatedHours": 250,
     "isPrimaryRecommended": false,
-    "resumeKeywords": ["Data Architecture", "Lakehouse", "Azure Data Factory", "Databricks", "dbt", "Data Modelling", "Data Governance", "Streaming", "DP-203", "pgvector"],
+    "resumeKeywords": [
+      "Data Architecture",
+      "Lakehouse",
+      "Azure Data Factory",
+      "Databricks",
+      "dbt",
+      "Data Modelling",
+      "Data Governance",
+      "Streaming",
+      "DP-203",
+      "pgvector"
+    ],
     "responsibilities": [
       "Design data models, warehouses and lakehouse architecture",
       "Build batch and streaming pipelines with quality gates",
@@ -634,30 +1875,155 @@
       "Explain slowly changing dimensions and when you would avoid them"
     ],
     "skills": [
-      { "slug": "sql", "targetLevel": 92, "importance": "Core" },
-      { "slug": "data-engineering", "targetLevel": 90, "importance": "Core" },
-      { "slug": "data-governance", "targetLevel": 88, "importance": "Core" },
-      { "slug": "azure", "targetLevel": 85, "importance": "Core" },
-      { "slug": "python", "targetLevel": 75, "importance": "Core" },
-      { "slug": "architecture", "targetLevel": 85, "importance": "Core" },
-      { "slug": "vector-db", "targetLevel": 70, "importance": "Important" },
-      { "slug": "messaging", "targetLevel": 75, "importance": "Important" },
-      { "slug": "cost-optimisation", "targetLevel": 78, "importance": "Important" }
+      {
+        "slug": "sql",
+        "targetLevel": 92,
+        "importance": "Core"
+      },
+      {
+        "slug": "data-engineering",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "data-governance",
+        "targetLevel": 88,
+        "importance": "Core"
+      },
+      {
+        "slug": "azure",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "python",
+        "targetLevel": 75,
+        "importance": "Core"
+      },
+      {
+        "slug": "architecture",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "vector-db",
+        "targetLevel": 70,
+        "importance": "Important"
+      },
+      {
+        "slug": "messaging",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "cost-optimisation",
+        "targetLevel": 78,
+        "importance": "Important"
+      }
     ],
     "ladder": [
-      { "stageOrder": 1, "title": "Current", "roleTitle": "Full Stack Developer", "description": "Deep SQL Server and relational modelling experience.", "salaryMinUsd": 110000, "salaryMaxUsd": 150000, "durationMonths": 0, "milestones": ["Strong relational database background"], "isCurrentPosition": true },
-      { "stageOrder": 2, "title": "Stage 1", "roleTitle": "Data Engineer", "description": "Builds pipelines and warehouse models.", "salaryMinUsd": 130000, "salaryMaxUsd": 165000, "durationMonths": 6, "milestones": ["DP-203 passed", "Production pipeline owned"], "isCurrentPosition": false },
-      { "stageOrder": 3, "title": "Stage 2", "roleTitle": "Senior Data Engineer", "description": "Owns a data domain end to end.", "salaryMinUsd": 150000, "salaryMaxUsd": 190000, "durationMonths": 9, "milestones": ["Streaming pipeline delivered", "Quality gates enforced"], "isCurrentPosition": false },
-      { "stageOrder": 4, "title": "Stage 3", "roleTitle": "Data Architect", "description": "Owns data architecture and governance.", "salaryMinUsd": 175000, "salaryMaxUsd": 250000, "durationMonths": 12, "milestones": ["Lakehouse architecture adopted", "Governance framework in force"], "isCurrentPosition": false }
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Full Stack Developer",
+        "description": "Deep SQL Server and relational modelling experience.",
+        "salaryMinUsd": 110000,
+        "salaryMaxUsd": 150000,
+        "durationMonths": 0,
+        "milestones": [
+          "Strong relational database background"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "Data Engineer",
+        "description": "Builds pipelines and warehouse models.",
+        "salaryMinUsd": 130000,
+        "salaryMaxUsd": 165000,
+        "durationMonths": 6,
+        "milestones": [
+          "DP-203 passed",
+          "Production pipeline owned"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "Senior Data Engineer",
+        "description": "Owns a data domain end to end.",
+        "salaryMinUsd": 150000,
+        "salaryMaxUsd": 190000,
+        "durationMonths": 9,
+        "milestones": [
+          "Streaming pipeline delivered",
+          "Quality gates enforced"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Data Architect",
+        "description": "Owns data architecture and governance.",
+        "salaryMinUsd": 175000,
+        "salaryMaxUsd": 250000,
+        "durationMonths": 12,
+        "milestones": [
+          "Lakehouse architecture adopted",
+          "Governance framework in force"
+        ],
+        "isCurrentPosition": false
+      }
     ],
     "readinessDimensions": [
-      { "name": "Data Modelling", "weight": 0.3, "skillSlugs": ["sql", "data-governance"] },
-      { "name": "Pipelines", "weight": 0.28, "skillSlugs": ["data-engineering", "messaging", "python"] },
-      { "name": "Cloud Data Platform", "weight": 0.22, "skillSlugs": ["azure", "aws"] },
-      { "name": "Architecture", "weight": 0.2, "skillSlugs": ["architecture", "system-design"] }
+      {
+        "name": "Data Modelling",
+        "weight": 0.3,
+        "skillSlugs": [
+          "sql",
+          "data-governance"
+        ]
+      },
+      {
+        "name": "Pipelines",
+        "weight": 0.28,
+        "skillSlugs": [
+          "data-engineering",
+          "messaging",
+          "python"
+        ]
+      },
+      {
+        "name": "Cloud Data Platform",
+        "weight": 0.22,
+        "skillSlugs": [
+          "azure",
+          "aws"
+        ]
+      },
+      {
+        "name": "Architecture",
+        "weight": 0.2,
+        "skillSlugs": [
+          "architecture",
+          "system-design"
+        ]
+      }
     ],
-    "certifications": ["DP-203", "AZ-305", "AWS-SAA"],
-    "projects": ["ai-sql-assistant", "enterprise-rag-system"]
+    "certifications": [
+      "DP-203",
+      "AZ-305",
+      "AWS-SAA"
+    ],
+    "projects": [
+      "ai-sql-assistant",
+      "enterprise-rag-system"
+    ],
+    "category": "Data",
+    "categoryOrder": 5
   },
   {
     "rank": 10,
@@ -678,7 +2044,16 @@
     "difficulty": "Advanced",
     "estimatedHours": 260,
     "isPrimaryRecommended": false,
-    "resumeKeywords": ["Application Security", "Threat Detection", "SIEM", "Incident Response", "Vulnerability Management", "Secure SDLC", "OWASP", "Penetration Testing"],
+    "resumeKeywords": [
+      "Application Security",
+      "Threat Detection",
+      "SIEM",
+      "Incident Response",
+      "Vulnerability Management",
+      "Secure SDLC",
+      "OWASP",
+      "Penetration Testing"
+    ],
     "responsibilities": [
       "Build and tune detections; reduce alert noise",
       "Run vulnerability management and remediation programmes",
@@ -692,29 +2067,145 @@
       "Design a detection strategy for lateral movement in Azure"
     ],
     "skills": [
-      { "slug": "security", "targetLevel": 92, "importance": "Core" },
-      { "slug": "identity", "targetLevel": 85, "importance": "Core" },
-      { "slug": "networking", "targetLevel": 80, "importance": "Core" },
-      { "slug": "azure", "targetLevel": 78, "importance": "Important" },
-      { "slug": "aws", "targetLevel": 72, "importance": "Important" },
-      { "slug": "ai-security", "targetLevel": 80, "importance": "Core" },
-      { "slug": "python", "targetLevel": 70, "importance": "Important" },
-      { "slug": "observability", "targetLevel": 78, "importance": "Important" }
+      {
+        "slug": "security",
+        "targetLevel": 92,
+        "importance": "Core"
+      },
+      {
+        "slug": "identity",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "networking",
+        "targetLevel": 80,
+        "importance": "Core"
+      },
+      {
+        "slug": "azure",
+        "targetLevel": 78,
+        "importance": "Important"
+      },
+      {
+        "slug": "aws",
+        "targetLevel": 72,
+        "importance": "Important"
+      },
+      {
+        "slug": "ai-security",
+        "targetLevel": 80,
+        "importance": "Core"
+      },
+      {
+        "slug": "python",
+        "targetLevel": 70,
+        "importance": "Important"
+      },
+      {
+        "slug": "observability",
+        "targetLevel": 78,
+        "importance": "Important"
+      }
     ],
     "ladder": [
-      { "stageOrder": 1, "title": "Current", "roleTitle": "Full Stack Developer", "description": "Secure coding awareness, no dedicated security role.", "salaryMinUsd": 110000, "salaryMaxUsd": 150000, "durationMonths": 0, "milestones": ["Secure development practices applied"], "isCurrentPosition": true },
-      { "stageOrder": 2, "title": "Stage 1", "roleTitle": "Application Security Engineer", "description": "Owns AppSec for a product line.", "salaryMinUsd": 125000, "salaryMaxUsd": 160000, "durationMonths": 6, "milestones": ["Threat modelling practice established", "AZ-500 underway"], "isCurrentPosition": false },
-      { "stageOrder": 3, "title": "Stage 2", "roleTitle": "Cybersecurity Engineer", "description": "Detection, response and vulnerability management.", "salaryMinUsd": 135000, "salaryMaxUsd": 190000, "durationMonths": 12, "milestones": ["Detections shipped", "Incident led end to end"], "isCurrentPosition": false },
-      { "stageOrder": 4, "title": "Stage 3", "roleTitle": "Senior Security Engineer / Architect", "description": "Sets security engineering direction.", "salaryMinUsd": 170000, "salaryMaxUsd": 235000, "durationMonths": 12, "milestones": ["CISSP or SC-100 passed"], "isCurrentPosition": false }
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Full Stack Developer",
+        "description": "Secure coding awareness, no dedicated security role.",
+        "salaryMinUsd": 110000,
+        "salaryMaxUsd": 150000,
+        "durationMonths": 0,
+        "milestones": [
+          "Secure development practices applied"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "Application Security Engineer",
+        "description": "Owns AppSec for a product line.",
+        "salaryMinUsd": 125000,
+        "salaryMaxUsd": 160000,
+        "durationMonths": 6,
+        "milestones": [
+          "Threat modelling practice established",
+          "AZ-500 underway"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "Cybersecurity Engineer",
+        "description": "Detection, response and vulnerability management.",
+        "salaryMinUsd": 135000,
+        "salaryMaxUsd": 190000,
+        "durationMonths": 12,
+        "milestones": [
+          "Detections shipped",
+          "Incident led end to end"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Senior Security Engineer / Architect",
+        "description": "Sets security engineering direction.",
+        "salaryMinUsd": 170000,
+        "salaryMaxUsd": 235000,
+        "durationMonths": 12,
+        "milestones": [
+          "CISSP or SC-100 passed"
+        ],
+        "isCurrentPosition": false
+      }
     ],
     "readinessDimensions": [
-      { "name": "Security Engineering", "weight": 0.35, "skillSlugs": ["security"] },
-      { "name": "Identity & Network", "weight": 0.25, "skillSlugs": ["identity", "networking"] },
-      { "name": "AI Security", "weight": 0.2, "skillSlugs": ["ai-security"] },
-      { "name": "Cloud", "weight": 0.2, "skillSlugs": ["azure", "aws"] }
+      {
+        "name": "Security Engineering",
+        "weight": 0.35,
+        "skillSlugs": [
+          "security"
+        ]
+      },
+      {
+        "name": "Identity & Network",
+        "weight": 0.25,
+        "skillSlugs": [
+          "identity",
+          "networking"
+        ]
+      },
+      {
+        "name": "AI Security",
+        "weight": 0.2,
+        "skillSlugs": [
+          "ai-security"
+        ]
+      },
+      {
+        "name": "Cloud",
+        "weight": 0.2,
+        "skillSlugs": [
+          "azure",
+          "aws"
+        ]
+      }
     ],
-    "certifications": ["AZ-500", "AWS-SCS", "CISSP"],
-    "projects": ["enterprise-rag-system"]
+    "certifications": [
+      "AZ-500",
+      "AWS-SCS",
+      "CISSP"
+    ],
+    "projects": [
+      "enterprise-rag-system"
+    ],
+    "category": "Security",
+    "categoryOrder": 4
   },
   {
     "rank": 11,
@@ -735,7 +2226,17 @@
     "difficulty": "Advanced",
     "estimatedHours": 200,
     "isPrimaryRecommended": false,
-    "resumeKeywords": ["Full Stack", "Angular", "React", ".NET 8", "Azure OpenAI", "Streaming", "RAG", "Vector Search", "Product Engineering"],
+    "resumeKeywords": [
+      "Full Stack",
+      "Angular",
+      "React",
+      ".NET 8",
+      "Azure OpenAI",
+      "Streaming",
+      "RAG",
+      "Vector Search",
+      "Product Engineering"
+    ],
     "responsibilities": [
       "Build AI-enabled product features end to end",
       "Design conversational and assistive user experiences",
@@ -749,30 +2250,158 @@
       "How would you A/B test two prompts in production?"
     ],
     "skills": [
-      { "slug": "dotnet", "targetLevel": 90, "importance": "Core" },
-      { "slug": "angular", "targetLevel": 85, "importance": "Core" },
-      { "slug": "typescript", "targetLevel": 85, "importance": "Core" },
-      { "slug": "llm", "targetLevel": 85, "importance": "Core" },
-      { "slug": "rag", "targetLevel": 75, "importance": "Core" },
-      { "slug": "prompt-engineering", "targetLevel": 80, "importance": "Core" },
-      { "slug": "azure", "targetLevel": 75, "importance": "Important" },
-      { "slug": "docker", "targetLevel": 70, "importance": "Important" },
-      { "slug": "ai-security", "targetLevel": 65, "importance": "Important" }
+      {
+        "slug": "dotnet",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "angular",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "typescript",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "llm",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "rag",
+        "targetLevel": 75,
+        "importance": "Core"
+      },
+      {
+        "slug": "prompt-engineering",
+        "targetLevel": 80,
+        "importance": "Core"
+      },
+      {
+        "slug": "azure",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "docker",
+        "targetLevel": 70,
+        "importance": "Important"
+      },
+      {
+        "slug": "ai-security",
+        "targetLevel": 65,
+        "importance": "Important"
+      }
     ],
     "ladder": [
-      { "stageOrder": 1, "title": "Current", "roleTitle": "Full Stack Developer", "description": "Angular and .NET delivery at senior level.", "salaryMinUsd": 110000, "salaryMaxUsd": 150000, "durationMonths": 0, "milestones": ["Senior full-stack delivery"], "isCurrentPosition": true },
-      { "stageOrder": 2, "title": "Stage 1", "roleTitle": "AI-Enabled Full Stack Engineer", "description": "Adds model integration to the stack.", "salaryMinUsd": 125000, "salaryMaxUsd": 165000, "durationMonths": 3, "milestones": ["Streaming AI feature shipped"], "isCurrentPosition": false },
-      { "stageOrder": 3, "title": "Stage 2", "roleTitle": "Full-Stack AI Engineer", "description": "Owns AI product features end to end.", "salaryMinUsd": 135000, "salaryMaxUsd": 185000, "durationMonths": 8, "milestones": ["RAG feature in production", "Cost instrumentation in place"], "isCurrentPosition": false },
-      { "stageOrder": 4, "title": "Stage 3", "roleTitle": "Senior Full-Stack AI Engineer", "description": "Leads AI product engineering.", "salaryMinUsd": 170000, "salaryMaxUsd": 225000, "durationMonths": 12, "milestones": ["Multiple AI products shipped"], "isCurrentPosition": false }
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Full Stack Developer",
+        "description": "Angular and .NET delivery at senior level.",
+        "salaryMinUsd": 110000,
+        "salaryMaxUsd": 150000,
+        "durationMonths": 0,
+        "milestones": [
+          "Senior full-stack delivery"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "AI-Enabled Full Stack Engineer",
+        "description": "Adds model integration to the stack.",
+        "salaryMinUsd": 125000,
+        "salaryMaxUsd": 165000,
+        "durationMonths": 3,
+        "milestones": [
+          "Streaming AI feature shipped"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "Full-Stack AI Engineer",
+        "description": "Owns AI product features end to end.",
+        "salaryMinUsd": 135000,
+        "salaryMaxUsd": 185000,
+        "durationMonths": 8,
+        "milestones": [
+          "RAG feature in production",
+          "Cost instrumentation in place"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Senior Full-Stack AI Engineer",
+        "description": "Leads AI product engineering.",
+        "salaryMinUsd": 170000,
+        "salaryMaxUsd": 225000,
+        "durationMonths": 12,
+        "milestones": [
+          "Multiple AI products shipped"
+        ],
+        "isCurrentPosition": false
+      }
     ],
     "readinessDimensions": [
-      { "name": "Full Stack", "weight": 0.3, "skillSlugs": ["dotnet", "angular", "typescript", "rest-api"] },
-      { "name": "LLM Engineering", "weight": 0.3, "skillSlugs": ["llm", "prompt-engineering", "ai-fundamentals"] },
-      { "name": "RAG", "weight": 0.2, "skillSlugs": ["rag", "vector-db"] },
-      { "name": "Cloud & Delivery", "weight": 0.2, "skillSlugs": ["azure", "docker", "cicd"] }
+      {
+        "name": "Full Stack",
+        "weight": 0.3,
+        "skillSlugs": [
+          "dotnet",
+          "angular",
+          "typescript",
+          "rest-api"
+        ]
+      },
+      {
+        "name": "LLM Engineering",
+        "weight": 0.3,
+        "skillSlugs": [
+          "llm",
+          "prompt-engineering",
+          "ai-fundamentals"
+        ]
+      },
+      {
+        "name": "RAG",
+        "weight": 0.2,
+        "skillSlugs": [
+          "rag",
+          "vector-db"
+        ]
+      },
+      {
+        "name": "Cloud & Delivery",
+        "weight": 0.2,
+        "skillSlugs": [
+          "azure",
+          "docker",
+          "cicd"
+        ]
+      }
     ],
-    "certifications": ["AI-102", "AZ-204", "AI-900"],
-    "projects": ["ai-chat-application", "enterprise-document-chat", "ai-invoice-processing", "ai-sql-assistant"]
+    "certifications": [
+      "AI-102",
+      "AZ-204",
+      "AI-900"
+    ],
+    "projects": [
+      "ai-chat-application",
+      "enterprise-document-chat",
+      "ai-invoice-processing",
+      "ai-sql-assistant"
+    ],
+    "category": "AI Engineering",
+    "categoryOrder": 2
   },
   {
     "rank": 12,
@@ -793,7 +2422,16 @@
     "difficulty": "Expert",
     "estimatedHours": 400,
     "isPrimaryRecommended": false,
-    "resumeKeywords": ["ROS 2", "C++", "Perception", "Motion Planning", "Sensor Fusion", "Real-time Systems", "Simulation", "Safety-Critical Software"],
+    "resumeKeywords": [
+      "ROS 2",
+      "C++",
+      "Perception",
+      "Motion Planning",
+      "Sensor Fusion",
+      "Real-time Systems",
+      "Simulation",
+      "Safety-Critical Software"
+    ],
     "responsibilities": [
       "Develop perception, planning and control software",
       "Integrate sensors and fuse their data streams",
@@ -807,28 +2445,138 @@
       "Design a fail-safe for a planning module that stops responding"
     ],
     "skills": [
-      { "slug": "robotics", "targetLevel": 90, "importance": "Core" },
-      { "slug": "python", "targetLevel": 85, "importance": "Core" },
-      { "slug": "machine-learning", "targetLevel": 80, "importance": "Core" },
-      { "slug": "ai-fundamentals", "targetLevel": 80, "importance": "Core" },
-      { "slug": "system-design", "targetLevel": 80, "importance": "Important" },
-      { "slug": "docker", "targetLevel": 70, "importance": "Important" },
-      { "slug": "iot-edge", "targetLevel": 75, "importance": "Important" }
+      {
+        "slug": "robotics",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "python",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "machine-learning",
+        "targetLevel": 80,
+        "importance": "Core"
+      },
+      {
+        "slug": "ai-fundamentals",
+        "targetLevel": 80,
+        "importance": "Core"
+      },
+      {
+        "slug": "system-design",
+        "targetLevel": 80,
+        "importance": "Important"
+      },
+      {
+        "slug": "docker",
+        "targetLevel": 70,
+        "importance": "Important"
+      },
+      {
+        "slug": "iot-edge",
+        "targetLevel": 75,
+        "importance": "Important"
+      }
     ],
     "ladder": [
-      { "stageOrder": 1, "title": "Current", "roleTitle": "Full Stack Developer", "description": "Enterprise software background; no robotics exposure.", "salaryMinUsd": 110000, "salaryMaxUsd": 150000, "durationMonths": 0, "milestones": ["Strong general software engineering"], "isCurrentPosition": true },
-      { "stageOrder": 2, "title": "Stage 1", "roleTitle": "Simulation / Tooling Engineer", "description": "Enter via tooling and simulation rather than control.", "salaryMinUsd": 125000, "salaryMaxUsd": 160000, "durationMonths": 12, "milestones": ["ROS 2 fundamentals", "Simulation harness contributed"], "isCurrentPosition": false },
-      { "stageOrder": 3, "title": "Stage 2", "roleTitle": "Robotics Software Engineer", "description": "Owns perception or planning components.", "salaryMinUsd": 140000, "salaryMaxUsd": 200000, "durationMonths": 18, "milestones": ["Production autonomy component owned"], "isCurrentPosition": false },
-      { "stageOrder": 4, "title": "Stage 3", "roleTitle": "Senior Autonomous Systems Engineer", "description": "Leads autonomy subsystems and safety cases.", "salaryMinUsd": 180000, "salaryMaxUsd": 260000, "durationMonths": 18, "milestones": ["Safety case authored and accepted"], "isCurrentPosition": false }
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Full Stack Developer",
+        "description": "Enterprise software background; no robotics exposure.",
+        "salaryMinUsd": 110000,
+        "salaryMaxUsd": 150000,
+        "durationMonths": 0,
+        "milestones": [
+          "Strong general software engineering"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "Simulation / Tooling Engineer",
+        "description": "Enter via tooling and simulation rather than control.",
+        "salaryMinUsd": 125000,
+        "salaryMaxUsd": 160000,
+        "durationMonths": 12,
+        "milestones": [
+          "ROS 2 fundamentals",
+          "Simulation harness contributed"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "Robotics Software Engineer",
+        "description": "Owns perception or planning components.",
+        "salaryMinUsd": 140000,
+        "salaryMaxUsd": 200000,
+        "durationMonths": 18,
+        "milestones": [
+          "Production autonomy component owned"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Senior Autonomous Systems Engineer",
+        "description": "Leads autonomy subsystems and safety cases.",
+        "salaryMinUsd": 180000,
+        "salaryMaxUsd": 260000,
+        "durationMonths": 18,
+        "milestones": [
+          "Safety case authored and accepted"
+        ],
+        "isCurrentPosition": false
+      }
     ],
     "readinessDimensions": [
-      { "name": "Robotics", "weight": 0.4, "skillSlugs": ["robotics"] },
-      { "name": "AI & Perception", "weight": 0.25, "skillSlugs": ["machine-learning", "ai-fundamentals"] },
-      { "name": "Systems Programming", "weight": 0.2, "skillSlugs": ["python", "system-design"] },
-      { "name": "Edge & Deployment", "weight": 0.15, "skillSlugs": ["iot-edge", "docker"] }
+      {
+        "name": "Robotics",
+        "weight": 0.4,
+        "skillSlugs": [
+          "robotics"
+        ]
+      },
+      {
+        "name": "AI & Perception",
+        "weight": 0.25,
+        "skillSlugs": [
+          "machine-learning",
+          "ai-fundamentals"
+        ]
+      },
+      {
+        "name": "Systems Programming",
+        "weight": 0.2,
+        "skillSlugs": [
+          "python",
+          "system-design"
+        ]
+      },
+      {
+        "name": "Edge & Deployment",
+        "weight": 0.15,
+        "skillSlugs": [
+          "iot-edge",
+          "docker"
+        ]
+      }
     ],
-    "certifications": ["AWS-MLA"],
-    "projects": ["ai-business-automation-agent"]
+    "certifications": [
+      "AWS-MLA"
+    ],
+    "projects": [
+      "ai-business-automation-agent"
+    ],
+    "category": "Emerging Tech",
+    "categoryOrder": 7
   },
   {
     "rank": 13,
@@ -849,7 +2597,17 @@
     "difficulty": "Advanced",
     "estimatedHours": 260,
     "isPrimaryRecommended": false,
-    "resumeKeywords": ["IoT", "Edge Computing", "Azure IoT Hub", "AWS IoT Greengrass", "MQTT", "Device Management", "Edge Inference", "Digital Twin", "Fleet Updates"],
+    "resumeKeywords": [
+      "IoT",
+      "Edge Computing",
+      "Azure IoT Hub",
+      "AWS IoT Greengrass",
+      "MQTT",
+      "Device Management",
+      "Edge Inference",
+      "Digital Twin",
+      "Fleet Updates"
+    ],
     "responsibilities": [
       "Architect device fleet management, provisioning and secure updates",
       "Design edge-to-cloud data flow under intermittent connectivity",
@@ -863,29 +2621,1466 @@
       "How do you roll out firmware safely to a global fleet?"
     ],
     "skills": [
-      { "slug": "iot-edge", "targetLevel": 90, "importance": "Core" },
-      { "slug": "architecture", "targetLevel": 88, "importance": "Core" },
-      { "slug": "azure", "targetLevel": 85, "importance": "Core" },
-      { "slug": "aws", "targetLevel": 75, "importance": "Important" },
-      { "slug": "messaging", "targetLevel": 85, "importance": "Core" },
-      { "slug": "security", "targetLevel": 82, "importance": "Core" },
-      { "slug": "docker", "targetLevel": 78, "importance": "Important" },
-      { "slug": "data-engineering", "targetLevel": 72, "importance": "Important" },
-      { "slug": "machine-learning", "targetLevel": 60, "importance": "Important" }
+      {
+        "slug": "iot-edge",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "architecture",
+        "targetLevel": 88,
+        "importance": "Core"
+      },
+      {
+        "slug": "azure",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "aws",
+        "targetLevel": 75,
+        "importance": "Important"
+      },
+      {
+        "slug": "messaging",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "security",
+        "targetLevel": 82,
+        "importance": "Core"
+      },
+      {
+        "slug": "docker",
+        "targetLevel": 78,
+        "importance": "Important"
+      },
+      {
+        "slug": "data-engineering",
+        "targetLevel": 72,
+        "importance": "Important"
+      },
+      {
+        "slug": "machine-learning",
+        "targetLevel": 60,
+        "importance": "Important"
+      }
     ],
     "ladder": [
-      { "stageOrder": 1, "title": "Current", "roleTitle": "Full Stack Developer", "description": "Cloud application experience without device fleets.", "salaryMinUsd": 110000, "salaryMaxUsd": 150000, "durationMonths": 0, "milestones": ["Cloud and integration background"], "isCurrentPosition": true },
-      { "stageOrder": 2, "title": "Stage 1", "roleTitle": "IoT Engineer", "description": "Builds device connectivity and telemetry pipelines.", "salaryMinUsd": 125000, "salaryMaxUsd": 160000, "durationMonths": 8, "milestones": ["IoT Hub telemetry pipeline delivered"], "isCurrentPosition": false },
-      { "stageOrder": 3, "title": "Stage 2", "roleTitle": "Senior IoT / Edge Engineer", "description": "Owns fleet management and edge workloads.", "salaryMinUsd": 145000, "salaryMaxUsd": 185000, "durationMonths": 12, "milestones": ["Secure OTA update pipeline shipped", "Edge inference deployed"], "isCurrentPosition": false },
-      { "stageOrder": 4, "title": "Stage 3", "roleTitle": "IoT / Edge Computing Architect", "description": "Owns edge architecture across the estate.", "salaryMinUsd": 175000, "salaryMaxUsd": 240000, "durationMonths": 12, "milestones": ["Fleet architecture adopted at scale"], "isCurrentPosition": false }
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Full Stack Developer",
+        "description": "Cloud application experience without device fleets.",
+        "salaryMinUsd": 110000,
+        "salaryMaxUsd": 150000,
+        "durationMonths": 0,
+        "milestones": [
+          "Cloud and integration background"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "IoT Engineer",
+        "description": "Builds device connectivity and telemetry pipelines.",
+        "salaryMinUsd": 125000,
+        "salaryMaxUsd": 160000,
+        "durationMonths": 8,
+        "milestones": [
+          "IoT Hub telemetry pipeline delivered"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "Senior IoT / Edge Engineer",
+        "description": "Owns fleet management and edge workloads.",
+        "salaryMinUsd": 145000,
+        "salaryMaxUsd": 185000,
+        "durationMonths": 12,
+        "milestones": [
+          "Secure OTA update pipeline shipped",
+          "Edge inference deployed"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "IoT / Edge Computing Architect",
+        "description": "Owns edge architecture across the estate.",
+        "salaryMinUsd": 175000,
+        "salaryMaxUsd": 240000,
+        "durationMonths": 12,
+        "milestones": [
+          "Fleet architecture adopted at scale"
+        ],
+        "isCurrentPosition": false
+      }
     ],
     "readinessDimensions": [
-      { "name": "IoT & Edge", "weight": 0.35, "skillSlugs": ["iot-edge"] },
-      { "name": "Architecture", "weight": 0.25, "skillSlugs": ["architecture", "system-design", "event-driven"] },
-      { "name": "Cloud", "weight": 0.2, "skillSlugs": ["azure", "aws", "messaging"] },
-      { "name": "Security", "weight": 0.2, "skillSlugs": ["security", "identity"] }
+      {
+        "name": "IoT & Edge",
+        "weight": 0.35,
+        "skillSlugs": [
+          "iot-edge"
+        ]
+      },
+      {
+        "name": "Architecture",
+        "weight": 0.25,
+        "skillSlugs": [
+          "architecture",
+          "system-design",
+          "event-driven"
+        ]
+      },
+      {
+        "name": "Cloud",
+        "weight": 0.2,
+        "skillSlugs": [
+          "azure",
+          "aws",
+          "messaging"
+        ]
+      },
+      {
+        "name": "Security",
+        "weight": 0.2,
+        "skillSlugs": [
+          "security",
+          "identity"
+        ]
+      }
     ],
-    "certifications": ["AZ-305", "AWS-SAA", "AZ-500"],
-    "projects": ["ai-business-automation-agent", "capstone-ai-solutions-architect"]
+    "certifications": [
+      "AZ-305",
+      "AWS-SAA",
+      "AZ-500"
+    ],
+    "projects": [
+      "ai-business-automation-agent",
+      "capstone-ai-solutions-architect"
+    ],
+    "category": "Emerging Tech",
+    "categoryOrder": 7
+  },
+  {
+    "rank": 14,
+    "title": "Forward Deployed Engineer",
+    "slug": "forward-deployed-engineer",
+    "summary": "Sits inside the customer's business and makes the product actually work there: runs discovery, builds the integration nobody scoped, prototypes in front of the user, and carries what it learns back to the core product team. Half engineer, half consultant, judged on whether the customer's workflow changed.",
+    "category": "Field & Leadership",
+    "categoryOrder": 6,
+    "salaryMinUsd": 165000,
+    "salaryMaxUsd": 235000,
+    "seniorSalaryMinUsd": 215000,
+    "seniorSalaryMaxUsd": 300000,
+    "twoHundredKPotential": "Reachable, and faster than most engineering ladders, because the role is revenue-adjacent and the supply of engineers who will sit with a customer is small. The premium is paid for the consulting half, not the coding half — which is exactly the half most engineers skip.",
+    "salaryAsOf": "2026-09-01",
+    "salarySource": "Aggregated public US ranges (Levels.fyi, Glassdoor, Indeed, Dice). Estimates only — update via Admin.",
+    "demandOutlook": "Explosive",
+    "demandNotes": "Every AI product company has discovered the same thing: the software works in the demo and stalls in the customer's environment. FDE is the role invented to close that gap, and hiring for it is now standard at AI platform vendors, data platform companies and enterprise consultancies.",
+    "aiReplacementRisk": "VeryLow",
+    "aiRiskNotes": "The hard parts are sitting in a room with a sceptical operations lead, working out what they actually do all day, and deciding which of their five stated problems is the real one. Models make the building faster and leave the judgement, the trust and the accountability exactly where they were.",
+    "difficulty": "Advanced",
+    "estimatedHours": 240,
+    "isPrimaryRecommended": false,
+    "resumeKeywords": [
+      "Forward Deployed Engineering",
+      "Customer Discovery",
+      "Solution Architecture",
+      "Systems Integration",
+      "Rapid Prototyping",
+      "Python",
+      "FastAPI",
+      "REST API Integration",
+      "Retrieval Augmented Generation (RAG)",
+      "LLM Integration",
+      "Data Pipelines",
+      "Stakeholder Management",
+      "Technical Pre-Sales",
+      "Proof of Concept Delivery",
+      "Docker",
+      "SQL",
+      "Requirements Elicitation",
+      "Change Management"
+    ],
+    "responsibilities": [
+      "Run discovery with the customer's operators, not only their executives, and write down what the workflow actually is",
+      "Turn an ambiguous business problem into a scoped deliverable with a success measure both sides agree on",
+      "Build the integration into systems you do not control and cannot change",
+      "Prototype in front of the user and iterate inside the same session where possible",
+      "Own the deployment into the customer's environment, including its security and data-handling constraints",
+      "Train the customer's own people so the solution outlives your engagement",
+      "Feed recurring customer problems back to the product team as product requirements, with evidence",
+      "Know when to say a request is out of scope, and say it early rather than at the deadline"
+    ],
+    "interviewFocus": [
+      "Walk me through a deployment that went badly. What did you miss during discovery?",
+      "The customer says they need X. After two days you believe they need Y. What do you do?",
+      "How do you integrate against a source system whose owner will not change anything for you?",
+      "Design a proof of concept you can demo in one week and still extend into production",
+      "How do you handle customer data you are not allowed to copy into your own environment?",
+      "The executive sponsor loves it and the people who must use it daily do not. What now?",
+      "What do you feed back to the product team, and how do you make it land?"
+    ],
+    "skills": [
+      {
+        "slug": "discovery",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "communication",
+        "targetLevel": 90,
+        "importance": "Core"
+      },
+      {
+        "slug": "integration",
+        "targetLevel": 88,
+        "importance": "Core"
+      },
+      {
+        "slug": "prototyping",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "python",
+        "targetLevel": 80,
+        "importance": "Core"
+      },
+      {
+        "slug": "rest-api",
+        "targetLevel": 85,
+        "importance": "Core"
+      },
+      {
+        "slug": "sql",
+        "targetLevel": 78,
+        "importance": "Core"
+      },
+      {
+        "slug": "llm",
+        "targetLevel": 75,
+        "importance": "Core"
+      },
+      {
+        "slug": "rag",
+        "targetLevel": 72,
+        "importance": "Important"
+      },
+      {
+        "slug": "docker",
+        "targetLevel": 70,
+        "importance": "Important"
+      },
+      {
+        "slug": "security",
+        "targetLevel": 65,
+        "importance": "Important"
+      },
+      {
+        "slug": "observability",
+        "targetLevel": 65,
+        "importance": "Important"
+      },
+      {
+        "slug": "testing",
+        "targetLevel": 70,
+        "importance": "Important"
+      },
+      {
+        "slug": "leadership",
+        "targetLevel": 70,
+        "importance": "Important"
+      },
+      {
+        "slug": "architecture",
+        "targetLevel": 70,
+        "importance": "NiceToHave"
+      }
+    ],
+    "ladder": [
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Full Stack / Enterprise Developer",
+        "description": "Strong build skills, limited direct customer exposure.",
+        "salaryMinUsd": 110000,
+        "salaryMaxUsd": 150000,
+        "durationMonths": 0,
+        "milestones": [
+          "Ships production software",
+          "Comfortable integrating third-party systems"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "Implementation / Solutions Engineer",
+        "description": "Delivers configured solutions with a customer in the room.",
+        "salaryMinUsd": 130000,
+        "salaryMaxUsd": 170000,
+        "durationMonths": 5,
+        "milestones": [
+          "First customer-facing deployment delivered",
+          "Discovery notes that changed the scope"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "Forward Deployed Engineer",
+        "description": "Owns an account end to end: discovery, build, deploy, handover.",
+        "salaryMinUsd": 165000,
+        "salaryMaxUsd": 235000,
+        "durationMonths": 10,
+        "milestones": [
+          "Production deployment inside a customer environment",
+          "A product change shipped from your field evidence"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Senior / Lead Forward Deployed Engineer",
+        "description": "Runs multiple accounts and sets the deployment playbook others follow.",
+        "salaryMinUsd": 215000,
+        "salaryMaxUsd": 300000,
+        "durationMonths": 18,
+        "milestones": [
+          "Reference customer willing to be named",
+          "Playbook adopted across the field team"
+        ],
+        "isCurrentPosition": false
+      }
+    ],
+    "readinessDimensions": [
+      {
+        "name": "Discovery & Communication",
+        "weight": 0.24,
+        "skillSlugs": [
+          "discovery",
+          "communication",
+          "leadership"
+        ]
+      },
+      {
+        "name": "Integration",
+        "weight": 0.22,
+        "skillSlugs": [
+          "integration",
+          "rest-api",
+          "sql"
+        ]
+      },
+      {
+        "name": "Build & Prototype",
+        "weight": 0.2,
+        "skillSlugs": [
+          "python",
+          "prototyping",
+          "testing"
+        ]
+      },
+      {
+        "name": "Applied AI",
+        "weight": 0.16,
+        "skillSlugs": [
+          "llm",
+          "rag",
+          "prompt-engineering"
+        ]
+      },
+      {
+        "name": "Deployment",
+        "weight": 0.1,
+        "skillSlugs": [
+          "docker",
+          "observability"
+        ]
+      },
+      {
+        "name": "Security & Data Handling",
+        "weight": 0.08,
+        "skillSlugs": [
+          "security",
+          "identity"
+        ]
+      }
+    ],
+    "certifications": [
+      "AZ-900",
+      "AI-900",
+      "AWS-CCP"
+    ],
+    "projects": [
+      "enterprise-renewal-copilot",
+      "field-integration-harness",
+      "ai-chat-application"
+    ]
+  },
+  {
+    "rank": 15,
+    "title": "C# / .NET Developer",
+    "slug": "csharp-dotnet-developer",
+    "summary": "The entry route into the Microsoft stack: C# as a language you actually understand, object-oriented design, ASP.NET Core web APIs and EF Core against a real database. Written for someone starting from little or no professional code.",
+    "category": "Foundations",
+    "categoryOrder": 1,
+    "salaryMinUsd": 70000,
+    "salaryMaxUsd": 105000,
+    "seniorSalaryMinUsd": 110000,
+    "seniorSalaryMaxUsd": 150000,
+    "twoHundredKPotential": "Not from this path on its own, and anyone telling you otherwise is selling something. This path is about becoming employable and genuinely useful. The senior and architect tracks on this platform are where the higher bands live, and they assume the ground this course covers.",
+    "salaryAsOf": "2026-09-01",
+    "salarySource": "Aggregated public US entry-level ranges (Glassdoor, Indeed, Levels.fyi, BLS occupational data). Estimates only — update via Admin.",
+    "demandOutlook": "Strong",
+    "demandNotes": "Enterprise .NET is deeply embedded in finance, healthcare, insurance and government, and those systems are maintained and extended for decades. The demand is steady rather than fashionable, which is a feature when you are looking for a first job.",
+    "aiReplacementRisk": "Moderate",
+    "aiRiskNotes": "Be clear-eyed: routine CRUD and boilerplate — which is most of what a junior was once hired to write — is exactly what models are now good at. The junior roles that survive belong to people who can read an unfamiliar codebase, debug something the model got wrong, and explain a trade-off. This path is built around those three.",
+    "difficulty": "Foundational",
+    "estimatedHours": 110,
+    "isPrimaryRecommended": false,
+    "resumeKeywords": [
+      "C#",
+      ".NET 8",
+      "ASP.NET Core",
+      "Entity Framework Core",
+      "REST API",
+      "LINQ",
+      "Object-Oriented Programming",
+      "SOLID Principles",
+      "Dependency Injection",
+      "xUnit",
+      "Unit Testing",
+      "SQL Server",
+      "Git",
+      "Visual Studio",
+      "JSON",
+      "Async / Await"
+    ],
+    "responsibilities": [
+      "Write and maintain C# code that other people on the team can read",
+      "Build and consume REST endpoints in ASP.NET Core",
+      "Query and update a relational database through EF Core without generating accidental N+1 queries",
+      "Write unit tests alongside the code rather than after it",
+      "Debug a failure by reading the stack trace and the logs rather than guessing",
+      "Work in Git with branches, meaningful commits and code review"
+    ],
+    "interviewFocus": [
+      "Explain the difference between a class and a struct, and when the distinction matters",
+      "What does async/await actually do, and what happens if you block on an async call?",
+      "Walk me through dependency injection: what problem is it solving?",
+      "Given this slow EF Core query, how would you find out why?",
+      "What is the difference between IEnumerable and IQueryable?",
+      "How would you test a class that talks to a database?"
+    ],
+    "skills": [
+      {
+        "slug": "csharp",
+        "targetLevel": 70,
+        "importance": "Core"
+      },
+      {
+        "slug": "oop",
+        "targetLevel": 70,
+        "importance": "Core"
+      },
+      {
+        "slug": "dotnet",
+        "targetLevel": 65,
+        "importance": "Core"
+      },
+      {
+        "slug": "rest-api",
+        "targetLevel": 60,
+        "importance": "Core"
+      },
+      {
+        "slug": "sql",
+        "targetLevel": 55,
+        "importance": "Core"
+      },
+      {
+        "slug": "testing",
+        "targetLevel": 55,
+        "importance": "Core"
+      },
+      {
+        "slug": "git",
+        "targetLevel": 60,
+        "importance": "Core"
+      },
+      {
+        "slug": "database-design",
+        "targetLevel": 50,
+        "importance": "Important"
+      },
+      {
+        "slug": "architecture",
+        "targetLevel": 35,
+        "importance": "Important"
+      },
+      {
+        "slug": "communication",
+        "targetLevel": 50,
+        "importance": "Important"
+      },
+      {
+        "slug": "linux",
+        "targetLevel": 30,
+        "importance": "NiceToHave"
+      }
+    ],
+    "ladder": [
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Career changer / student",
+        "description": "Starting out or changing track. No professional output in this stack yet.",
+        "salaryMinUsd": 0,
+        "salaryMaxUsd": 0,
+        "durationMonths": 0,
+        "milestones": [
+          "Committed to a study schedule you can actually keep"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "Junior .NET Developer",
+        "description": "Ships small features under review.",
+        "salaryMinUsd": 70000,
+        "salaryMaxUsd": 90000,
+        "durationMonths": 8,
+        "milestones": [
+          "Portfolio API deployed and public",
+          "First code review survived"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": ".NET Developer",
+        "description": "Owns features end to end.",
+        "salaryMinUsd": 90000,
+        "salaryMaxUsd": 120000,
+        "durationMonths": 20,
+        "milestones": [
+          "Owns a service or module",
+          "Writes the tests without being asked"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Senior .NET Developer",
+        "description": "Sets the shape of the codebase and mentors.",
+        "salaryMinUsd": 120000,
+        "salaryMaxUsd": 150000,
+        "durationMonths": 36,
+        "milestones": [
+          "Leads a delivery",
+          "Mentors a junior through their first quarter"
+        ],
+        "isCurrentPosition": false
+      }
+    ],
+    "readinessDimensions": [
+      {
+        "name": "Language",
+        "weight": 0.3,
+        "skillSlugs": [
+          "csharp",
+          "oop"
+        ]
+      },
+      {
+        "name": "Web & APIs",
+        "weight": 0.24,
+        "skillSlugs": [
+          "dotnet",
+          "rest-api"
+        ]
+      },
+      {
+        "name": "Data",
+        "weight": 0.2,
+        "skillSlugs": [
+          "sql",
+          "database-design"
+        ]
+      },
+      {
+        "name": "Engineering Craft",
+        "weight": 0.18,
+        "skillSlugs": [
+          "testing",
+          "git"
+        ]
+      },
+      {
+        "name": "Communication",
+        "weight": 0.08,
+        "skillSlugs": [
+          "communication"
+        ]
+      }
+    ],
+    "certifications": [
+      "AZ-900",
+      "AZ-204"
+    ],
+    "projects": [
+      "console-task-tracker-csharp",
+      "library-rest-api-dotnet",
+      "retail-database-design"
+    ]
+  },
+  {
+    "rank": 16,
+    "title": "Java Developer",
+    "slug": "java-developer",
+    "summary": "The entry route into the Java ecosystem: the language, object-oriented design, collections and generics, then Spring Boot and JPA against a real database. The same engineering concepts as the .NET path, in the stack most large enterprises outside Microsoft shops run on.",
+    "category": "Foundations",
+    "categoryOrder": 1,
+    "salaryMinUsd": 72000,
+    "salaryMaxUsd": 110000,
+    "seniorSalaryMinUsd": 115000,
+    "seniorSalaryMaxUsd": 155000,
+    "twoHundredKPotential": "Not from this path on its own, and anyone telling you otherwise is selling something. This path is about becoming employable and genuinely useful. The senior and architect tracks on this platform are where the higher bands live, and they assume the ground this course covers.",
+    "salaryAsOf": "2026-09-01",
+    "salarySource": "Aggregated public US entry-level ranges (Glassdoor, Indeed, Levels.fyi, BLS occupational data). Estimates only — update via Admin.",
+    "demandOutlook": "Strong",
+    "demandNotes": "Java runs an enormous amount of banking, telecoms, retail and public-sector software, and the Indian services and GCC market in particular hires Java at volume. Spring Boot is the single most common backend job requirement in that market.",
+    "aiReplacementRisk": "Moderate",
+    "aiRiskNotes": "Same honest answer as the .NET path. Generated code handles the boilerplate that Java has historically been full of. What it does not handle is a production incident in a service you did not write, or a concurrency bug that appears once a week. Aim at those.",
+    "difficulty": "Foundational",
+    "estimatedHours": 110,
+    "isPrimaryRecommended": false,
+    "resumeKeywords": [
+      "Java 21",
+      "Spring Boot",
+      "Spring Data JPA",
+      "Hibernate",
+      "REST API",
+      "Maven",
+      "Gradle",
+      "JUnit 5",
+      "Object-Oriented Programming",
+      "SOLID Principles",
+      "Collections Framework",
+      "Streams API",
+      "Concurrency",
+      "PostgreSQL",
+      "Git",
+      "IntelliJ IDEA"
+    ],
+    "responsibilities": [
+      "Write idiomatic Java using the collections and streams APIs rather than reinventing them",
+      "Build REST services with Spring Boot and its dependency injection",
+      "Map and query relational data through Spring Data JPA, and know when the ORM is hurting you",
+      "Write JUnit tests, including at least one that starts the real application context",
+      "Reason about thread safety when more than one request touches the same state",
+      "Work in Git and in a Maven or Gradle build others can run"
+    ],
+    "interviewFocus": [
+      "Explain the difference between an interface and an abstract class in Java, with a case for each",
+      "What is the contract between equals and hashCode, and what breaks if you violate it?",
+      "Walk me through what Spring does at startup to wire your beans together",
+      "What is the N+1 problem in JPA and how do you detect it?",
+      "Checked versus unchecked exceptions: what do you actually do in a service layer?",
+      "How would you make a counter safe under concurrent access, and what are the options?"
+    ],
+    "skills": [
+      {
+        "slug": "java",
+        "targetLevel": 70,
+        "importance": "Core"
+      },
+      {
+        "slug": "oop",
+        "targetLevel": 70,
+        "importance": "Core"
+      },
+      {
+        "slug": "spring-boot",
+        "targetLevel": 65,
+        "importance": "Core"
+      },
+      {
+        "slug": "rest-api",
+        "targetLevel": 60,
+        "importance": "Core"
+      },
+      {
+        "slug": "sql",
+        "targetLevel": 55,
+        "importance": "Core"
+      },
+      {
+        "slug": "testing",
+        "targetLevel": 55,
+        "importance": "Core"
+      },
+      {
+        "slug": "git",
+        "targetLevel": 60,
+        "importance": "Core"
+      },
+      {
+        "slug": "database-design",
+        "targetLevel": 50,
+        "importance": "Important"
+      },
+      {
+        "slug": "architecture",
+        "targetLevel": 35,
+        "importance": "Important"
+      },
+      {
+        "slug": "communication",
+        "targetLevel": 50,
+        "importance": "Important"
+      },
+      {
+        "slug": "linux",
+        "targetLevel": 35,
+        "importance": "NiceToHave"
+      }
+    ],
+    "ladder": [
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Career changer / student",
+        "description": "Starting out or changing track. No professional output in this stack yet.",
+        "salaryMinUsd": 0,
+        "salaryMaxUsd": 0,
+        "durationMonths": 0,
+        "milestones": [
+          "Committed to a study schedule you can actually keep"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "Junior Java Developer",
+        "description": "Ships small features under review.",
+        "salaryMinUsd": 72000,
+        "salaryMaxUsd": 92000,
+        "durationMonths": 8,
+        "milestones": [
+          "Spring Boot service deployed and public",
+          "First code review survived"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "Java Developer",
+        "description": "Owns services end to end.",
+        "salaryMinUsd": 92000,
+        "salaryMaxUsd": 125000,
+        "durationMonths": 20,
+        "milestones": [
+          "Owns a microservice in production",
+          "Debugs other people's code confidently"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Senior Java Developer",
+        "description": "Sets standards and mentors.",
+        "salaryMinUsd": 125000,
+        "salaryMaxUsd": 155000,
+        "durationMonths": 36,
+        "milestones": [
+          "Leads a delivery",
+          "Owns the service's production health"
+        ],
+        "isCurrentPosition": false
+      }
+    ],
+    "readinessDimensions": [
+      {
+        "name": "Language",
+        "weight": 0.3,
+        "skillSlugs": [
+          "java",
+          "oop"
+        ]
+      },
+      {
+        "name": "Spring & APIs",
+        "weight": 0.24,
+        "skillSlugs": [
+          "spring-boot",
+          "rest-api"
+        ]
+      },
+      {
+        "name": "Data",
+        "weight": 0.2,
+        "skillSlugs": [
+          "sql",
+          "database-design"
+        ]
+      },
+      {
+        "name": "Engineering Craft",
+        "weight": 0.18,
+        "skillSlugs": [
+          "testing",
+          "git"
+        ]
+      },
+      {
+        "name": "Communication",
+        "weight": 0.08,
+        "skillSlugs": [
+          "communication"
+        ]
+      }
+    ],
+    "certifications": [
+      "OCA-JAVA",
+      "AWS-CCP"
+    ],
+    "projects": [
+      "inventory-service-java",
+      "retail-database-design"
+    ]
+  },
+  {
+    "rank": 17,
+    "title": "SQL & Database Developer",
+    "slug": "sql-database-developer",
+    "summary": "Relational thinking from the ground up: modelling a business into tables, writing SQL that is correct before it is clever, reading an execution plan, and knowing when a document store is the better answer. The most transferable skill on this list — every other path assumes it.",
+    "category": "Foundations",
+    "categoryOrder": 1,
+    "salaryMinUsd": 68000,
+    "salaryMaxUsd": 100000,
+    "seniorSalaryMinUsd": 105000,
+    "seniorSalaryMaxUsd": 145000,
+    "twoHundredKPotential": "Not from this path on its own, and anyone telling you otherwise is selling something. This path is about becoming employable and genuinely useful. The senior and architect tracks on this platform are where the higher bands live, and they assume the ground this course covers.",
+    "salaryAsOf": "2026-09-01",
+    "salarySource": "Aggregated public US entry-level ranges (Glassdoor, Indeed, Levels.fyi, BLS occupational data). Estimates only — update via Admin.",
+    "demandOutlook": "Strong",
+    "demandNotes": "Data volumes keep growing and the number of people who can genuinely tune a query does not. This also feeds directly into the Data Architect and Data Engineering tracks, which pay considerably more.",
+    "aiReplacementRisk": "Moderate",
+    "aiRiskNotes": "Models write passable SQL for well-described problems. They do not know your data distribution, your index strategy or which of two correct queries will take down production at month end. Schema design and performance work stay human because they depend on facts about your system that are not in the prompt.",
+    "difficulty": "Foundational",
+    "estimatedHours": 90,
+    "isPrimaryRecommended": false,
+    "resumeKeywords": [
+      "SQL",
+      "T-SQL",
+      "PostgreSQL",
+      "SQL Server",
+      "Database Design",
+      "Normalisation",
+      "Indexing",
+      "Query Optimisation",
+      "Execution Plans",
+      "Stored Procedures",
+      "Joins",
+      "Window Functions",
+      "Transactions",
+      "ACID",
+      "MongoDB",
+      "Data Modelling",
+      "ETL"
+    ],
+    "responsibilities": [
+      "Turn a written business description into a normalised schema with defensible keys",
+      "Write correct SQL across joins, grouping and window functions",
+      "Enforce integrity with constraints instead of hoping the application does it",
+      "Read an execution plan and act on what it says rather than adding indexes by instinct",
+      "Choose isolation levels deliberately and know what each one lets through",
+      "Judge when a document or key-value store fits better than a relational one"
+    ],
+    "interviewFocus": [
+      "Normalise this order form into tables and defend each key",
+      "What is the difference between a clustered and a non-clustered index?",
+      "This query is slow. Walk me through how you find out why",
+      "Explain a dirty read, a non-repeatable read and a phantom read, and which isolation level stops each",
+      "When would you deliberately denormalise, and what does it cost you?",
+      "When is a document store the right answer, and when is it just avoiding schema design?"
+    ],
+    "skills": [
+      {
+        "slug": "sql",
+        "targetLevel": 75,
+        "importance": "Core"
+      },
+      {
+        "slug": "database-design",
+        "targetLevel": 72,
+        "importance": "Core"
+      },
+      {
+        "slug": "data-governance",
+        "targetLevel": 55,
+        "importance": "Core"
+      },
+      {
+        "slug": "nosql",
+        "targetLevel": 50,
+        "importance": "Important"
+      },
+      {
+        "slug": "data-engineering",
+        "targetLevel": 45,
+        "importance": "Important"
+      },
+      {
+        "slug": "git",
+        "targetLevel": 50,
+        "importance": "Important"
+      },
+      {
+        "slug": "csharp",
+        "targetLevel": 30,
+        "importance": "NiceToHave"
+      },
+      {
+        "slug": "python",
+        "targetLevel": 35,
+        "importance": "NiceToHave"
+      },
+      {
+        "slug": "communication",
+        "targetLevel": 50,
+        "importance": "Important"
+      }
+    ],
+    "ladder": [
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Career changer / student",
+        "description": "Starting out or changing track. No professional output in this stack yet.",
+        "salaryMinUsd": 0,
+        "salaryMaxUsd": 0,
+        "durationMonths": 0,
+        "milestones": [
+          "Committed to a study schedule you can actually keep"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "Junior Database Developer",
+        "description": "Writes reports and maintains schemas.",
+        "salaryMinUsd": 68000,
+        "salaryMaxUsd": 88000,
+        "durationMonths": 8,
+        "milestones": [
+          "Normalised schema in a public portfolio",
+          "Tuned a query with evidence"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "Database Developer",
+        "description": "Owns schema changes and performance.",
+        "salaryMinUsd": 88000,
+        "salaryMaxUsd": 115000,
+        "durationMonths": 20,
+        "milestones": [
+          "Owns a production schema",
+          "Runs the index strategy"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Senior Database / Data Engineer",
+        "description": "Owns the data platform and its standards.",
+        "salaryMinUsd": 115000,
+        "salaryMaxUsd": 145000,
+        "durationMonths": 36,
+        "milestones": [
+          "Designs for volume",
+          "Sets modelling standards across teams"
+        ],
+        "isCurrentPosition": false
+      }
+    ],
+    "readinessDimensions": [
+      {
+        "name": "SQL",
+        "weight": 0.34,
+        "skillSlugs": [
+          "sql"
+        ]
+      },
+      {
+        "name": "Modelling",
+        "weight": 0.28,
+        "skillSlugs": [
+          "database-design",
+          "data-governance"
+        ]
+      },
+      {
+        "name": "Performance",
+        "weight": 0.18,
+        "skillSlugs": [
+          "sql",
+          "data-engineering"
+        ]
+      },
+      {
+        "name": "Beyond SQL",
+        "weight": 0.12,
+        "skillSlugs": [
+          "nosql"
+        ]
+      },
+      {
+        "name": "Communication",
+        "weight": 0.08,
+        "skillSlugs": [
+          "communication"
+        ]
+      }
+    ],
+    "certifications": [
+      "DP-900",
+      "AZ-900"
+    ],
+    "projects": [
+      "retail-database-design",
+      "library-rest-api-dotnet"
+    ]
+  },
+  {
+    "rank": 18,
+    "title": "Python Developer",
+    "slug": "python-developer",
+    "summary": "Python from first principles through to a tested command-line tool and a small web API — plus the surrounding practice (virtual environments, dependencies, packaging) that tutorials skip. The shortest route from here into the AI and data tracks.",
+    "category": "Foundations",
+    "categoryOrder": 1,
+    "salaryMinUsd": 70000,
+    "salaryMaxUsd": 108000,
+    "seniorSalaryMinUsd": 115000,
+    "seniorSalaryMaxUsd": 155000,
+    "twoHundredKPotential": "Not from this path on its own, and anyone telling you otherwise is selling something. This path is about becoming employable and genuinely useful. The senior and architect tracks on this platform are where the higher bands live, and they assume the ground this course covers.",
+    "salaryAsOf": "2026-09-01",
+    "salarySource": "Aggregated public US entry-level ranges (Glassdoor, Indeed, Levels.fyi, BLS occupational data). Estimates only — update via Admin.",
+    "demandOutlook": "VeryStrong",
+    "demandNotes": "Python is the default language of data work, automation and the entire AI toolchain. Its ceiling as a standalone skill is modest; its value as the entry point to better-paid data and AI work is high, and that is the honest reason to learn it.",
+    "aiReplacementRisk": "Moderate",
+    "aiRiskNotes": "Short Python scripts are the single thing code models write best, so “I can write a script” is no longer a job. “I can build a tool that survives bad input, is tested, and someone else can install and run” still is. This path is built around that difference.",
+    "difficulty": "Foundational",
+    "estimatedHours": 95,
+    "isPrimaryRecommended": false,
+    "resumeKeywords": [
+      "Python 3",
+      "FastAPI",
+      "pytest",
+      "Virtual Environments",
+      "pip",
+      "Type Hints",
+      "Generators",
+      "Comprehensions",
+      "REST API",
+      "JSON",
+      "pandas",
+      "Automation",
+      "CLI Tools",
+      "Git",
+      "Requests",
+      "SQLAlchemy"
+    ],
+    "responsibilities": [
+      "Write readable Python that uses the standard library rather than reaching for a package first",
+      "Build command-line tools and small web APIs that other people can install and run",
+      "Handle malformed input and failure explicitly instead of letting exceptions escape",
+      "Manage dependencies and virtual environments so the project is reproducible",
+      "Write pytest tests, including for the failure paths",
+      "Use type hints to make the intent of a function readable without running it"
+    ],
+    "interviewFocus": [
+      "What is the difference between a list and a generator, and when does it matter?",
+      "Explain mutable default arguments and why they bite people",
+      "What does a virtual environment actually do?",
+      "How would you process a file larger than available memory?",
+      "What is the GIL and when should you care about it?",
+      "Show me how you would test a function that calls an external API"
+    ],
+    "skills": [
+      {
+        "slug": "python",
+        "targetLevel": 72,
+        "importance": "Core"
+      },
+      {
+        "slug": "testing",
+        "targetLevel": 58,
+        "importance": "Core"
+      },
+      {
+        "slug": "rest-api",
+        "targetLevel": 55,
+        "importance": "Core"
+      },
+      {
+        "slug": "git",
+        "targetLevel": 60,
+        "importance": "Core"
+      },
+      {
+        "slug": "sql",
+        "targetLevel": 50,
+        "importance": "Important"
+      },
+      {
+        "slug": "linux",
+        "targetLevel": 50,
+        "importance": "Important"
+      },
+      {
+        "slug": "oop",
+        "targetLevel": 55,
+        "importance": "Important"
+      },
+      {
+        "slug": "ai-fundamentals",
+        "targetLevel": 35,
+        "importance": "NiceToHave"
+      },
+      {
+        "slug": "communication",
+        "targetLevel": 50,
+        "importance": "Important"
+      }
+    ],
+    "ladder": [
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Career changer / student",
+        "description": "Starting out or changing track. No professional output in this stack yet.",
+        "salaryMinUsd": 0,
+        "salaryMaxUsd": 0,
+        "durationMonths": 0,
+        "milestones": [
+          "Committed to a study schedule you can actually keep"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "Junior Python Developer",
+        "description": "Automation and small services under review.",
+        "salaryMinUsd": 70000,
+        "salaryMaxUsd": 90000,
+        "durationMonths": 8,
+        "milestones": [
+          "Installable CLI tool published",
+          "Tests covering the failure paths"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "Python Developer",
+        "description": "Owns services and pipelines.",
+        "salaryMinUsd": 90000,
+        "salaryMaxUsd": 122000,
+        "durationMonths": 20,
+        "milestones": [
+          "Owns a production service",
+          "Pipeline running on a schedule"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Senior Python / Data Engineer",
+        "description": "Owns platform-level Python work.",
+        "salaryMinUsd": 122000,
+        "salaryMaxUsd": 155000,
+        "durationMonths": 36,
+        "milestones": [
+          "Sets the team's Python standards",
+          "Mentors juniors"
+        ],
+        "isCurrentPosition": false
+      }
+    ],
+    "readinessDimensions": [
+      {
+        "name": "Language",
+        "weight": 0.32,
+        "skillSlugs": [
+          "python",
+          "oop"
+        ]
+      },
+      {
+        "name": "Tooling & Craft",
+        "weight": 0.24,
+        "skillSlugs": [
+          "testing",
+          "git",
+          "linux"
+        ]
+      },
+      {
+        "name": "APIs & Services",
+        "weight": 0.2,
+        "skillSlugs": [
+          "rest-api"
+        ]
+      },
+      {
+        "name": "Data",
+        "weight": 0.16,
+        "skillSlugs": [
+          "sql"
+        ]
+      },
+      {
+        "name": "Communication",
+        "weight": 0.08,
+        "skillSlugs": [
+          "communication"
+        ]
+      }
+    ],
+    "certifications": [
+      "PCEP",
+      "AI-900"
+    ],
+    "projects": [
+      "log-analyzer-python",
+      "field-integration-harness"
+    ]
+  },
+  {
+    "rank": 19,
+    "title": "Front-End Web Developer",
+    "slug": "frontend-web-developer",
+    "summary": "HTML, CSS, JavaScript and TypeScript learned properly before a framework hides them: layout, the DOM, async data, types and accessibility. The prerequisite for the Angular and full-stack work the senior tracks assume.",
+    "category": "Foundations",
+    "categoryOrder": 1,
+    "salaryMinUsd": 65000,
+    "salaryMaxUsd": 100000,
+    "seniorSalaryMinUsd": 105000,
+    "seniorSalaryMaxUsd": 145000,
+    "twoHundredKPotential": "Not from this path on its own, and anyone telling you otherwise is selling something. This path is about becoming employable and genuinely useful. The senior and architect tracks on this platform are where the higher bands live, and they assume the ground this course covers.",
+    "salaryAsOf": "2026-09-01",
+    "salarySource": "Aggregated public US entry-level ranges (Glassdoor, Indeed, Levels.fyi, BLS occupational data). Estimates only — update via Admin.",
+    "demandOutlook": "Moderate",
+    "demandNotes": "The most crowded entry point in software, and the one where a bootcamp portfolio no longer distinguishes anyone. Demand is real but the competition is heavy — which is why this path pushes accessibility, performance and TypeScript rather than another landing page.",
+    "aiReplacementRisk": "High",
+    "aiRiskNotes": "The honest assessment on this list. Generating a component from a description is the strongest thing current models do, and straightforward markup work is genuinely being absorbed. What is not: accessibility that survives audit, performance work on a real device, and design judgement. Treat this path as a foundation to build on, not a destination.",
+    "difficulty": "Foundational",
+    "estimatedHours": 95,
+    "isPrimaryRecommended": false,
+    "resumeKeywords": [
+      "HTML5",
+      "CSS3",
+      "Flexbox",
+      "CSS Grid",
+      "JavaScript (ES2023)",
+      "TypeScript",
+      "Responsive Design",
+      "Accessibility (WCAG)",
+      "DOM",
+      "fetch",
+      "Async / Await",
+      "Vite",
+      "npm",
+      "Git",
+      "Web Performance",
+      "Angular"
+    ],
+    "responsibilities": [
+      "Build responsive layouts with flexbox and grid that hold up at phone width",
+      "Write semantic, accessible markup that works with a keyboard and a screen reader",
+      "Consume REST APIs and handle loading, empty, error and success states explicitly",
+      "Use TypeScript to make data shapes explicit instead of hoping",
+      "Debug in browser dev tools: the network panel, the element inspector, the console",
+      "Keep pages fast on a mid-range phone, not only on a developer laptop"
+    ],
+    "interviewFocus": [
+      "Explain the box model and what box-sizing: border-box changes",
+      "What is the event loop, and why does a long synchronous function freeze the page?",
+      "How do you make a custom control keyboard accessible?",
+      "What is the difference between == and === and why does it matter?",
+      "Walk me through what happens between typing a URL and seeing the page",
+      "How would you find out why a page is slow on a mid-range phone?"
+    ],
+    "skills": [
+      {
+        "slug": "html-css",
+        "targetLevel": 72,
+        "importance": "Core"
+      },
+      {
+        "slug": "typescript",
+        "targetLevel": 65,
+        "importance": "Core"
+      },
+      {
+        "slug": "rest-api",
+        "targetLevel": 55,
+        "importance": "Core"
+      },
+      {
+        "slug": "git",
+        "targetLevel": 60,
+        "importance": "Core"
+      },
+      {
+        "slug": "angular",
+        "targetLevel": 45,
+        "importance": "Important"
+      },
+      {
+        "slug": "testing",
+        "targetLevel": 45,
+        "importance": "Important"
+      },
+      {
+        "slug": "communication",
+        "targetLevel": 50,
+        "importance": "Important"
+      },
+      {
+        "slug": "oop",
+        "targetLevel": 40,
+        "importance": "NiceToHave"
+      }
+    ],
+    "ladder": [
+      {
+        "stageOrder": 1,
+        "title": "Current",
+        "roleTitle": "Career changer / student",
+        "description": "Starting out or changing track. No professional output in this stack yet.",
+        "salaryMinUsd": 0,
+        "salaryMaxUsd": 0,
+        "durationMonths": 0,
+        "milestones": [
+          "Committed to a study schedule you can actually keep"
+        ],
+        "isCurrentPosition": true
+      },
+      {
+        "stageOrder": 2,
+        "title": "Stage 1",
+        "roleTitle": "Junior Front-End Developer",
+        "description": "Builds screens against a design and an API.",
+        "salaryMinUsd": 65000,
+        "salaryMaxUsd": 85000,
+        "durationMonths": 8,
+        "milestones": [
+          "Accessible responsive site published",
+          "Consumes a live API with all states handled"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 3,
+        "title": "Stage 2",
+        "roleTitle": "Front-End Developer",
+        "description": "Owns features and component quality.",
+        "salaryMinUsd": 85000,
+        "salaryMaxUsd": 115000,
+        "durationMonths": 20,
+        "milestones": [
+          "Owns a feature area",
+          "Fixes accessibility findings without supervision"
+        ],
+        "isCurrentPosition": false
+      },
+      {
+        "stageOrder": 4,
+        "title": "Stage 3",
+        "roleTitle": "Senior Front-End Developer",
+        "description": "Owns the front-end architecture.",
+        "salaryMinUsd": 115000,
+        "salaryMaxUsd": 145000,
+        "durationMonths": 36,
+        "milestones": [
+          "Sets component and accessibility standards",
+          "Owns performance budgets"
+        ],
+        "isCurrentPosition": false
+      }
+    ],
+    "readinessDimensions": [
+      {
+        "name": "Markup & Layout",
+        "weight": 0.3,
+        "skillSlugs": [
+          "html-css"
+        ]
+      },
+      {
+        "name": "Language & Types",
+        "weight": 0.28,
+        "skillSlugs": [
+          "typescript"
+        ]
+      },
+      {
+        "name": "Data & APIs",
+        "weight": 0.18,
+        "skillSlugs": [
+          "rest-api"
+        ]
+      },
+      {
+        "name": "Framework",
+        "weight": 0.16,
+        "skillSlugs": [
+          "angular",
+          "testing"
+        ]
+      },
+      {
+        "name": "Communication",
+        "weight": 0.08,
+        "skillSlugs": [
+          "communication"
+        ]
+      }
+    ],
+    "certifications": [
+      "AZ-900"
+    ],
+    "projects": [
+      "web-foundations-portfolio"
+    ]
   }
 ]

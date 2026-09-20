@@ -52,7 +52,9 @@ public class CareerPathConfiguration : IEntityTypeConfiguration<CareerPath>
     {
         b.HasIndex(c => c.Slug).IsUnique();
         b.HasIndex(c => c.Rank);
+        b.HasIndex(c => new { c.CategoryOrder, c.Rank });
         b.Property(c => c.Title).HasMaxLength(200).IsRequired();
+        b.Property(c => c.Category).HasMaxLength(64);
         b.HasMany(c => c.CareerSkills).WithOne().HasForeignKey(cs => cs.CareerPathId).OnDelete(DeleteBehavior.Cascade);
         b.HasMany(c => c.LadderStages).WithOne().HasForeignKey(s => s.CareerPathId).OnDelete(DeleteBehavior.Cascade);
         b.HasMany(c => c.ReadinessDimensions).WithOne().HasForeignKey(d => d.CareerPathId).OnDelete(DeleteBehavior.Cascade);

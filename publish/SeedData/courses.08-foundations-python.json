@@ -1,0 +1,1295 @@
+[
+  {
+    "careerSlug": "python-developer",
+    "order": 1,
+    "phaseNumber": 1,
+    "title": "Phase 1 — Python Language Foundations",
+    "slug": "phase-1-python-language-foundations",
+    "summary": "The language and the mental model underneath it: names and objects, mutability, comprehensions, the argument rules that catch everyone once, and the type hints that make Python code readable at scale.",
+    "estimatedHours": 35,
+    "level": "Foundational",
+    "minimumTrack": "FastTrack",
+    "outcomes": [
+      "Explain what a Python name is and predict mutation behaviour",
+      "Use comprehensions and generators where a loop would be noisier",
+      "Avoid the mutable default argument trap and use keyword arguments well",
+      "Organise code into modules and packages with imports that work",
+      "Annotate code with type hints and check them with a tool"
+    ],
+    "skillSlugs": [
+      "python",
+      "oop",
+      "git"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "The Language Model",
+        "summary": "Names, objects and mutability — the model that explains most surprising behaviour.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Objects, Names and Mutability",
+            "slug": "objects-names-and-mutability",
+            "type": "Concept",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## A name is a label, not a box\n\nIn many languages a variable is a box holding a value. In Python a name is a label attached to an object. Assignment moves the label; it does not copy the object.\n\n```python\na = [1, 2, 3]\nb = a          # b labels the SAME list\nb.append(4)\nprint(a)       # [1, 2, 3, 4]\n```\n\nThis one idea explains most of the surprising behaviour beginners hit.\n\n## Mutable and immutable\n\n**Immutable**: `int`, `float`, `str`, `tuple`, `bool`, `frozenset`. Cannot be changed. Operations return a new object.\n\n**Mutable**: `list`, `dict`, `set`, and most objects you define. Can be changed in place, visibly to every name attached to them.\n\n`x += 1` on an integer rebinds the name to a new object. `lst += [1]` mutates the list in place. The syntax is identical and the behaviour is not.\n\n## Functions receive the same object\n\nPass a list to a function and the function can modify your list. Pass an integer and it cannot, because integers are immutable.\n\nNeither is wrong — but a function that mutates its arguments should say so in its name, because the caller cannot see it from the call site.\n\n## Copying takes two forms\n\n`list(original)` or `original.copy()` makes a **shallow** copy: a new outer list containing the same inner objects. Mutating a nested list is still visible through both.\n\n`copy.deepcopy()` copies all the way down. It is slower, and occasionally the only correct answer.\n\n## `is` versus `==`\n\n`==` asks whether the values are equal. `is` asks whether they are the same object.\n\nUse `is` only for `None`, `True` and `False`. Using it on strings or numbers appears to work because of interning, then fails on a value outside the cached range.\n\n## Everything is an object\n\nFunctions, classes and modules are objects too. You can pass a function as an argument, store it in a dictionary and return it from another function. This is what makes decorators and callbacks straightforward.",
+            "codeExample": "# --- names label objects ---------------------------------------------------\na = [1, 2, 3]\nb = a                  # same object, second label\nb.append(4)\nprint(a)               # [1, 2, 3, 4]\n\nc = a.copy()           # new list object\nc.append(5)\nprint(a)               # [1, 2, 3, 4] — unaffected\n\n# --- identical syntax, different behaviour --------------------------------\nx = 5\ny = x\ny += 1                 # int is immutable: y is REBOUND to a new object\nprint(x)               # 5\n\nlst = [1]\nother = lst\nother += [2]           # list is mutable: this MUTATES in place\nprint(lst)             # [1, 2]\n\n# --- shallow copy is not deep ---------------------------------------------\nimport copy\ngrid = [[0, 0], [0, 0]]\nshallow = grid.copy()          # new outer list, SAME inner lists\nshallow[0][0] = 9\nprint(grid)                    # [[9, 0], [0, 0]] — still shared\n\ndeep = copy.deepcopy(grid)\ndeep[0][0] = 1\nprint(grid)                    # [[9, 0], [0, 0]] — now independent\n\n# --- functions can mutate what you pass -----------------------------------\ndef append_total(rows: list) -> None:\n    \"\"\"Name says it mutates. The caller cannot see this from the call site.\"\"\"\n    rows.append(sum(r[\"amount\"] for r in rows))\n\ndef with_total(rows: list) -> list:\n    \"\"\"Safer default: return a new list, leave the caller's alone.\"\"\"\n    return [*rows, {\"amount\": sum(r[\"amount\"] for r in rows)}]\n\n# --- is vs == --------------------------------------------------------------\nif value is None:              # correct use of `is`\n    ...\n\ns1, s2 = \"hello world!\", \"hello world!\"\nprint(s1 == s2)                # True  — what you meant\nprint(s1 is s2)                # may be False: interning is not guaranteed",
+            "codeLanguage": "python",
+            "diagramMermaid": "flowchart LR\n  A[\"name: a\"] --> OBJ[\"list object<br/>[1, 2, 3, 4]\"]\n  B[\"name: b\"] --> OBJ\n  C[\"name: c\"] --> OBJ2[\"list object<br/>[1, 2, 3, 5]\"]",
+            "keyTakeaways": [
+              "A name labels an object; assignment moves the label and copies nothing",
+              "Mutating an object is visible through every name attached to it",
+              "Functions can mutate mutable arguments — name such functions accordingly",
+              "`copy()` is shallow; nested structures need `deepcopy`",
+              "Use `is` only for None, True and False — `==` for values"
+            ],
+            "resources": [
+              {
+                "title": "The Python tutorial",
+                "url": "https://docs.python.org/3/tutorial/",
+                "kind": "Documentation"
+              }
+            ],
+            "quiz": {
+              "title": "Names and objects",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "`a = [1,2]; b = a; b.append(3)`. What does `a` contain?",
+                  "explanation": "Assignment binds a second name to the same list object. The append is visible through both names.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "[1, 2, 3] — both names refer to the same list",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "[1, 2] — assignment copies the list",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "[3] — b replaced the contents",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A TypeError is raised",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why should `is` not be used to compare strings?",
+                  "explanation": "`is` compares object identity. String interning makes it appear to work for short literals and then fail for values built at runtime.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It compares identity, and interning makes it work by accident until it does not",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "`is` is slower than `==` for strings",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "`is` is deprecated for all comparisons",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "`is` performs a case-insensitive comparison",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Control Flow, Comprehensions and Iteration",
+            "slug": "control-flow-comprehensions-and-iteration",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Iterate over things, not indices\n\n`for item in items` is the Python way. Reaching for `range(len(items))` almost always means you wanted `enumerate` (when you need the index too) or `zip` (when you are walking two sequences together).\n\n## Comprehensions build collections\n\n```python\nsquares = [n * n for n in numbers if n > 0]\n```\n\nOne line that says what the result is, rather than three lines describing how to accumulate it. Dictionary and set comprehensions follow the same shape.\n\nKeep them to one loop and at most one condition. A comprehension with two `for` clauses and a conditional expression is harder to read than the loop it replaced.\n\n## Generators for anything large\n\nA generator expression uses parentheses and produces values one at a time instead of building the whole list.\n\nFor a large file or an infinite sequence this is the difference between flat memory use and running out. `sum(x for x in huge)` never materialises `huge`.\n\nA function containing `yield` is a generator function — the same laziness, with room for real logic.\n\n## Truthiness\n\nEmpty containers, `0`, `\"\"` and `None` are falsy. So `if items:` reads better than `if len(items) > 0:`.\n\nOne trap: `if count:` is false when `count` is `0`, which may be a legitimate value. When zero is meaningful, test `if count is not None:`.\n\n## Unpacking\n\n`first, *rest = items` and `a, b = b, a` are idiomatic and clear. Unpacking in a `for` loop over pairs — `for key, value in d.items()` — is the normal way to read a dictionary.\n\n## `enumerate` and `zip` take arguments worth knowing\n\n`enumerate(items, start=1)` when counting for humans. `zip(a, b, strict=True)` raises when the sequences differ in length, instead of silently stopping at the shorter one — which has hidden a lot of bugs.",
+            "codeExample": "rows = [{\"sku\": \"A-1\", \"qty\": 3}, {\"sku\": \"B-2\", \"qty\": 0}, {\"sku\": \"C-3\", \"qty\": 7}]\n\n# --- iterate over items, not indices --------------------------------------\nfor row in rows:                       # not: for i in range(len(rows))\n    print(row[\"sku\"])\n\nfor position, row in enumerate(rows, start=1):     # start=1 for human counting\n    print(f\"{position}. {row['sku']}\")\n\nskus   = [\"A-1\", \"B-2\"]\nprices = [9.99, 14.50, 3.00]\n# strict=True raises instead of silently stopping at the shorter sequence —\n# that silent truncation has hidden a lot of bugs.\nfor sku, price in zip(skus, prices, strict=False):\n    print(sku, price)\n\n# --- comprehensions --------------------------------------------------------\nin_stock = [r[\"sku\"] for r in rows if r[\"qty\"] > 0]\nby_sku   = {r[\"sku\"]: r[\"qty\"] for r in rows}\nunique   = {r[\"sku\"][0] for r in rows}\n\n# --- generators: constant memory over a huge file -------------------------\ndef read_amounts(path):\n    \"\"\"A generator function: yields one value at a time, holds one line.\"\"\"\n    with open(path, encoding=\"utf-8\") as fh:\n        for line in fh:\n            parts = line.split(\",\")\n            if len(parts) > 2 and parts[2].strip():\n                yield float(parts[2])\n\ntotal = sum(read_amounts(\"huge.csv\"))     # never builds a list of the values\n\n# Parentheses make a generator expression; brackets would build the whole list.\nbig_total = sum(r[\"qty\"] for r in rows)\n\n# --- truthiness, and its one trap -----------------------------------------\nif rows:                    # good: empty list is falsy\n    print(\"have rows\")\n\ncount = 0\nif count:                   # WRONG if zero is a legitimate value\n    print(\"never runs\")\nif count is not None:       # right when zero is meaningful\n    print(f\"count is {count}\")\n\n# --- unpacking -------------------------------------------------------------\nfirst, *rest = [1, 2, 3, 4]        # first=1, rest=[2, 3, 4]\na, b = 1, 2\na, b = b, a                        # swap, no temporary",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Iterate over items directly; use `enumerate` or `zip` rather than `range(len(...))`",
+              "Comprehensions state the result; keep them to one loop and one condition",
+              "Generator expressions stream instead of materialising — essential for large data",
+              "Empty containers are falsy, but `if count:` wrongly excludes a legitimate zero",
+              "`zip(..., strict=True)` catches length mismatches that otherwise pass silently"
+            ],
+            "quiz": {
+              "title": "Control flow and comprehensions",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why use a generator expression rather than a list comprehension for a very large file?",
+                  "explanation": "A generator yields one value at a time, so memory stays flat. A list comprehension materialises every element first.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It streams values one at a time instead of building the whole list in memory",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It is syntactically shorter",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It can be iterated more than once",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It automatically parallelises the work",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why is `if count:` risky when count is a number?",
+                  "explanation": "Zero is falsy, so the branch is skipped when the count is legitimately zero — usually not what was meant.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Zero is falsy, so a legitimate zero is treated as absent",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Numbers cannot be used in a boolean context",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It raises a TypeError for integers",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It compares identity rather than value",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "Functions and Structure",
+        "summary": "Argument rules with real traps, and organising code across files.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Functions, Arguments and the Mutable Default Trap",
+            "slug": "functions-arguments-and-the-mutable-default-trap",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Default arguments are evaluated once\n\nThis is the single most notorious trap in Python:\n\n```python\ndef add(item, items=[]):\n    items.append(item)\n    return items\n```\n\nThe empty list is created **once**, when the function is defined — not on each call. Every call without an explicit list shares the same one, and it grows forever.\n\nUse `None` as the default and create the object inside:\n\n```python\ndef add(item, items=None):\n    items = [] if items is None else items\n```\n\nThe same applies to `{}`, `set()` and anything else mutable, including a `datetime.now()` default, which would freeze at import time.\n\n## Keyword-only arguments\n\nA `*` in the signature forces everything after it to be passed by name. Calling `create_user(name, True, False)` is unreadable; `create_user(name, admin=True, notify=False)` is not.\n\nUse it for boolean flags and optional settings. It also means you can reorder them later without breaking callers.\n\n## `*args` and `**kwargs` where they earn it\n\nUseful for wrappers and decorators that pass arguments through. Used on ordinary functions they destroy the signature, so the reader has to read the body to learn what it takes.\n\n## Return one kind of thing\n\nA function that returns a dict on success and `False` on failure forces every caller to check the type. Return a consistent type, raise on failure, or return `None` with the possibility documented in the annotation.\n\n## Small functions with honest names\n\n`process_data` says nothing. `parse_log_line` says exactly what goes in and what comes out.\n\nIf naming a function is hard, it usually does more than one thing.\n\n## Docstrings for the non-obvious\n\nDo not restate the signature. Record what a reader cannot see: units, the failure behaviour, the constraint that explains an odd decision.",
+            "codeExample": "from datetime import datetime, UTC\n\n# --- the trap --------------------------------------------------------------\ndef add_bad(item, items=[]):\n    items.append(item)\n    return items\n\nprint(add_bad(1))      # [1]\nprint(add_bad(2))      # [1, 2]  <-- the SAME list, created once at definition\nprint(add_bad(3))      # [1, 2, 3]\n\n# --- the fix ---------------------------------------------------------------\ndef add(item, items: list | None = None) -> list:\n    items = [] if items is None else items\n    items.append(item)\n    return items\n\n# Same trap with a timestamp: this freezes at import time and every call\n# reports the moment the module was loaded.\ndef log_bad(message, when=datetime.now(UTC)): ...\n\ndef log(message: str, when: datetime | None = None) -> None:\n    when = when or datetime.now(UTC)\n    print(f\"{when.isoformat()} {message}\")\n\n\n# --- keyword-only arguments ------------------------------------------------\ndef create_user(name: str, email: str, *, admin: bool = False,\n                notify: bool = True, quota_mb: int = 500) -> dict:\n    \"\"\"Everything after * must be passed by name.\n\n    Rejects the unreadable create_user(\"Ada\", \"a@b.com\", True, False, 100),\n    and lets these options be reordered later without breaking callers.\n    \"\"\"\n    return {\"name\": name, \"email\": email, \"admin\": admin,\n            \"notify\": notify, \"quota_mb\": quota_mb}\n\ncreate_user(\"Ada\", \"ada@example.com\", admin=True, quota_mb=2000)\n\n\n# --- return one kind of thing ---------------------------------------------\ndef parse_amount_bad(text):\n    try:\n        return {\"value\": float(text)}     # dict on success\n    except ValueError:\n        return False                       # bool on failure — caller must type-check\n\ndef parse_amount(text: str) -> float | None:\n    \"\"\"Return the parsed amount, or None if `text` is not a number.\n\n    Amounts are in minor units (pence), because the upstream export has no\n    decimal separator — the thing a reader cannot infer from the signature.\n    \"\"\"\n    try:\n        return float(text)\n    except ValueError:\n        return None",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "A mutable default is created once at definition and shared by every call",
+              "Use `None` as the default and construct inside the function",
+              "`*` makes following arguments keyword-only — use it for flags and options",
+              "Return a consistent type; do not mix a result and a boolean failure",
+              "If a function is hard to name, it is doing more than one thing"
+            ],
+            "quiz": {
+              "title": "Functions and arguments",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why does `def add(item, items=[])` accumulate values across calls?",
+                  "explanation": "The default list is created once when the function is defined, so every call that omits the argument shares and mutates that same object.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The default object is created once at definition and shared by all calls",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Python caches the return value",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Lists are global by default",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "The function is missing a return statement",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What does the bare `*` in `def f(a, *, b=False)` do?",
+                  "explanation": "It ends positional parameters, so everything after it must be passed by keyword — which makes flags readable at the call site.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Forces all following arguments to be passed by keyword",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Collects extra positional arguments into a tuple",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Marks the following arguments as required",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Unpacks the preceding argument",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Modules, Packages and Type Hints",
+            "slug": "modules-packages-and-type-hints",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## A module is a file, a package is a directory\n\nAny `.py` file is a module. A directory of modules is a package. Imports use dotted paths from the project root.\n\nPrefer absolute imports (`from myapp.parsing import parse_line`) over relative ones. They survive a file being moved and are unambiguous to a reader.\n\n## Import time is execution time\n\nImporting a module runs its top-level code. Anything expensive or side-effecting at module level runs every time something imports it — including your test suite.\n\nThat is what `if __name__ == \"__main__\":` is for: the code inside runs when the file is executed directly, not when it is imported.\n\n## Circular imports mean a design problem\n\nIf A imports B and B imports A, Python may fail with a partially initialised module. The mechanical fixes — importing inside a function, reordering — work but leave the real problem: the two modules are entangled.\n\nUsually the answer is to extract the shared part into a third module.\n\n## Type hints, and why they pay\n\nPython does not enforce annotations at runtime. They exist for readers and for tools.\n\nThe payoff is real. `def process(data)` tells you nothing; `def process(rows: list[dict[str, str]]) -> Report` tells you what to pass and what comes back. Your editor autocompletes, and a checker finds mistakes before they run.\n\n## Run a type checker\n\nAnnotations that nothing checks drift out of date and become misleading. Run **mypy** or **pyright** in CI so they stay true.\n\nStart permissive on an existing codebase and tighten gradually. Requiring full coverage on day one is how teams give up on it.\n\n## The syntax worth knowing\n\n`str | None` for optional. `list[str]`, `dict[str, int]` for containers. `Sequence` or `Iterable` when you only need to iterate — accepting the widest type you can use is a kindness to callers.",
+            "codeExample": "# project layout\n#   logtool/\n#     __init__.py\n#     parsing.py        <- pure functions, no I/O\n#     reporting.py      <- aggregation\n#     cli.py            <- entry point, the only place that touches argv\n#   tests/\n#     test_parsing.py\n#   pyproject.toml\n\n# --- logtool/parsing.py ----------------------------------------------------\nfrom collections.abc import Iterable, Iterator\nfrom dataclasses import dataclass\nfrom datetime import datetime\n\n@dataclass(frozen=True, slots=True)\nclass LogEntry:\n    at: datetime\n    path: str\n    status: int\n    duration_ms: int\n\ndef parse_line(line: str) -> LogEntry | None:\n    \"\"\"Parse one access-log line, or return None if it is malformed.\n\n    Malformed lines are common in this feed (roughly 1 in 500) and must never\n    be fatal — the caller counts them instead.\n    \"\"\"\n    parts = line.split()\n    if len(parts) < 4:\n        return None\n    try:\n        return LogEntry(datetime.fromisoformat(parts[0]), parts[1],\n                        int(parts[2]), int(parts[3]))\n    except ValueError:\n        return None\n\n# Accept the widest type you can use: any iterable of strings works, so the\n# caller can pass a list, a file object or a generator.\ndef parse_all(lines: Iterable[str]) -> Iterator[LogEntry]:\n    for line in lines:\n        if (entry := parse_line(line)) is not None:\n            yield entry\n\n\n# --- logtool/cli.py --------------------------------------------------------\nfrom logtool.parsing import parse_all          # absolute import: survives a move\n\ndef main() -> int:\n    ...\n    return 0\n\n# Runs when executed directly, NOT when imported — including by the test suite.\nif __name__ == \"__main__\":\n    raise SystemExit(main())\n\n\n# --- checked in CI ---------------------------------------------------------\n# pyproject.toml\n#   [tool.mypy]\n#   python_version = \"3.12\"\n#   warn_unused_ignores = true\n#   disallow_untyped_defs = true     # start false on an existing codebase,\n#                                     # tighten module by module",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "A module is a file, a package a directory; prefer absolute imports",
+              "Importing runs top-level code — guard scripts with `if __name__ == \"__main__\"`",
+              "Circular imports signal entangled modules; extract the shared part",
+              "Type hints are for readers and tools, not enforced at runtime",
+              "Run mypy or pyright in CI, or the annotations will quietly become wrong"
+            ],
+            "quiz": {
+              "title": "Modules and type hints",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What is the purpose of `if __name__ == \"__main__\":`?",
+                  "explanation": "Importing a module executes its top-level code. The guard confines script behaviour to direct execution, so an import — including by tests — does not run it.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It runs the block only on direct execution, not when the module is imported",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It marks the module as the application entry point for the interpreter",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It prevents the module from being imported at all",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It makes the code run faster",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why run mypy or pyright rather than just writing annotations?",
+                  "explanation": "Nothing enforces annotations at runtime, so unchecked ones drift and become misleading — worse than none. A checker keeps them true.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Unchecked annotations drift out of date and become misleading",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Type checkers make the code run faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Python refuses to run unchecked annotations",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Annotations are only valid if a checker has approved them",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Structuring Data",
+        "summary": "Choosing the right container, and the classes Python gives you for free.",
+        "estimatedHours": 0.8,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Dataclasses and Choosing the Right Container",
+            "slug": "dataclasses-and-choosing-the-right-container",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Four containers, four jobs\n\n- **list** — ordered, mutable, indexed. The default sequence.\n- **tuple** — ordered, immutable. Fixed-size records and dictionary keys.\n- **dict** — key to value, roughly constant-time lookup. Insertion ordered since 3.7.\n- **set** — unordered, unique, constant-time membership.\n\n## The list-scan mistake\n\n`if item in big_list` checks every element. Inside a loop over another large sequence, that is quadratic and your program appears to hang.\n\n`if item in big_set` is roughly constant time. Converting the list to a set once is often the entire fix, and it is the single most common accidental performance disaster in Python.\n\n## Dictionaries have methods worth knowing\n\n`get(key, default)` avoids a KeyError. `setdefault` and `collections.defaultdict` remove the check-then-insert dance. `Counter` counts things in one line and has `most_common`.\n\nReading through `collections` once is a good use of twenty minutes.\n\n## Dataclasses replace dictionaries of fields\n\nA dict of fields has no defined shape: any key might be missing, any typo is silent, and the reader cannot see what is in it.\n\n`@dataclass` gives you a named type with annotated fields, a constructor, `__repr__` and `__eq__`. A typo becomes an error and an editor can autocomplete.\n\n## Freeze them where you can\n\n`@dataclass(frozen=True)` makes instances immutable and hashable, so they work as dictionary keys and cannot be corrupted by a caller. `slots=True` reduces memory and catches attribute typos.\n\nBoth are good defaults for data.\n\n## Validating in `__post_init__`\n\nA dataclass can check its own fields on construction. An invalid instance then cannot exist, and nothing downstream needs to re-check.\n\n## Pydantic when data comes from outside\n\nFor parsing untrusted JSON — an API request, a config file — Pydantic validates and coerces at the boundary and produces a typed object. Use dataclasses inside, Pydantic at the edge.",
+            "codeExample": "from dataclasses import dataclass, field\nfrom collections import Counter, defaultdict\n\n# --- the accidental quadratic --------------------------------------------\nknown_skus = load_skus()                   # 50,000 items in a list\n\nfor row in incoming:                       # 50,000 rows\n    if row[\"sku\"] in known_skus:           # scans up to 50,000 each time\n        ...                                # 2.5 billion comparisons: hangs\n\nknown = set(known_skus)                    # build once\nfor row in incoming:\n    if row[\"sku\"] in known:                # roughly constant time\n        ...\n\n# --- collections that remove boilerplate ----------------------------------\nby_region = defaultdict(list)\nfor row in incoming:\n    by_region[row[\"region\"]].append(row)   # no \"if key not in dict\" dance\n\nstatus_counts = Counter(r[\"status\"] for r in incoming)\nprint(status_counts.most_common(3))\n\n# --- a dict of fields has no shape ---------------------------------------\norder = {\"sku\": \"A-1\", \"qty\": 3}\nprint(order.get(\"quantity\"))               # None — typo, silent, no error\n\n# --- a dataclass does ------------------------------------------------------\n@dataclass(frozen=True, slots=True)\nclass Order:\n    sku: str\n    quantity: int\n    unit_price: float\n    tags: list[str] = field(default_factory=list)   # never a bare [] default\n\n    def __post_init__(self):\n        # An invalid Order cannot exist, so nothing downstream re-checks.\n        if self.quantity <= 0:\n            raise ValueError(f\"quantity must be positive, got {self.quantity}\")\n        if self.unit_price < 0:\n            raise ValueError(f\"unit_price must not be negative, got {self.unit_price}\")\n\n    @property\n    def total(self) -> float:\n        return self.quantity * self.unit_price\n\norder = Order(\"A-1\", 3, 9.99)\nprint(order.total)          # 29.97\nprint(order)                # Order(sku='A-1', quantity=3, ...) — free __repr__\n# order.quantity = 5        # FrozenInstanceError — cannot be corrupted\n# order.quantiy             # AttributeError from slots=True, not a silent None\n\n# frozen=True makes it hashable, so it works as a dict key or in a set.\nseen: set[Order] = {order}",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "list, tuple, dict, set — pick for the access pattern",
+              "Membership testing against a list is the classic accidental quadratic bug; use a set",
+              "`defaultdict` and `Counter` remove whole categories of boilerplate",
+              "Dataclasses give shape to data that would otherwise be an untyped dict",
+              "`frozen=True, slots=True` are good defaults; validate in `__post_init__`"
+            ],
+            "quiz": {
+              "title": "Containers and dataclasses",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why convert a large list to a set before testing membership in a loop?",
+                  "explanation": "List membership scans every element. Inside another large loop that becomes quadratic; set membership is roughly constant time.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "List membership scans every element, which is quadratic inside a loop",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Sets use less memory than lists",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Lists cannot contain strings",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Sets preserve insertion order",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What does `@dataclass(frozen=True, slots=True)` give you?",
+                  "explanation": "Frozen makes instances immutable and hashable; slots reduces memory and turns an attribute typo into an AttributeError rather than a silent addition.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Immutable, hashable instances, lower memory, and attribute typos become errors",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Automatic JSON serialisation",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Thread-safe mutation of fields",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Validation of all field types at runtime",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "careerSlug": "python-developer",
+    "order": 2,
+    "phaseNumber": 2,
+    "title": "Phase 2 — Real Programs: Files, Errors, Tooling & Tests",
+    "slug": "phase-2-real-programs-files-errors-tooling-and-tests",
+    "summary": "The difference between a script and something someone else can install and rely on: streaming files, failing usefully, reproducible environments, a real command-line interface, and a test suite that covers the broken cases.",
+    "estimatedHours": 30,
+    "level": "Foundational",
+    "minimumTrack": "FastTrack",
+    "outcomes": [
+      "Read and write files without loading them entirely into memory",
+      "Handle errors so a malformed input is counted, not fatal",
+      "Create reproducible environments with pinned dependencies",
+      "Build a command-line tool that installs and has real help text",
+      "Write pytest tests including fixtures, parametrisation and failure paths"
+    ],
+    "skillSlugs": [
+      "python",
+      "testing",
+      "linux",
+      "git"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "Working with the Outside World",
+        "summary": "Files and failures — where scripts usually break first.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Files, Encodings and Streaming",
+            "slug": "files-encodings-and-streaming",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Always use a context manager\n\n`with open(path) as fh:` closes the file even if an exception is raised. Without it, a failure mid-processing leaves the handle open, and on Windows the file stays locked.\n\n## Always state the encoding\n\n`open(path)` uses a platform-dependent default. The same code then reads a file correctly on Linux and raises `UnicodeDecodeError` on a Windows machine, or worse, silently produces mojibake.\n\nPass `encoding=\"utf-8\"` every time. For data from unknown sources, `errors=\"replace\"` degrades gracefully rather than crashing on one bad byte.\n\n## Stream, do not slurp\n\n`fh.read()` loads the whole file into memory. `for line in fh:` reads one line at a time and works on a file larger than RAM.\n\nThe difference only shows up in production, where the file is 4 GB and your test file was 4 KB.\n\n## Use `pathlib`\n\n`Path` objects handle separators across platforms and read like what they mean: `path.exists()`, `path.with_suffix(\".json\")`, `path / \"subdir\" / \"file.txt\"`.\n\nString concatenation of paths breaks on Windows, and `os.path.join` nested three deep is harder to read.\n\n## CSV needs the csv module\n\nSplitting on commas breaks the moment a field contains a comma inside quotes, which real data does constantly. `csv.DictReader` handles quoting, embedded newlines and escapes.\n\nPass `newline=\"\"` when opening, or you get blank rows on Windows.\n\n## Write atomically when it matters\n\nWriting directly to the destination means a crash mid-write leaves a truncated file. Write to a temporary file in the same directory and rename it — rename is atomic, so readers see either the old file or the new one, never half of one.",
+            "codeExample": "import csv, json, os, tempfile\nfrom pathlib import Path\n\n# --- streaming, with an explicit encoding ---------------------------------\ndef count_errors(path: Path) -> tuple[int, int]:\n    \"\"\"Return (error_lines, malformed_lines). Memory stays flat on a 4GB file.\"\"\"\n    errors = malformed = 0\n    # errors=\"replace\" degrades on one bad byte instead of aborting the run.\n    with path.open(encoding=\"utf-8\", errors=\"replace\") as fh:\n        for line in fh:                       # one line at a time\n            parts = line.split()\n            if len(parts) < 3:\n                malformed += 1\n                continue\n            if parts[2].startswith(\"5\"):\n                errors += 1\n    return errors, malformed\n\n# fh.read() here would load the entire file into memory. It works on the 4KB\n# test fixture and fails on the 4GB production file.\n\n\n# --- CSV: never split on commas yourself ----------------------------------\ndef load_customers(path: Path) -> list[dict[str, str]]:\n    # newline=\"\" is required, or Windows produces blank rows between records.\n    with path.open(encoding=\"utf-8\", newline=\"\") as fh:\n        return list(csv.DictReader(fh))\n\n# This breaks on:  Acme, Inc.,EMEA,50000\n#   line.split(\",\")  ->  ['Acme', ' Inc.', 'EMEA', '50000']   — four fields\n# csv.DictReader handles the quoting, embedded newlines and escapes correctly.\n\n\n# --- atomic write ----------------------------------------------------------\ndef write_report(path: Path, data: dict) -> None:\n    \"\"\"Write via a temp file in the SAME directory, then rename.\n\n    Rename is atomic, so a reader sees either the old file or the complete new\n    one — never a truncated file from a crash mid-write. Same directory\n    matters: rename across filesystems is not atomic.\n    \"\"\"\n    path.parent.mkdir(parents=True, exist_ok=True)\n    fd, tmp = tempfile.mkstemp(dir=path.parent, suffix=\".tmp\")\n    try:\n        with os.fdopen(fd, \"w\", encoding=\"utf-8\") as fh:\n            json.dump(data, fh, indent=2)\n            fh.flush()\n            os.fsync(fh.fileno())        # on disk before the rename\n        os.replace(tmp, path)            # atomic, and overwrites on Windows too\n    except BaseException:\n        Path(tmp).unlink(missing_ok=True)\n        raise\n\n\n# --- pathlib reads like what it means -------------------------------------\ndata_dir = Path(\"data\")\nfor csv_file in sorted(data_dir.glob(\"*.csv\")):\n    out = csv_file.with_suffix(\".json\")\n    print(f\"{csv_file.name} -> {out.name}\")",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "`with` closes the file even on an exception",
+              "Always pass `encoding=\"utf-8\"`; the default is platform-dependent",
+              "Iterate the file object to stream; `.read()` loads everything",
+              "Use `pathlib.Path` for paths and the `csv` module for CSV",
+              "Write to a temporary file and rename, so a crash cannot leave a half-file"
+            ],
+            "quiz": {
+              "title": "Files",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why pass `encoding=\"utf-8\"` explicitly to `open`?",
+                  "explanation": "The default encoding depends on the platform and locale, so the same code can work on one machine and raise UnicodeDecodeError or corrupt text on another.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The default is platform-dependent, so behaviour differs across machines",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "UTF-8 files load faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Python raises an error without it",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It enables streaming mode",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why write to a temporary file and rename rather than writing directly?",
+                  "explanation": "Rename is atomic. Writing directly means a crash mid-write leaves a truncated file that a reader may consume as if it were complete.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Rename is atomic, so a reader never sees a half-written file",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Temporary files are written faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It avoids file permission problems",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It compresses the output automatically",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Errors, Exceptions and Failing Usefully",
+            "slug": "errors-exceptions-and-failing-usefully",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Catch what you expect, and nothing else\n\n`except Exception:` catches everything, including the programming errors you need to see. It converts a crash into a silently wrong result, which is harder to diagnose.\n\nCatch the specific exception you anticipated. Let the rest propagate.\n\nNever write a bare `except:` — it catches `KeyboardInterrupt` too, so your program cannot be stopped with Ctrl-C.\n\n## One bad row should not end the run\n\nA tool processing ten thousand records should not die on record four hundred. Handle the failure per record, count it, keep the reason, and report at the end.\n\nThe report matters. \"Processed 9,847 of 10,000; 153 skipped: 149 unparseable date, 4 missing sku\" tells the user what to fix. Silence does not.\n\n## Ask forgiveness, not permission\n\nChecking `if path.exists()` before opening leaves a gap where the file can disappear between the check and the open. Try the operation and handle the failure — it is both correct and idiomatic.\n\n## Put values in the message\n\n\"Invalid input\" is useless. \"Row 412: could not parse renewal_date '19/09/2026'; expected ISO 8601\" tells the user exactly what and where.\n\nException messages are read by someone under pressure who does not have your context.\n\n## Preserve the cause when re-raising\n\n`raise MyError(...) from original` keeps the original traceback chained. Without it, you discard the information that says what really failed.\n\n## Custom exceptions for your domain\n\nA small hierarchy — one base exception for your tool, specific ones beneath — lets callers catch your failures without catching everything else.\n\n## `finally` and `else`\n\n`finally` runs whatever happens; use it for cleanup, though a context manager is usually better. `else` runs only when no exception occurred, which keeps the `try` block narrow.",
+            "codeExample": "import logging\nfrom dataclasses import dataclass, field\nfrom pathlib import Path\n\nlog = logging.getLogger(__name__)\n\nclass LogToolError(Exception):\n    \"\"\"Base for everything this tool raises, so callers can catch just ours.\"\"\"\n\nclass MalformedLine(LogToolError):\n    pass\n\n\n@dataclass\nclass ParseReport:\n    parsed: int = 0\n    skipped: list[tuple[int, str]] = field(default_factory=list)\n\n    def summary(self) -> str:\n        if not self.skipped:\n            return f\"Processed {self.parsed} lines, none skipped.\"\n        from collections import Counter\n        reasons = Counter(reason for _, reason in self.skipped)\n        detail = \"; \".join(f\"{n} {reason}\" for reason, n in reasons.most_common())\n        return (f\"Processed {self.parsed} of {self.parsed + len(self.skipped)} lines; \"\n                f\"{len(self.skipped)} skipped: {detail}\")\n\n\ndef parse_file(path: Path) -> tuple[list[LogEntry], ParseReport]:\n    entries, report = [], ParseReport()\n\n    # Ask forgiveness: checking path.exists() first leaves a window in which\n    # the file can disappear between the check and the open.\n    try:\n        fh = path.open(encoding=\"utf-8\", errors=\"replace\")\n    except FileNotFoundError as e:\n        # The cause is preserved, so the real traceback is not discarded.\n        raise LogToolError(f\"Log file not found: {path}\") from e\n    except PermissionError as e:\n        raise LogToolError(f\"No permission to read: {path}\") from e\n\n    with fh:\n        for number, line in enumerate(fh, start=1):\n            try:\n                entries.append(parse_line(line))\n                report.parsed += 1\n            except ValueError as e:\n                # ONE bad line must not end a run over ten thousand. Count it,\n                # keep the reason, report at the end.\n                report.skipped.append((number, str(e)))\n            # NOT `except Exception` — a bug in parse_line must still surface.\n\n    return entries, report\n\n\ndef parse_line(line: str) -> LogEntry:\n    parts = line.split()\n    if len(parts) < 4:\n        # The value and its shape are in the message, because the person\n        # reading this does not have the file in front of them.\n        raise ValueError(f\"expected 4 fields, found {len(parts)}: {line[:60]!r}\")\n    try:\n        return LogEntry(datetime.fromisoformat(parts[0]), parts[1],\n                        int(parts[2]), int(parts[3]))\n    except ValueError as e:\n        raise ValueError(f\"unparseable timestamp {parts[0]!r}\") from e",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Catch the specific exception; never use a bare `except:`",
+              "One malformed record should be counted and reported, not fatal",
+              "Try the operation rather than checking first — the check has a race in it",
+              "Put the offending value and its location in the message",
+              "Use `raise ... from original` so the real cause is not discarded"
+            ],
+            "quiz": {
+              "title": "Errors",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why is a bare `except:` worse than `except Exception:`?",
+                  "explanation": "A bare except also catches BaseException subclasses such as KeyboardInterrupt and SystemExit, so the program cannot be interrupted or exited normally.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It catches KeyboardInterrupt and SystemExit, so the program cannot be stopped",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It is a syntax error in modern Python",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is slower to execute",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It only catches the first exception raised",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "A tool processes 10,000 records and record 400 is malformed. What should happen?",
+                  "explanation": "The record is counted with its reason and processing continues, with a summary at the end telling the user what to fix.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Count it with a reason, continue, and report the totals at the end",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Stop immediately so the user knows something is wrong",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Skip it silently to keep the output clean",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Substitute default values and continue without recording it",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "The Toolchain",
+        "summary": "Making a script into something someone else can install and run.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Virtual Environments, Dependencies and Reproducibility",
+            "slug": "virtual-environments-dependencies-and-reproducibility",
+            "type": "Lab",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Why environments exist\n\nInstalling packages globally means every project shares one set of versions. Two projects needing different versions of the same library cannot both work.\n\nA virtual environment is a per-project directory with its own interpreter and packages. Create one for every project, without exception.\n\n## The basics\n\n```\npython -m venv .venv\n.venv\\Scripts\\activate      # Windows\nsource .venv/bin/activate    # macOS / Linux\npip install -r requirements.txt\n```\n\nAdd `.venv/` to `.gitignore`. It is generated, large, and not portable between machines.\n\n## Pinning is what makes it reproducible\n\n`requirements.txt` with `requests` installs whatever version is current today. In six months that is a different version, and a colleague's checkout behaves differently from yours.\n\nPin exact versions. The usual arrangement is two files: direct dependencies with loose constraints, and a fully pinned lock file generated from it including transitive dependencies.\n\nTools like `pip-tools` and `uv` generate the lock file, which is what you commit.\n\n## `pyproject.toml` is the modern home\n\nProject metadata, dependencies and tool configuration in one file. Optional dependency groups keep test and development tools out of the production install.\n\n## Development dependencies are separate\n\npytest, mypy and formatters do not belong in a production container. Keep them in a `dev` extra.\n\n## Reproducible means it can be rebuilt\n\nThe test: delete `.venv`, recreate it from the committed files, and run the tests. If that fails, the environment was not reproducible and your colleague's first day will be spent discovering why.\n\nDo this in CI so it is verified continuously rather than assumed.",
+            "codeExample": "# pyproject.toml — metadata, dependencies and tool config in one place\n[project]\nname = \"logtool\"\nversion = \"0.2.0\"\ndescription = \"Parse messy access logs and report traffic, paths and error rates\"\nrequires-python = \">=3.11\"\n\n# Direct dependencies with deliberate lower bounds.\ndependencies = [\n    \"typer>=0.12,<1.0\",\n    \"rich>=13.7,<14.0\",\n]\n\n[project.optional-dependencies]\n# Not installed in production. pytest and mypy do not belong in a container.\ndev = [\n    \"pytest>=8.0\",\n    \"pytest-cov>=5.0\",\n    \"mypy>=1.10\",\n    \"ruff>=0.5\",\n]\n\n[project.scripts]\n# Makes `logtool` a real command after installation.\nlogtool = \"logtool.cli:app\"\n\n[build-system]\nrequires = [\"hatchling\"]\nbuild-backend = \"hatchling.build\"\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\naddopts = \"-q --strict-markers\"\n\n[tool.mypy]\npython_version = \"3.12\"\ndisallow_untyped_defs = true\n\n# ---------------------------------------------------------------------------\n# requirements.lock — generated, committed, includes TRANSITIVE dependencies.\n#   pip-compile pyproject.toml --output-file requirements.lock\n#\n#   typer==0.12.3\n#     # via logtool (pyproject.toml)\n#   click==8.1.7\n#     # via typer                      <- transitive, pinned too\n#   rich==13.7.1\n#     # via logtool (pyproject.toml)\n#\n# Without the transitive pins, a new click release can break your build on a\n# day you changed nothing.\n# ---------------------------------------------------------------------------\n\n# The reproducibility test, run in CI on every push:\n#   rm -rf .venv\n#   python -m venv .venv && . .venv/bin/activate\n#   pip install -r requirements.lock -e \".[dev]\"\n#   pytest\n# If this fails, the environment was never reproducible — you just had not\n# found out yet.",
+            "codeLanguage": "toml",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "One virtual environment per project; never install globally",
+              "Add `.venv/` to `.gitignore` — it is generated and not portable",
+              "Pin exact versions in a committed lock file including transitive dependencies",
+              "Keep test and development tools in a separate dependency group",
+              "Verify reproducibility by rebuilding from scratch in CI"
+            ],
+            "quiz": {
+              "title": "Environments and dependencies",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why pin transitive dependencies in a lock file, not just your direct ones?",
+                  "explanation": "An unpinned transitive dependency can release a breaking version and fail your build on a day you changed nothing.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A new release of an indirect dependency can break the build with no change from you",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Transitive dependencies install faster when pinned",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "pip refuses to resolve unpinned transitive dependencies",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It reduces the size of the virtual environment",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why keep pytest and mypy in a separate dependency group?",
+                  "explanation": "Development tools have no place in a production install: they enlarge the image and add dependencies that never run there.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "They do not belong in a production install, where they only add size and surface",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "They conflict with production packages",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "pip cannot install them alongside runtime dependencies",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "They must be installed globally to work",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Building a Command-Line Tool People Can Install",
+            "slug": "building-a-command-line-tool-people-can-install",
+            "type": "Lab",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## A tool is not a script\n\nA script is a file you run. A tool has help text, sensible flags, meaningful exit codes, and installs as a command. The difference is about an hour of work and decides whether anyone else uses it.\n\n## Help text is the interface\n\nEvery argument needs a one-line description. Someone running `--help` should be able to use the tool without reading the source.\n\n`argparse` is in the standard library and sufficient. `typer` and `click` derive the interface from type-annotated functions, which is less code and keeps help text next to the parameter.\n\n## Exit codes matter\n\n`0` means success. Anything else means failure. Scripts and CI pipelines branch on this, and a tool that always exits `0` cannot be used in automation.\n\nPick a small convention and document it: `1` for a general error, `2` for bad usage, `3` for partial success if that is a meaningful state.\n\n## Support machine-readable output\n\nA `--json` flag makes the tool composable. Human-readable tables are for people; JSON is for the next program in the pipeline.\n\n## Respect stdout and stderr\n\nResults go to stdout. Progress, warnings and errors go to stderr. That separation is what lets someone pipe your output somewhere useful without the progress messages contaminating it.\n\n## Handle Ctrl-C\n\nAn interrupted tool should exit cleanly with a message, not dump a traceback. Catch `KeyboardInterrupt` at the top level.\n\n## Read configuration in a predictable order\n\nCommand-line flags override environment variables, which override a config file, which overrides defaults. This is what people expect; anything else surprises them.",
+            "codeExample": "\"\"\"logtool/cli.py — installed as `logtool` by the [project.scripts] entry.\"\"\"\nimport json, sys\nfrom enum import Enum\nfrom pathlib import Path\nfrom typing import Annotated\n\nimport typer\nfrom rich.console import Console\nfrom rich.table import Table\n\napp = typer.Typer(add_completion=False, help=\"Parse access logs and report on them.\")\n# Progress and errors go to stderr so stdout stays pipeable.\nerr = Console(stderr=True)\nout = Console()\n\nclass Format(str, Enum):\n    table = \"table\"\n    json = \"json\"\n\n@app.command()\ndef report(\n    paths: Annotated[list[Path], typer.Argument(\n        help=\"Log files to read. Accepts globs expanded by your shell.\")],\n    fmt: Annotated[Format, typer.Option(\n        \"--format\", \"-f\", help=\"Output format: a table for humans, JSON for pipelines.\")]\n        = Format.table,\n    min_status: Annotated[int, typer.Option(\n        \"--min-status\", help=\"Only count responses at or above this status code.\")] = 400,\n    quiet: Annotated[bool, typer.Option(\n        \"--quiet\", \"-q\", help=\"Suppress progress output on stderr.\")] = False,\n) -> None:\n    \"\"\"Summarise traffic, top paths and error rates across one or more log files.\"\"\"\n    entries, skipped = [], 0\n\n    for path in paths:\n        if not quiet:\n            err.print(f\"[dim]reading {path}[/dim]\")     # stderr: never pollutes a pipe\n        try:\n            parsed, rep = parse_file(path)\n        except LogToolError as e:\n            err.print(f\"[red]error:[/red] {e}\")\n            raise typer.Exit(code=1)                     # 1 = general error\n        entries.extend(parsed)\n        skipped += len(rep.skipped)\n\n    summary = summarise(entries, min_status=min_status)\n\n    if fmt is Format.json:\n        # stdout, machine-readable: the tool composes with whatever comes next.\n        json.dump({\"summary\": summary, \"skipped\": skipped}, sys.stdout, indent=2)\n        sys.stdout.write(\"\\n\")\n    else:\n        table = Table(title=\"Traffic summary\")\n        table.add_column(\"Path\"); table.add_column(\"Hits\", justify=\"right\")\n        table.add_column(\"Errors\", justify=\"right\")\n        for row in summary[\"top_paths\"]:\n            table.add_row(row[\"path\"], str(row[\"hits\"]), str(row[\"errors\"]))\n        out.print(table)\n\n    if skipped:\n        err.print(f\"[yellow]{skipped} malformed line(s) skipped[/yellow]\")\n        raise typer.Exit(code=3)      # 3 = partial success, documented in --help\n\n\ndef main() -> None:\n    try:\n        app()\n    except KeyboardInterrupt:\n        # A clean message, not a traceback.\n        err.print(\"\\n[yellow]interrupted[/yellow]\")\n        raise SystemExit(130)         # conventional exit code for SIGINT",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Help text, flags, exit codes and installability separate a tool from a script",
+              "Every argument needs a description; `--help` should be enough to use it",
+              "Non-zero exit codes are what makes a tool usable in automation",
+              "Results to stdout, progress and errors to stderr, plus a `--json` mode",
+              "Flags override environment variables override config file override defaults"
+            ],
+            "quiz": {
+              "title": "Command-line tools",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why send progress messages to stderr rather than stdout?",
+                  "explanation": "Results on stdout can be piped or redirected. Progress on stdout would contaminate that stream and break the next program.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "So stdout stays clean for results that will be piped elsewhere",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "stderr is displayed in colour by default",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "stdout has a smaller buffer",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "stderr messages are logged automatically",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why do non-zero exit codes matter?",
+                  "explanation": "Shell scripts and CI pipelines branch on the exit code. A tool that always exits 0 cannot signal failure and cannot be used in automation.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Automation branches on them; always exiting 0 makes failure undetectable",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "They determine whether output is flushed",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Python requires an explicit exit code",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "They control the logging level",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Testing",
+        "summary": "A suite that catches regressions and covers the paths nobody exercises by hand.",
+        "estimatedHours": 1.5,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "pytest: Fixtures, Parametrize and Testing Failure",
+            "slug": "pytest-fixtures-parametrize-and-testing-failure",
+            "type": "Coding",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Plain functions and plain asserts\n\npytest needs no class and no special assertion methods. A function whose name starts with `test_` and a bare `assert` is a test, and pytest rewrites the assert to show both sides on failure.\n\n## Name the test as a sentence\n\n`test_parse_line_with_missing_field_returns_none`. That name appears in a CI failure list read by someone who has not opened the file, and it should be enough on its own.\n\n## Fixtures provide the setup\n\nA `@pytest.fixture` function returns something tests can request by naming it as a parameter. `tmp_path` is built in and gives a fresh temporary directory per test — no cleanup code, no shared state.\n\nFixtures can `yield` to run teardown after the test.\n\n## Parametrize for the same rule over many inputs\n\n`@pytest.mark.parametrize` runs one test over several cases, each reported separately, so a failure names the exact input. A loop inside one test stops at the first failure and hides the rest.\n\n## Test the failure paths hardest\n\nMalformed input, empty input, the boundary value, the permission error. These are the paths nobody exercises by hand, which is exactly why they break.\n\n`pytest.raises` asserts that an exception is raised, and `match=` checks the message says something useful.\n\n## Do not assert on incidental detail\n\nAsserting an exact log string or a precise float breaks on harmless changes. Assert the behaviour: `pytest.approx` for floats, a substring for messages.\n\n## Coverage is a hint, not a target\n\nCoverage finds code nobody tested. It cannot tell you whether the tests are any good — a test that calls a function and asserts nothing shows as covered. Use it to find gaps, not as a number to hit.",
+            "codeExample": "import json\nimport pytest\nfrom pathlib import Path\nfrom logtool.parsing import parse_line, parse_file, LogToolError\n\n# --- parametrize: each case reported separately ---------------------------\n@pytest.mark.parametrize(\"line,expected_status\", [\n    (\"2026-09-20T10:00:00 /home 200 45\", 200),\n    (\"2026-09-20T10:00:01 /api/orders 404 12\", 404),\n    (\"2026-09-20T10:00:02 /api/orders 500 3001\", 500),\n])\ndef test_parse_line_extracts_status(line, expected_status):\n    assert parse_line(line).status == expected_status\n\n\n@pytest.mark.parametrize(\"line,reason\", [\n    (\"\",                              \"empty line\"),\n    (\"only two fields\",               \"too few fields\"),\n    (\"not-a-date /home 200 45\",       \"unparseable timestamp\"),\n    (\"2026-09-20T10:00:00 /home x 45\", \"non-numeric status\"),\n])\ndef test_parse_line_rejects_malformed(line, reason):\n    # The failure paths, which nobody exercises by hand and which therefore break.\n    with pytest.raises(ValueError):\n        parse_line(line)\n\n\n# --- fixtures: setup shared without shared state --------------------------\n@pytest.fixture\ndef log_file(tmp_path: Path) -> Path:\n    \"\"\"A realistic file: mostly valid, deliberately including bad lines.\"\"\"\n    path = tmp_path / \"access.log\"          # fresh directory per test, auto-cleaned\n    path.write_text(\"\\n\".join([\n        \"2026-09-20T10:00:00 /home 200 45\",\n        \"malformed line here\",\n        \"2026-09-20T10:00:02 /api/orders 500 3001\",\n        \"\",\n        \"2026-09-20T10:00:03 /home 200 38\",\n    ]), encoding=\"utf-8\")\n    return path\n\n\ndef test_parse_file_skips_malformed_and_reports_count(log_file):\n    entries, report = parse_file(log_file)\n\n    assert len(entries) == 3\n    assert len(report.skipped) == 2\n    assert \"2 skipped\" in report.summary()      # substring, not the exact string\n\n\ndef test_parse_file_missing_file_raises_with_path_in_message(tmp_path):\n    with pytest.raises(LogToolError, match=\"not found\"):\n        parse_file(tmp_path / \"nope.log\")\n\n\ndef test_parse_file_empty_file_returns_nothing(tmp_path):\n    empty = tmp_path / \"empty.log\"\n    empty.write_text(\"\", encoding=\"utf-8\")\n\n    entries, report = parse_file(empty)\n\n    assert entries == []                        # the zero case\n    assert report.skipped == []\n\n\ndef test_error_rate_is_approximately_correct(log_file):\n    entries, _ = parse_file(log_file)\n    rate = sum(1 for e in entries if e.status >= 500) / len(entries)\n    assert rate == pytest.approx(0.333, abs=0.001)   # never == on a float",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Plain functions and plain asserts; pytest shows both sides on failure",
+              "`tmp_path` gives a fresh directory per test with no cleanup code",
+              "Parametrize so each input is reported separately when it fails",
+              "Test malformed, empty, boundary and permission-denied paths",
+              "Coverage finds untested code; it cannot tell you the tests are good"
+            ],
+            "quiz": {
+              "title": "pytest",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why use `@pytest.mark.parametrize` rather than a loop inside one test?",
+                  "explanation": "Each case is a separate reported test, so a failure names the exact input. A loop stops at the first failure and hides the remaining cases.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Each input is reported separately, so you see exactly which case failed",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Parametrized tests run in parallel automatically",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Loops are not permitted in test functions",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It generates the test data for you",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What does 100% test coverage tell you?",
+                  "explanation": "Coverage shows which lines executed. A test that calls a function and asserts nothing counts as covered, so it says nothing about test quality.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Which lines ran during the tests — not whether the assertions are meaningful",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "That the code is free of bugs",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "That every edge case has been considered",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "That the tests will catch any regression",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Testing Code That Touches the Network",
+            "slug": "testing-code-that-touches-the-network",
+            "type": "Lab",
+            "estimatedMinutes": 40,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Tests must not make real requests\n\nA test that calls a live API is slow, fails when the network does, may cost money, and can change data. It is not a test — it is a monitoring check wearing a test's clothes.\n\n## Put the boundary behind something replaceable\n\nThe cleanest approach is structural: a thin client class or a function passed in, which a test replaces with a fake. No patching, no mocking library, and the test reads clearly.\n\n## `monkeypatch` for the awkward cases\n\npytest's `monkeypatch` fixture replaces an attribute for the duration of one test and restores it afterwards. Useful for environment variables, the clock, and functions you cannot inject.\n\nThe important detail: patch where the name is **used**, not where it is defined. `from x import y` binds a new name in your module, and patching `x.y` afterwards has no effect on it.\n\n## Record a real response once\n\nCapture one real API response, save it as a fixture file, and test against that. You get realistic data — including the fields you did not expect — without a network call.\n\nRefresh it occasionally, and strip anything sensitive before committing it.\n\n## Test what your code does with the response\n\nThe library already works. What needs testing is your handling: a 429, a timeout, a 200 with an unexpected shape, a field that is null this time.\n\nThose are the cases that break in production, and they are trivial to construct with a fake.\n\n## Keep the clock out of your logic\n\nAnything calling `datetime.now()` internally is untestable without waiting. Pass the time in, or inject a clock function. Then \"what happens after the deadline\" is a parameter.\n\n## A very small number of real calls\n\nOne test against the live API, marked so it does not run by default, catches the case where the provider changed. Run it nightly, not on every commit.",
+            "codeExample": "import json\nimport pytest\nfrom datetime import datetime, UTC\n\n# --- structural: the client is injected, so no patching is needed ---------\nclass RenewalService:\n    def __init__(self, http_client, now=lambda: datetime.now(UTC)):\n        self._http = http_client       # injected: a fake in tests\n        self._now = now                # injected clock: no waiting in tests\n\n    def at_risk(self, region: str) -> list[dict]:\n        response = self._http.get(f\"/customers?region={region}\")\n        if response.status_code == 429:\n            raise RateLimited(retry_after=int(response.headers.get(\"Retry-After\", 60)))\n        response.raise_for_status()\n        today = self._now().date()\n        return [c for c in response.json()[\"customers\"]\n                if (datetime.fromisoformat(c[\"renewal_date\"]).date() - today).days <= 30]\n\n\nclass FakeResponse:\n    def __init__(self, payload, status_code=200, headers=None):\n        self._payload, self.status_code = payload, status_code\n        self.headers = headers or {}\n    def json(self): return self._payload\n    def raise_for_status(self):\n        if self.status_code >= 400:\n            raise HTTPError(f\"{self.status_code}\")\n\n\nclass FakeHttp:\n    def __init__(self, response): self._response = response; self.calls = []\n    def get(self, url): self.calls.append(url); return self._response\n\n\n# --- a recorded real response, saved once as a fixture --------------------\n@pytest.fixture\ndef recorded_payload():\n    \"\"\"One real API response, captured and sanitised. Realistic — including the\n    null usage field we did not expect — with no network call.\"\"\"\n    return json.loads(Path(\"tests/fixtures/customers_response.json\").read_text())\n\n\ndef test_at_risk_returns_only_renewals_within_thirty_days(recorded_payload):\n    # The clock is a parameter, so \"what happens near the deadline\" is testable.\n    service = RenewalService(FakeHttp(FakeResponse(recorded_payload)),\n                             now=lambda: datetime(2026, 9, 20, tzinfo=UTC))\n\n    at_risk = service.at_risk(\"EMEA\")\n\n    assert {c[\"customer_id\"] for c in at_risk} == {\"CUST-0003\", \"CUST-0017\"}\n\n\ndef test_at_risk_raises_rate_limited_with_retry_after():\n    # Testing OUR handling of a 429 — the library's behaviour is not in question.\n    http = FakeHttp(FakeResponse({}, status_code=429, headers={\"Retry-After\": \"30\"}))\n    service = RenewalService(http)\n\n    with pytest.raises(RateLimited) as exc:\n        service.at_risk(\"EMEA\")\n\n    assert exc.value.retry_after == 30\n\n\n# --- monkeypatch: patch where the name is USED ----------------------------\ndef test_uses_configured_base_url(monkeypatch):\n    monkeypatch.setenv(\"RENEWAL_API_URL\", \"https://test.invalid\")\n    assert load_config().base_url == \"https://test.invalid\"\n    # `from mymodule import fetch` binds a NEW name in the importing module.\n    # Patch \"consumer.fetch\", not \"mymodule.fetch\", or nothing changes.\n\n\n# --- one real call, excluded from the normal run --------------------------\n@pytest.mark.live      # pytest -m live, nightly — not on every commit\ndef test_live_api_still_returns_expected_shape():\n    payload = real_client().get(\"/customers?region=EMEA&limit=1\").json()\n    assert \"customers\" in payload",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "A test that makes a real network call is a monitoring check, not a test",
+              "Inject the client so the test can pass a fake; prefer structure over patching",
+              "`monkeypatch` patches where the name is used, not where it is defined",
+              "Record one real response as a fixture for realistic, offline data",
+              "Test your handling of 429s, timeouts and unexpected shapes — not the library"
+            ],
+            "quiz": {
+              "title": "Testing the network",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "With `from mymodule import fetch` in consumer.py, which name must be patched?",
+                  "explanation": "The import binds a new name in consumer's namespace. Patching mymodule.fetch afterwards does not affect the already-bound reference.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "consumer.fetch — patch where the name is used",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "mymodule.fetch — patch where it is defined",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Either works identically",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Neither; the function must be reimported",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why inject a clock function instead of calling `datetime.now()` inside the logic?",
+                  "explanation": "An embedded clock makes date-dependent behaviour untestable without waiting. Injecting it turns the date into a parameter the test sets.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It makes date-dependent behaviour testable without waiting for real time",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "`datetime.now()` is deprecated",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Injected clocks are faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It avoids time zone handling entirely",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "careerSlug": "python-developer",
+    "order": 3,
+    "phaseNumber": 3,
+    "title": "Phase 3 — APIs, Data & the Path into AI Work",
+    "slug": "phase-3-apis-data-and-the-path-into-ai-work",
+    "summary": "Where Python earns its living: calling other people's APIs without falling over, serving your own with FastAPI, working with tabular data and databases, and the practices that carry into AI engineering.",
+    "estimatedHours": 30,
+    "level": "Foundational",
+    "minimumTrack": "Balanced",
+    "outcomes": [
+      "Call an HTTP API with timeouts, retries and rate-limit handling",
+      "Build a typed, validated, self-documenting API with FastAPI",
+      "Work with tabular data and talk to a database safely",
+      "Call a language model with grounding, structure and cost awareness",
+      "Judge when async Python helps and when it adds nothing"
+    ],
+    "skillSlugs": [
+      "python",
+      "rest-api",
+      "sql",
+      "ai-fundamentals",
+      "testing"
+    ],
+    "modules": [
+      {
+        "order": 1,
+        "title": "Consuming and Serving HTTP",
+        "summary": "Being a good client, and building a server others can use.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Calling APIs Properly: Timeouts, Retries and Rate Limits",
+            "slug": "calling-apis-properly-timeouts-retries-and-rate-limits",
+            "type": "Coding",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Always set a timeout\n\n`requests.get(url)` has **no timeout by default**. A server that accepts your connection and never responds hangs your program indefinitely.\n\nSet two: a connect timeout and a read timeout. This is the single most common omission in Python code that calls an API.\n\n## Retry only what is retryable\n\nA 500, a 502, a 503 and a connection error may succeed on a second attempt. A 400 or a 404 will not — retrying them just wastes time and adds load.\n\nRetry with exponential backoff and a bound on attempts. Add jitter, or every client that failed together retries together and re-creates the outage.\n\n## Respect Retry-After\n\nA 429 usually carries a `Retry-After` header. Honour it. Ignoring it and retrying immediately is how a temporary rate limit becomes a ban.\n\n## Reuse the connection\n\nA `Session` reuses the underlying TCP connection across requests. For anything more than a couple of calls this is a significant speed difference and less load on the server.\n\n## Paginate defensively\n\nFollow the API's paging until it says there is no more. Bound the loop — a server bug returning the same next-page token forever will otherwise spin indefinitely.\n\n## Never log the whole response\n\nResponse bodies contain personal data and tokens. Log the status, the timing and a correlation id. If you need the body for debugging, do it behind a debug flag and be deliberate about what is in it.\n\n## Validate what comes back\n\nAn API's documentation and its behaviour drift apart. Validate the response shape at the boundary — with Pydantic, for instance — so a missing field fails in one place with a clear message instead of as a `KeyError` three functions later.",
+            "codeExample": "import logging, random, time\nfrom typing import Any, Iterator\nimport requests\nfrom pydantic import BaseModel, ValidationError\n\nlog = logging.getLogger(__name__)\n\nRETRYABLE_STATUS = {429, 500, 502, 503, 504}\n\nclass Customer(BaseModel):\n    customer_id: str\n    name: str\n    renewal_date: str\n    usage_last_30d: int | None = None      # nullable in practice, despite the docs\n\nclass CustomerPage(BaseModel):\n    customers: list[Customer]\n    next_cursor: str | None = None\n\n\nclass ApiClient:\n    def __init__(self, base_url: str, token: str, *, max_attempts: int = 4):\n        self.base_url = base_url.rstrip(\"/\")\n        self.max_attempts = max_attempts\n        # A Session reuses the TCP connection across requests.\n        self._session = requests.Session()\n        self._session.headers.update({\"Authorization\": f\"Bearer {token}\"})\n\n    def _get(self, path: str, params: dict | None = None) -> dict[str, Any]:\n        last_error: Exception | None = None\n\n        for attempt in range(1, self.max_attempts + 1):\n            try:\n                response = self._session.get(\n                    f\"{self.base_url}{path}\", params=params,\n                    timeout=(3.05, 30),     # (connect, read). Without this, a\n                )                           # silent server hangs you forever.\n\n                if response.status_code in RETRYABLE_STATUS:\n                    # Honour Retry-After; ignoring it turns a rate limit into a ban.\n                    wait = float(response.headers.get(\"Retry-After\", 0)) or self._backoff(attempt)\n                    log.warning(\"api.retryable status=%s attempt=%d waiting=%.1fs\",\n                                response.status_code, attempt, wait)\n                    time.sleep(wait)\n                    continue\n\n                # 4xx other than 429 will never succeed on retry.\n                response.raise_for_status()\n                return response.json()\n\n            except (requests.ConnectionError, requests.Timeout) as e:\n                last_error = e\n                if attempt == self.max_attempts:\n                    break\n                time.sleep(self._backoff(attempt))\n\n        raise ApiUnavailable(f\"{path} failed after {self.max_attempts} attempts\") from last_error\n\n    @staticmethod\n    def _backoff(attempt: int) -> float:\n        # Jitter matters: without it every client that failed together retries\n        # together and re-creates the outage they were waiting out.\n        return min(2 ** attempt, 30) * (0.5 + random.random() / 2)\n\n    def customers(self, region: str) -> Iterator[Customer]:\n        cursor, pages = None, 0\n        while True:\n            pages += 1\n            if pages > 1000:                     # bound it: a server bug that\n                raise ApiError(\"pagination did not terminate\")   # repeats a cursor\n                                                                 # would spin forever\n            raw = self._get(\"/customers\", {\"region\": region, \"cursor\": cursor})\n            try:\n                page = CustomerPage.model_validate(raw)\n            except ValidationError as e:\n                # Fails HERE with a clear message, not as a KeyError three\n                # functions away. Documentation and behaviour drift apart.\n                raise ApiError(f\"unexpected response shape from /customers: {e}\") from e\n\n            yield from page.customers\n            if not page.next_cursor:\n                return\n            cursor = page.next_cursor",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "`requests` has no default timeout — always set connect and read timeouts",
+              "Retry 5xx and connection errors with backoff and jitter; never retry a 400",
+              "Honour `Retry-After` on a 429 rather than hammering the endpoint",
+              "Use a Session to reuse connections; bound every pagination loop",
+              "Validate the response shape at the boundary; never log whole bodies"
+            ],
+            "quiz": {
+              "title": "Calling APIs",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "What happens if you call `requests.get(url)` without a timeout?",
+                  "explanation": "requests has no default timeout. A server that accepts the connection and never responds will hang your program indefinitely.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It can hang indefinitely if the server never responds",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It times out after 30 seconds by default",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It raises an error immediately",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It retries automatically three times",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why add jitter to exponential backoff?",
+                  "explanation": "Without jitter, every client that failed at the same moment retries at the same moment, producing a synchronised burst that recreates the outage.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Without it, all failed clients retry simultaneously and recreate the overload",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It makes retries faster on average",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is required by the HTTP specification",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It prevents the server from caching the failure",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Building an API with FastAPI",
+            "slug": "building-an-api-with-fastapi",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Types become the contract\n\nFastAPI reads your annotations and generates request parsing, validation, serialisation and OpenAPI documentation from them. A Pydantic model in a signature means the request body is validated before your function runs, and a malformed body returns a 422 naming the field.\n\nYou write the model once and get four things.\n\n## Separate request, internal and response models\n\nThe shape a caller sends, the shape you work with, and the shape you return are three different things. Keeping them separate means adding an internal field does not change your public API, and a `password_hash` cannot leak into a response because it is not on the response model.\n\n## Return honest status codes\n\n`201` with a `Location` when you create something. `404` when it does not exist. `409` when the request is valid but conflicts with current state. `422` is FastAPI's validation default.\n\nNever signal failure with a `200` and an error in the body — callers branch on the status.\n\n## Dependencies for shared concerns\n\n`Depends` injects database sessions, the current user, and configuration. It keeps handlers free of setup code, and a test can override a dependency with a fake in one line.\n\n## Async where it helps\n\nFastAPI supports both. Use `async def` when the handler awaits I/O. Use plain `def` for synchronous work — FastAPI runs it in a thread pool, which is correct.\n\nThe mistake to avoid is a blocking call inside an `async def`: it blocks the event loop and stalls every other request on that worker.\n\n## The docs are free and worth using\n\n`/docs` gives an interactive interface generated from your types. Hand it to the front-end developer instead of writing a specification by hand.\n\n## Keep logic out of handlers\n\nA handler validates, calls a service and maps the result. Business logic in a handler cannot be tested without the web stack.",
+            "codeExample": "from typing import Annotated\nfrom fastapi import Depends, FastAPI, HTTPException, Response, status\nfrom pydantic import BaseModel, Field, EmailStr\n\napp = FastAPI(title=\"Renewals API\", version=\"1.0.0\")\n\n# --- three models, three jobs ---------------------------------------------\nclass CustomerCreate(BaseModel):                 # what the caller SENDS\n    name: str = Field(min_length=1, max_length=200)\n    email: EmailStr\n    region: str = Field(pattern=\"^(EMEA|NA|APAC)$\")\n\nclass CustomerOut(BaseModel):                    # what we RETURN\n    customer_id: str\n    name: str\n    region: str\n    # Deliberately absent: email, internal_notes, risk_model_version.\n    # They cannot leak, because they are not on this model.\n\n\ndef get_repo() -> CustomerRepository:            # overridable in tests\n    return CustomerRepository(get_connection())\n\nRepo = Annotated[CustomerRepository, Depends(get_repo)]\n\n\n@app.post(\"/customers\", status_code=status.HTTP_201_CREATED,\n          response_model=CustomerOut)\nasync def create_customer(payload: CustomerCreate, response: Response, repo: Repo):\n    \"\"\"Create a customer.\n\n    A malformed body never reaches this function: FastAPI has already returned\n    422 naming the offending field.\n    \"\"\"\n    if await repo.exists_by_email(payload.email):\n        # 409: the request is valid, the state conflicts. A caller can act on\n        # this differently from a 422, which is the point of distinguishing them.\n        raise HTTPException(status.HTTP_409_CONFLICT,\n                            detail=f\"A customer with email {payload.email} already exists\")\n\n    created = await repo.create(payload.name, payload.email, payload.region)\n    response.headers[\"Location\"] = f\"/customers/{created.customer_id}\"\n    return created          # filtered through CustomerOut; email cannot escape\n\n\n@app.get(\"/customers/{customer_id}\", response_model=CustomerOut)\nasync def get_customer(customer_id: str, repo: Repo):\n    customer = await repo.find(customer_id)\n    if customer is None:\n        raise HTTPException(status.HTTP_404_NOT_FOUND)\n    return customer\n\n\n# --- the mistake worth avoiding -------------------------------------------\n@app.get(\"/bad\")\nasync def blocking_in_async():\n    import time\n    time.sleep(5)           # blocks the EVENT LOOP: every other request on this\n    return {\"ok\": True}     # worker stalls for five seconds\n\n@app.get(\"/good-sync\")\ndef sync_handler():\n    import time\n    time.sleep(5)           # plain def: FastAPI runs it in a thread pool, and\n    return {\"ok\": True}     # other requests are unaffected\n\n\n# --- tests override the dependency ----------------------------------------\n# app.dependency_overrides[get_repo] = lambda: FakeCustomerRepository()",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Annotations generate validation, serialisation and OpenAPI documentation",
+              "Separate request, internal and response models so internals cannot leak",
+              "Use 201, 404 and 409 honestly; never signal failure with a 200",
+              "`Depends` injects shared concerns and is overridable in tests",
+              "Never make a blocking call inside `async def` — it stalls every other request"
+            ],
+            "quiz": {
+              "title": "FastAPI",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why define a separate response model rather than returning the internal object?",
+                  "explanation": "The response model determines what is serialised, so internal fields cannot leak, and adding one later does not silently change the public contract.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Internal fields cannot leak, and adding one does not change the public contract",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It makes serialisation faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "FastAPI cannot serialise internal objects",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is required for OpenAPI generation",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What goes wrong with a blocking `time.sleep(5)` inside an `async def` handler?",
+                  "explanation": "It blocks the event loop, so every other request being served by that worker stalls for the duration.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It blocks the event loop and stalls every other request on that worker",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It raises a RuntimeError",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Nothing — FastAPI detects and offloads blocking calls",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Only that one request is delayed",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 2,
+        "title": "Working with Data",
+        "summary": "Tabular data and databases, without the mistakes that bite later.",
+        "estimatedHours": 1.6,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Tabular Data and Talking to a Database",
+            "slug": "tabular-data-and-talking-to-a-database",
+            "type": "Coding",
+            "estimatedMinutes": 50,
+            "minimumTrack": "FastTrack",
+            "contentMarkdown": "## Never build SQL with string formatting\n\n```python\ncursor.execute(f\"SELECT * FROM customer WHERE email = '{email}'\")\n```\n\nThis is a SQL injection vulnerability. An email of `' OR '1'='1` returns every row; a more creative one drops the table.\n\nUse parameters: `cursor.execute(\"... WHERE email = %s\", (email,))`. The driver sends the value separately from the statement, so it can never be interpreted as SQL. This is not a performance optimisation or a style preference — it is the difference between safe and exploitable.\n\n## Parameters are not string substitution\n\nThe placeholder style varies by driver (`%s`, `?`, `:name`). None of them are formatting: the value never becomes part of the statement text.\n\nYou cannot parameterise a table or column name this way. If one must be dynamic, validate it against an allow-list.\n\n## Use a connection pool\n\nOpening a connection per request is slow. A pool keeps a set open and hands them out. Always return them — a context manager makes that automatic.\n\n## Fetch in batches for large results\n\n`fetchall()` on a million rows loads a million rows into memory. Iterate the cursor, or use `fetchmany` with a size.\n\n## pandas where it earns it\n\nFor analysis, reshaping and aggregation over data that fits in memory, pandas is excellent. For a simple pass over a large CSV, the standard library `csv` module streams and uses a fraction of the memory.\n\nReaching for pandas to read a file and loop over it is usually the wrong tool.\n\n## Set dtypes when loading\n\npandas infers types, and its inference is sometimes wrong in expensive ways: an id column of digits becomes an integer and loses leading zeros; a mixed column becomes `object`.\n\nState the dtypes for anything you care about.\n\n## Money is not a float, here either\n\nThe same rule as in the database. Use `Decimal`, or integer minor units. Floating-point drift in a financial total is real and unexplainable after the fact.",
+            "codeExample": "from decimal import Decimal\nimport psycopg\nfrom psycopg.rows import dict_row\n\n# --- SQL injection: the difference between safe and exploitable -----------\ndef find_customer_UNSAFE(conn, email: str):\n    # An email of:  ' OR '1'='1\n    # turns this into: SELECT * FROM customer WHERE email = '' OR '1'='1'\n    # which returns every row. A more creative value drops the table.\n    return conn.execute(f\"SELECT * FROM customer WHERE email = '{email}'\").fetchall()\n\ndef find_customer(conn, email: str):\n    # The value is sent SEPARATELY from the statement and can never be parsed\n    # as SQL, whatever it contains.\n    return conn.execute(\n        \"SELECT customer_id, name, region FROM customer WHERE email = %s\",\n        (email,)                      # a tuple, even for one parameter\n    ).fetchone()\n\n# You cannot parameterise an identifier. Validate against an allow-list.\nSORTABLE = {\"name\", \"region\", \"created_at\"}\ndef list_customers(conn, sort_by: str = \"name\"):\n    if sort_by not in SORTABLE:\n        raise ValueError(f\"cannot sort by {sort_by!r}\")\n    return conn.execute(f\"SELECT * FROM customer ORDER BY {sort_by}\").fetchall()\n\n\n# --- pooling and streaming large results ----------------------------------\nfrom psycopg_pool import ConnectionPool\n\npool = ConnectionPool(\"postgresql://localhost/app\", min_size=2, max_size=10)\n\ndef export_all(out_path):\n    with pool.connection() as conn:              # returned to the pool automatically\n        with conn.cursor(row_factory=dict_row) as cur:\n            cur.execute(\"SELECT customer_id, name, arr FROM customer\")\n            while rows := cur.fetchmany(1000):   # NOT fetchall() on a large table\n                for row in rows:\n                    write(out_path, row)\n\n\n# --- money -----------------------------------------------------------------\ntotal = Decimal(\"0.00\")\nfor row in rows:\n    total += Decimal(str(row[\"amount\"]))     # never float; drift is unexplainable\n\n# --- pandas: state the dtypes ---------------------------------------------\nimport pandas as pd\n\ndf = pd.read_csv(\n    \"customers.csv\",\n    dtype={\n        \"customer_id\": \"string\",     # inferred as int64 -> loses leading zeros\n        \"postcode\":    \"string\",     # \"01234\" would become 1234\n        \"region\":      \"category\",   # far less memory than object\n    },\n    parse_dates=[\"renewal_date\"],\n)\n\n# For a single streaming pass over a large file, the csv module uses a\n# fraction of the memory. pandas earns its place for analysis, not iteration.",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "Always use query parameters — f-strings in SQL are an injection vulnerability",
+              "Parameters are not substitution; table and column names need an allow-list",
+              "Pool connections and return them with a context manager",
+              "Iterate or `fetchmany` for large results instead of `fetchall`",
+              "State dtypes when loading with pandas; never hold money in a float"
+            ],
+            "quiz": {
+              "title": "Data and databases",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why is `f\"WHERE email = '{email}'\"` dangerous?",
+                  "explanation": "The value becomes part of the statement text, so crafted input is executed as SQL. Parameters send the value separately, where it can never be parsed as code.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "The value is parsed as SQL, so crafted input can read or destroy data",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "It is slower than using parameters",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "f-strings cannot contain quotes",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It only fails for non-ASCII input",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why specify `dtype={\"customer_id\": \"string\"}` when reading a CSV with pandas?",
+                  "explanation": "Inference reads a column of digits as an integer, which silently drops leading zeros — corrupting identifiers and postcodes.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "Inference would read it as an integer and drop leading zeros",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "String columns load faster",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "pandas cannot infer types without help",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It is required before parse_dates can be used",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "order": 2,
+            "title": "Calling a Language Model from Python",
+            "slug": "calling-a-language-model-from-python",
+            "type": "Coding",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## The same discipline as any API\n\nA model provider is an HTTP API. Everything from earlier applies: timeouts, bounded retries with jitter, honouring rate limits, never logging whole payloads. The fact that it is an LLM changes nothing about that.\n\n## Never put the key in the code\n\nRead it from the environment or a secret store. A key committed to Git is leaked permanently and must be rotated, not merely deleted.\n\nKeep the call server-side. A key shipped to a browser is a key anybody can spend.\n\n## Ask for structured output and validate it\n\nRequesting JSON and parsing it into a Pydantic model turns a free-text response into a typed object with a clear failure at the boundary.\n\nValidate rather than trusting. The response may be well-formed JSON that does not match your schema, and you want that to fail in one place.\n\n## Ground answers and allow refusal\n\nIf the model is answering from documents, pass the passages, require a citation, and check the cited identifier actually appeared in what you sent. Make \"the documents do not address this\" a valid response.\n\nWithout an explicit refusal path, a format that requires an answer will produce one.\n\n## Never use a model for arithmetic\n\nCompute totals and scores in code. A model that is usually right about a number fails silently and plausibly, which is the worst failure mode available.\n\nUse it for language: summarising, extracting, explaining, classifying.\n\n## Record token usage from day one\n\nLog input and output tokens per request with a correlation id. You will be asked what it costs, and retrofitting this is tedious.\n\n## Test without calling the model\n\nWrap the client behind a small interface so tests can supply canned responses. Keep a handful of recorded real responses as fixtures, including a malformed one — because you will receive malformed ones.",
+            "codeExample": "import json, logging, os\nfrom dataclasses import dataclass\nfrom pydantic import BaseModel, ValidationError\n\nlog = logging.getLogger(__name__)\n\nclass ContractAnswer(BaseModel):\n    clause_id: str | None      # None is a valid, expected answer\n    quote: str | None\n    answer: str | None\n\nSYSTEM = \"\"\"Answer only from the numbered clauses provided.\n\nReturn JSON: {\"clause_id\": \"<id or null>\", \"quote\": \"<verbatim or null>\",\n              \"answer\": \"<one sentence or null>\"}\n\nIf the clauses do not address the question, return all three as null. That is a\ncorrect outcome — do not infer or answer from general knowledge.\"\"\"\n\n\n@dataclass\nclass Usage:\n    input_tokens: int\n    output_tokens: int\n\n\nclass ContractQa:\n    def __init__(self, client):\n        self._client = client          # injected, so tests supply a fake\n\n    def ask(self, question: str, clauses: list[dict], correlation_id: str\n            ) -> tuple[ContractAnswer, Usage]:\n        context = \"\\n\\n\".join(f\"[{c['id']}] {c['text']}\" for c in clauses)\n\n        response = self._client.complete(\n            system=SYSTEM,\n            user=f\"Clauses:\\n{context}\\n\\nQuestion: {question}\",\n        )\n\n        usage = Usage(response.usage.input_tokens, response.usage.output_tokens)\n        # Logged from day one: you WILL be asked what this costs, and\n        # retrofitting it is tedious. Note the tokens, never the content.\n        log.info(\"llm.call id=%s in_tokens=%d out_tokens=%d\",\n                 correlation_id, usage.input_tokens, usage.output_tokens)\n\n        try:\n            parsed = ContractAnswer.model_validate_json(response.text)\n        except ValidationError as e:\n            # Well-formed JSON that does not match the schema is a real case.\n            log.warning(\"llm.invalid_shape id=%s error=%s\", correlation_id, e)\n            return ContractAnswer(clause_id=None, quote=None, answer=None), usage\n\n        if parsed.clause_id is None:\n            return parsed, usage                    # refusal: expected, fine\n\n        # Verify the citation. A model occasionally cites an id that was never\n        # in the context, and an unvalidated citation LOOKS like evidence.\n        by_id = {c[\"id\"]: c[\"text\"] for c in clauses}\n        if parsed.clause_id not in by_id or (parsed.quote or \"\") not in by_id[parsed.clause_id]:\n            log.warning(\"llm.bad_citation id=%s clause=%s\", correlation_id, parsed.clause_id)\n            return ContractAnswer(clause_id=None, quote=None, answer=None), usage\n\n        return parsed, usage\n\n\n# The key comes from the environment, and the call stays server-side.\nclient = SomeProvider(api_key=os.environ[\"MODEL_API_KEY\"])\n\n# NOT the model's job. This is arithmetic, and a plausible wrong number that\n# nobody can explain is worse than no number.\ndef renewal_risk(usage_drop: float, days_to_renewal: int, open_tickets: int) -> float:\n    score = 0.0\n    if usage_drop > 0.4:       score += 0.4\n    if days_to_renewal < 60:   score += 0.3\n    if open_tickets > 5:       score += 0.3\n    return min(score, 1.0)",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "A model API is an HTTP API — timeouts, bounded retries and no logging of payloads",
+              "Keys come from the environment and stay server-side",
+              "Request structured output and validate it into a typed object",
+              "Ground claims in passages, verify citations, allow refusal",
+              "Never ask a model for arithmetic; log token usage from the first day"
+            ],
+            "quiz": {
+              "title": "Calling a model",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "Why compute a risk score in code rather than asking the model for it?",
+                  "explanation": "A model's numeric answer can be plausible and wrong, failing silently. A computed score is reproducible and can be explained when someone asks why a value changed.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A plausible wrong number fails silently and cannot be explained or reproduced",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "Models cannot return numeric values",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It costs too many tokens",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Models are too slow for scoring",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "Why verify that a cited clause identifier appeared in the context you sent?",
+                  "explanation": "A model can cite an identifier that was never supplied. An unverified citation looks like evidence while being fabricated, which is worse than showing none.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "A fabricated citation looks like evidence, which is worse than no citation",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "To reduce the token count",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Because identifiers must be sequential",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "To satisfy the provider's terms of service",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "order": 3,
+        "title": "Concurrency in Python",
+        "summary": "What async actually buys, and when threads or processes are the right answer instead.",
+        "estimatedHours": 0.8,
+        "lessons": [
+          {
+            "order": 1,
+            "title": "Async, Threads and Processes: Choosing Correctly",
+            "slug": "async-threads-and-processes-choosing-correctly",
+            "type": "Concept",
+            "estimatedMinutes": 45,
+            "minimumTrack": "Balanced",
+            "contentMarkdown": "## Ask what you are waiting for\n\nThe right tool follows directly from one question: is the program waiting on I/O, or is it doing computation?\n\n- **Waiting on I/O** — network calls, disk, database. `asyncio` or threads.\n- **Doing computation** — parsing, numerical work, image processing. Processes.\n\nGetting this backwards produces code that is more complex and no faster.\n\n## The GIL, briefly\n\nCPython's global interpreter lock permits only one thread to execute Python bytecode at a time. Threads therefore do not speed up pure-Python computation.\n\nThey do help with I/O, because a thread waiting on a socket releases the lock. And libraries with C extensions — NumPy, for instance — release it during heavy work.\n\nFor genuinely parallel computation, use `multiprocessing` or `ProcessPoolExecutor`, which run separate interpreters.\n\n## What async actually does\n\nA single thread runs an event loop. When a coroutine awaits I/O, the loop runs another one. Thousands of concurrent network calls, one thread, very little memory.\n\n`asyncio.gather` runs independent awaitables concurrently — total time is the slowest, not the sum.\n\n## The rule that matters\n\n**Never make a blocking call inside a coroutine.** `time.sleep`, `requests.get`, a synchronous database driver — each blocks the entire event loop, stalling every other task.\n\nUse the async equivalent (`asyncio.sleep`, `httpx.AsyncClient`) or push the blocking work to a thread with `asyncio.to_thread`.\n\n## Async is contagious\n\nAwaiting requires being a coroutine, and coroutines must be awaited, all the way up to the event loop. Adding async to part of a synchronous codebase tends to mean converting a great deal of it.\n\nThat is a real cost. Weigh it before starting.\n\n## Do not use async by default\n\nFor a script making ten API calls, a thread pool is simpler and just as fast. Async earns its complexity at hundreds or thousands of concurrent operations.\n\nReach for `ThreadPoolExecutor` first. It is a few lines and needs no restructuring.",
+            "codeExample": "import asyncio, time\nfrom concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor\nimport httpx\n\n# --- I/O-bound, small scale: a thread pool is simplest --------------------\ndef fetch_all_threaded(urls: list[str]) -> list[str]:\n    with ThreadPoolExecutor(max_workers=10) as pool:\n        return list(pool.map(lambda u: httpx.get(u, timeout=10).text, urls))\n    # Ten calls in roughly the time of the slowest. No restructuring needed.\n\n\n# --- I/O-bound, large scale: async ----------------------------------------\nasync def fetch_all_async(urls: list[str]) -> list[str]:\n    limit = asyncio.Semaphore(20)      # bound concurrency, or you will be rate-limited\n\n    async with httpx.AsyncClient(timeout=10) as client:\n        async def one(url: str) -> str:\n            async with limit:\n                response = await client.get(url)\n                return response.text\n\n        # gather: total time is the SLOWEST call, not the sum.\n        return await asyncio.gather(*(one(u) for u in urls))\n\n# asyncio.run(fetch_all_async(thousands_of_urls))   # one thread, little memory\n\n\n# --- the rule that matters ------------------------------------------------\nasync def broken():\n    time.sleep(5)                  # blocks the EVENT LOOP: every other task stalls\n    return \"done\"\n\nasync def correct():\n    await asyncio.sleep(5)         # yields to the loop; other tasks proceed\n    return \"done\"\n\nasync def blocking_library_call():\n    # A synchronous driver you cannot replace: push it to a thread so the loop\n    # stays free.\n    rows = await asyncio.to_thread(legacy_db.query, \"SELECT * FROM customer\")\n    return rows\n\n\n# --- CPU-bound: threads do NOT help ---------------------------------------\ndef parse_huge_file(path: str) -> int:\n    return sum(1 for _ in open(path, encoding=\"utf-8\"))\n\ndef parse_all_wrong(paths: list[str]) -> list[int]:\n    with ThreadPoolExecutor() as pool:         # the GIL serialises this anyway\n        return list(pool.map(parse_huge_file, paths))\n\ndef parse_all_right(paths: list[str]) -> list[int]:\n    with ProcessPoolExecutor() as pool:        # separate interpreters: real parallelism\n        return list(pool.map(parse_huge_file, paths))\n    # Processes cost more to start and arguments must be picklable — worth it\n    # for substantial computation, not for a handful of quick calls.",
+            "codeLanguage": "python",
+            "diagramMermaid": null,
+            "keyTakeaways": [
+              "I/O-bound means async or threads; CPU-bound means processes",
+              "The GIL prevents threads from parallelising pure-Python computation",
+              "Async runs thousands of concurrent I/O operations on one thread",
+              "A blocking call inside a coroutine stalls every other task",
+              "Start with a thread pool; async earns its complexity only at scale"
+            ],
+            "quiz": {
+              "title": "Concurrency",
+              "passMarkPercent": 70,
+              "questions": [
+                {
+                  "prompt": "You need to parse fifty large files, which is CPU-bound. Which tool?",
+                  "explanation": "The GIL serialises pure-Python bytecode across threads, so a thread pool gives no speedup. Processes run separate interpreters and parallelise properly.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "ProcessPoolExecutor — threads cannot parallelise Python bytecode",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "ThreadPoolExecutor — threads are lighter than processes",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "asyncio.gather — it runs tasks concurrently",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "A plain loop — parsing cannot be parallelised",
+                      "isCorrect": false
+                    }
+                  ]
+                },
+                {
+                  "prompt": "What happens when `requests.get()` is called inside an `async def`?",
+                  "explanation": "It is a blocking call, so it holds the single event-loop thread and every other coroutine waits for it to finish.",
+                  "allowsMultiple": false,
+                  "options": [
+                    {
+                      "text": "It blocks the event loop, stalling every other task",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "asyncio automatically runs it in a thread",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "It raises a RuntimeError",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "Only that coroutine is delayed",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -47,6 +47,10 @@ public class DatabaseSeeder(
         if (options.CreateDemoUser && !await db.Users.AnyAsync(ct))
             await SeedDemoUsersAsync(ct);
 
+        // Before geography: the reconcile can introduce careers, and those
+        // careers then need their default-market salary band backfilled.
+        await ReconcileContentAsync(ct);
+
         await ReconcileGeographyAsync(ct);
         // Called here rather than from ReconcileGeographyAsync, which returns
         // early once the default market is fully backfilled — on an existing
@@ -253,33 +257,7 @@ public class DatabaseSeeder(
         db.Certifications.AddRange(certEntities);
 
         var projects = Load<List<ProjectSeed>>("projects.json") ?? [];
-        var projectEntities = projects.Select(p =>
-        {
-            var project = new Project
-            {
-                Order = p.Order,
-                Title = p.Title,
-                Slug = p.Slug,
-                Summary = p.Summary,
-                BriefMarkdown = p.BriefMarkdown,
-                TechStack = p.TechStack,
-                Difficulty = Text.ParseEnum(p.Difficulty, DifficultyLevel.Advanced),
-                EstimatedHours = p.EstimatedHours,
-                ArchitectureMermaid = p.ArchitectureMermaid,
-                AcceptanceCriteria = string.Join('\n', p.AcceptanceCriteria),
-                ResumeBullets = string.Join('\n', p.ResumeBullets),
-                SkillSlugs = string.Join(',', p.SkillSlugs)
-            };
-            foreach (var m in p.Milestones.OrderBy(m => m.Order))
-                project.Milestones.Add(new ProjectMilestone
-                {
-                    Order = m.Order,
-                    Title = m.Title,
-                    Description = m.Description,
-                    EstimatedHours = m.EstimatedHours
-                });
-            return project;
-        }).ToList();
+        var projectEntities = projects.Select(BuildProject).ToList();
         db.Projects.AddRange(projectEntities);
 
         await db.SaveChangesAsync(ct);
@@ -293,81 +271,7 @@ public class DatabaseSeeder(
         var careerEntities = new List<CareerPath>();
 
         foreach (var c in careers)
-        {
-            var career = new CareerPath
-            {
-                Rank = c.Rank,
-                Title = c.Title,
-                Slug = c.Slug,
-                Summary = c.Summary,
-                SalaryMinUsd = c.SalaryMinUsd,
-                SalaryMaxUsd = c.SalaryMaxUsd,
-                SeniorSalaryMinUsd = c.SeniorSalaryMinUsd,
-                SeniorSalaryMaxUsd = c.SeniorSalaryMaxUsd,
-                TwoHundredKPotential = c.TwoHundredKPotential,
-                SalaryAsOf = DateOnly.Parse(c.SalaryAsOf),
-                SalarySource = c.SalarySource,
-                DemandOutlook = Text.ParseEnum(c.DemandOutlook, DemandOutlook.Strong),
-                DemandNotes = c.DemandNotes,
-                AiReplacementRisk = Text.ParseEnum(c.AiReplacementRisk, AiReplacementRisk.Low),
-                AiRiskNotes = c.AiRiskNotes,
-                Difficulty = Text.ParseEnum(c.Difficulty, DifficultyLevel.Advanced),
-                EstimatedHours = c.EstimatedHours,
-                IsPrimaryRecommended = c.IsPrimaryRecommended,
-                ResumeKeywords = string.Join('\n', c.ResumeKeywords),
-                Responsibilities = string.Join('\n', c.Responsibilities),
-                InterviewFocus = string.Join('\n', c.InterviewFocus)
-            };
-
-            foreach (var s in c.Skills)
-            {
-                if (!skillsBySlug.TryGetValue(s.Slug, out var skill))
-                {
-                    logger.LogWarning("Career {Career} references unknown skill {Skill}", c.Slug, s.Slug);
-                    continue;
-                }
-                career.CareerSkills.Add(new CareerSkill
-                {
-                    SkillId = skill.Id,
-                    TargetLevel = s.TargetLevel,
-                    Importance = Text.ParseEnum(s.Importance, SkillImportance.Important)
-                });
-            }
-
-            foreach (var stage in c.Ladder.OrderBy(s => s.StageOrder))
-                career.LadderStages.Add(new LadderStage
-                {
-                    StageOrder = stage.StageOrder,
-                    Title = stage.Title,
-                    RoleTitle = stage.RoleTitle,
-                    Description = stage.Description,
-                    SalaryMinUsd = stage.SalaryMinUsd,
-                    SalaryMaxUsd = stage.SalaryMaxUsd,
-                    DurationMonths = stage.DurationMonths,
-                    Milestones = string.Join('\n', stage.Milestones),
-                    IsCurrentPosition = stage.IsCurrentPosition
-                });
-
-            foreach (var d in c.ReadinessDimensions)
-                career.ReadinessDimensions.Add(new ReadinessDimension
-                {
-                    Name = d.Name,
-                    Weight = d.Weight,
-                    SkillSlugs = string.Join(',', d.SkillSlugs)
-                });
-
-            var priority = 1;
-            foreach (var code in c.Certifications)
-                if (certsByCode.TryGetValue(code, out var cert))
-                    career.CareerCertifications.Add(new CareerCertification { CertificationId = cert.Id, Priority = priority++ });
-
-            var order = 1;
-            foreach (var slug in c.Projects)
-                if (projectsBySlug.TryGetValue(slug, out var project))
-                    career.CareerProjects.Add(new CareerProject { ProjectId = project.Id, Order = order++ });
-
-            careerEntities.Add(career);
-        }
+            careerEntities.Add(BuildCareer(c, skillsBySlug, certsByCode, projectsBySlug));
 
         db.CareerPaths.AddRange(careerEntities);
         await db.SaveChangesAsync(ct);
@@ -385,102 +289,7 @@ public class DatabaseSeeder(
                 logger.LogWarning("Course {Course} references unknown career {Career}", c.Slug, c.CareerSlug);
                 continue;
             }
-
-            var course = new Course
-            {
-                CareerPathId = career.Id,
-                Order = c.Order,
-                PhaseNumber = c.PhaseNumber,
-                Title = c.Title,
-                Slug = c.Slug,
-                Summary = c.Summary,
-                EstimatedHours = c.EstimatedHours,
-                Level = Text.ParseEnum(c.Level, DifficultyLevel.Advanced),
-                MinimumTrack = Text.ParseEnum(c.MinimumTrack, TrackMode.Balanced),
-                Outcomes = string.Join('\n', c.Outcomes),
-                SkillSlugs = string.Join(',', c.SkillSlugs)
-            };
-
-            foreach (var m in c.Modules.OrderBy(m => m.Order))
-            {
-                var module = new Module
-                {
-                    Order = m.Order,
-                    Title = m.Title,
-                    Summary = m.Summary,
-                    EstimatedHours = m.EstimatedHours
-                };
-
-                foreach (var l in m.Lessons.OrderBy(l => l.Order))
-                {
-                    var lesson = new Lesson
-                    {
-                        Order = l.Order,
-                        Title = l.Title,
-                        Slug = l.Slug,
-                        Type = Text.ParseEnum(l.Type, LessonType.Concept),
-                        EstimatedMinutes = l.EstimatedMinutes,
-                        MinimumTrack = Text.ParseEnum(l.MinimumTrack, TrackMode.Balanced),
-                        ContentMarkdown = l.ContentMarkdown,
-                        CodeExample = l.CodeExample,
-                        CodeLanguage = l.CodeLanguage ?? "csharp",
-                        DiagramMermaid = l.DiagramMermaid,
-                        KeyTakeaways = string.Join('\n', l.KeyTakeaways)
-                    };
-
-                    foreach (var r in l.Resources ?? [])
-                        lesson.Resources.Add(new LessonResource
-                        {
-                            Title = r.Title,
-                            Url = r.Url,
-                            Kind = Text.ParseEnum(r.Kind, ResourceKind.Documentation)
-                        });
-
-                    if (l.Video is { } v)
-                        // Links in the content pack were each checked against the
-                        // YouTube oEmbed endpoint, which answers only for a video
-                        // that exists and allows embedding; title, channel and
-                        // runtime come from that lookup rather than from us. A
-                        // lesson with no verified video keeps a null URL rather
-                        // than carrying an invented one.
-                        lesson.Videos.Add(new Video
-                        {
-                            Title = v.Title,
-                            YouTubeUrl = v.YouTubeUrl,
-                            Instructor = v.Instructor,
-                            DurationMinutes = v.DurationMinutes,
-                            SkillLevel = Text.ParseEnum(v.SkillLevel, DifficultyLevel.Advanced),
-                            IsVerified = v.Verified
-                        });
-
-                    if (l.Quiz is { } q)
-                    {
-                        var quiz = new Quiz { Title = q.Title, PassMarkPercent = q.PassMarkPercent };
-                        var qOrder = 1;
-                        foreach (var question in q.Questions)
-                        {
-                            var entity = new QuizQuestion
-                            {
-                                Order = qOrder++,
-                                Prompt = question.Prompt,
-                                Explanation = question.Explanation,
-                                AllowsMultiple = question.AllowsMultiple
-                            };
-                            var oOrder = 1;
-                            foreach (var option in question.Options)
-                                entity.Options.Add(new QuizOption { Order = oOrder++, Text = option.Text, IsCorrect = option.IsCorrect });
-                            quiz.Questions.Add(entity);
-                        }
-                        lesson.Quiz = quiz;
-                    }
-
-                    module.Lessons.Add(lesson);
-                }
-
-                course.Modules.Add(module);
-            }
-
-            db.Courses.Add(course);
+            db.Courses.Add(BuildCourse(c, career.Id));
         }
         await db.SaveChangesAsync(ct);
 
@@ -841,6 +650,370 @@ public class DatabaseSeeder(
         }
         return items;
     }
+
+    // -------------------------------------------------------------------
+    // Entity builders, shared by the first-run seed and the additive
+    // reconcile below. They only construct graphs; nothing is added to the
+    // context here, so a caller can decide what to do with the result.
+    // -------------------------------------------------------------------
+
+    private CareerPath BuildCareer(
+        CareerSeed c,
+        IReadOnlyDictionary<string, Skill> skillsBySlug,
+        IReadOnlyDictionary<string, Certification> certsByCode,
+        IReadOnlyDictionary<string, Project> projectsBySlug)
+    {
+        var career = new CareerPath
+        {
+            Rank = c.Rank,
+            Title = c.Title,
+            Slug = c.Slug,
+            Summary = c.Summary,
+            Category = c.Category ?? "Other",
+            CategoryOrder = c.CategoryOrder,
+            SalaryMinUsd = c.SalaryMinUsd,
+            SalaryMaxUsd = c.SalaryMaxUsd,
+            SeniorSalaryMinUsd = c.SeniorSalaryMinUsd,
+            SeniorSalaryMaxUsd = c.SeniorSalaryMaxUsd,
+            TwoHundredKPotential = c.TwoHundredKPotential,
+            SalaryAsOf = DateOnly.Parse(c.SalaryAsOf),
+            SalarySource = c.SalarySource,
+            DemandOutlook = Text.ParseEnum(c.DemandOutlook, DemandOutlook.Strong),
+            DemandNotes = c.DemandNotes,
+            AiReplacementRisk = Text.ParseEnum(c.AiReplacementRisk, AiReplacementRisk.Low),
+            AiRiskNotes = c.AiRiskNotes,
+            Difficulty = Text.ParseEnum(c.Difficulty, DifficultyLevel.Advanced),
+            EstimatedHours = c.EstimatedHours,
+            IsPrimaryRecommended = c.IsPrimaryRecommended,
+            ResumeKeywords = string.Join('\n', c.ResumeKeywords),
+            Responsibilities = string.Join('\n', c.Responsibilities),
+            InterviewFocus = string.Join('\n', c.InterviewFocus)
+        };
+
+        foreach (var s in c.Skills)
+        {
+            if (!skillsBySlug.TryGetValue(s.Slug, out var skill))
+            {
+                logger.LogWarning("Career {Career} references unknown skill {Skill}", c.Slug, s.Slug);
+                continue;
+            }
+            career.CareerSkills.Add(new CareerSkill
+            {
+                SkillId = skill.Id,
+                TargetLevel = s.TargetLevel,
+                Importance = Text.ParseEnum(s.Importance, SkillImportance.Important)
+            });
+        }
+
+        foreach (var stage in c.Ladder.OrderBy(s => s.StageOrder))
+            career.LadderStages.Add(new LadderStage
+            {
+                StageOrder = stage.StageOrder,
+                Title = stage.Title,
+                RoleTitle = stage.RoleTitle,
+                Description = stage.Description,
+                SalaryMinUsd = stage.SalaryMinUsd,
+                SalaryMaxUsd = stage.SalaryMaxUsd,
+                DurationMonths = stage.DurationMonths,
+                Milestones = string.Join('\n', stage.Milestones),
+                IsCurrentPosition = stage.IsCurrentPosition
+            });
+
+        foreach (var d in c.ReadinessDimensions)
+            career.ReadinessDimensions.Add(new ReadinessDimension
+            {
+                Name = d.Name,
+                Weight = d.Weight,
+                SkillSlugs = string.Join(',', d.SkillSlugs)
+            });
+
+        var priority = 1;
+        foreach (var code in c.Certifications)
+            if (certsByCode.TryGetValue(code, out var cert))
+                career.CareerCertifications.Add(new CareerCertification { CertificationId = cert.Id, Priority = priority++ });
+
+        var order = 1;
+        foreach (var slug in c.Projects)
+            if (projectsBySlug.TryGetValue(slug, out var project))
+                career.CareerProjects.Add(new CareerProject { ProjectId = project.Id, Order = order++ });
+        return career;
+    }
+
+    private static Course BuildCourse(CourseSeed c, Guid careerId)
+    {
+        var course = new Course
+        {
+            CareerPathId = careerId,
+            Order = c.Order,
+            PhaseNumber = c.PhaseNumber,
+            Title = c.Title,
+            Slug = c.Slug,
+            Summary = c.Summary,
+            EstimatedHours = c.EstimatedHours,
+            Level = Text.ParseEnum(c.Level, DifficultyLevel.Advanced),
+            MinimumTrack = Text.ParseEnum(c.MinimumTrack, TrackMode.Balanced),
+            Outcomes = string.Join('\n', c.Outcomes),
+            SkillSlugs = string.Join(',', c.SkillSlugs)
+        };
+
+        foreach (var m in c.Modules.OrderBy(m => m.Order))
+        {
+            var module = new Module
+            {
+                Order = m.Order,
+                Title = m.Title,
+                Summary = m.Summary,
+                EstimatedHours = m.EstimatedHours
+            };
+
+            foreach (var l in m.Lessons.OrderBy(l => l.Order))
+            {
+                var lesson = new Lesson
+                {
+                    Order = l.Order,
+                    Title = l.Title,
+                    Slug = l.Slug,
+                    Type = Text.ParseEnum(l.Type, LessonType.Concept),
+                    EstimatedMinutes = l.EstimatedMinutes,
+                    MinimumTrack = Text.ParseEnum(l.MinimumTrack, TrackMode.Balanced),
+                    ContentMarkdown = l.ContentMarkdown,
+                    CodeExample = l.CodeExample,
+                    CodeLanguage = l.CodeLanguage ?? "csharp",
+                    DiagramMermaid = l.DiagramMermaid,
+                    KeyTakeaways = string.Join('\n', l.KeyTakeaways)
+                };
+
+                foreach (var r in l.Resources ?? [])
+                    lesson.Resources.Add(new LessonResource
+                    {
+                        Title = r.Title,
+                        Url = r.Url,
+                        Kind = Text.ParseEnum(r.Kind, ResourceKind.Documentation)
+                    });
+
+                if (l.Video is { } v)
+                    // Links in the content pack were each checked against the
+                    // YouTube oEmbed endpoint, which answers only for a video
+                    // that exists and allows embedding; title, channel and
+                    // runtime come from that lookup rather than from us. A
+                    // lesson with no verified video keeps a null URL rather
+                    // than carrying an invented one.
+                    lesson.Videos.Add(new Video
+                    {
+                        Title = v.Title,
+                        YouTubeUrl = v.YouTubeUrl,
+                        Instructor = v.Instructor,
+                        DurationMinutes = v.DurationMinutes,
+                        SkillLevel = Text.ParseEnum(v.SkillLevel, DifficultyLevel.Advanced),
+                        IsVerified = v.Verified
+                    });
+
+                if (l.Quiz is { } q)
+                {
+                    var quiz = new Quiz { Title = q.Title, PassMarkPercent = q.PassMarkPercent };
+                    var qOrder = 1;
+                    foreach (var question in q.Questions)
+                    {
+                        var entity = new QuizQuestion
+                        {
+                            Order = qOrder++,
+                            Prompt = question.Prompt,
+                            Explanation = question.Explanation,
+                            AllowsMultiple = question.AllowsMultiple
+                        };
+                        var oOrder = 1;
+                        foreach (var option in question.Options)
+                            entity.Options.Add(new QuizOption { Order = oOrder++, Text = option.Text, IsCorrect = option.IsCorrect });
+                        quiz.Questions.Add(entity);
+                    }
+                    lesson.Quiz = quiz;
+                }
+
+                module.Lessons.Add(lesson);
+            }
+
+            course.Modules.Add(module);
+        }
+        return course;
+    }
+
+    /// <summary>
+    /// Adds content that the pack has gained since this database was seeded.
+    /// <para>
+    /// <see cref="SeedContentAsync"/> only runs against an empty database, so
+    /// without this step a new career path, course or project would be visible
+    /// on a fresh install and invisible on every existing one — including the
+    /// developer's own, which is where it would be noticed last.
+    /// </para>
+    /// <para>
+    /// Additive and keyed by slug: anything already present is left exactly as
+    /// it is, because it may have been edited in Admin and the seed file has no
+    /// way to know that. Removing an item from the pack therefore does not
+    /// delete it here. The one exception is the career category, which is
+    /// backfilled when blank so careers seeded before grouping existed do not
+    /// all pile into "Other".
+    /// </para>
+    /// </summary>
+    private async Task ReconcileContentAsync(CancellationToken ct)
+    {
+        // Nothing to reconcile against: the first-run seed either just ran or
+        // is disabled, and either way this would have nothing to compare.
+        if (!await db.CareerPaths.AnyAsync(ct)) return;
+
+        // --- skills ------------------------------------------------------
+        var haveSkillSlugs = await db.Skills.Select(s => s.Slug).ToListAsync(ct);
+        var haveSkills = haveSkillSlugs.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var newSkills = (Load<List<SkillSeed>>("skills.json") ?? [])
+            .Where(s => !haveSkills.Contains(s.Slug))
+            .Select(s => new Skill
+            {
+                Name = s.Name,
+                Slug = s.Slug,
+                Category = Text.ParseEnum(s.Category, SkillCategory.Framework),
+                BaselineLevel = s.BaselineLevel
+            })
+            .ToList();
+        if (newSkills.Count > 0) db.Skills.AddRange(newSkills);
+
+        // --- certifications ----------------------------------------------
+        var haveCertCodes = await db.Certifications.Select(c => c.Code).ToListAsync(ct);
+        var haveCerts = haveCertCodes.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var newCerts = (Load<List<CertificationSeed>>("certifications.json") ?? [])
+            .Where(c => !haveCerts.Contains(c.Code))
+            .Select(c => new Certification
+            {
+                Code = c.Code,
+                Name = c.Name,
+                Vendor = c.Vendor,
+                Level = c.Level,
+                EstimatedPrepHours = c.EstimatedPrepHours,
+                TopicsJson = Text.ToJson(c.Topics),
+                ExamCostUsd = c.ExamCostUsd,
+                OfficialUrl = c.OfficialUrl
+            })
+            .ToList();
+        if (newCerts.Count > 0) db.Certifications.AddRange(newCerts);
+
+        // --- projects ------------------------------------------------------
+        var haveProjectSlugs = await db.Projects.Select(p => p.Slug).ToListAsync(ct);
+        var haveProjects = haveProjectSlugs.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var newProjects = (Load<List<ProjectSeed>>("projects.json") ?? [])
+            .Where(p => !haveProjects.Contains(p.Slug))
+            .Select(BuildProject)
+            .ToList();
+        if (newProjects.Count > 0) db.Projects.AddRange(newProjects);
+
+        if (newSkills.Count > 0 || newCerts.Count > 0 || newProjects.Count > 0)
+        {
+            await db.SaveChangesAsync(ct);
+            logger.LogInformation(
+                "Content pack: added {Skills} skill(s), {Certs} certification(s), {Projects} project(s).",
+                newSkills.Count, newCerts.Count, newProjects.Count);
+        }
+
+        // --- careers -------------------------------------------------------
+        var seededCareers = Load<List<CareerSeed>>("careers.json") ?? [];
+        if (seededCareers.Count == 0) return;
+
+        var existingCareers = await db.CareerPaths.ToDictionaryAsync(
+            c => c.Slug, c => c, StringComparer.OrdinalIgnoreCase, ct);
+
+        // Backfill the grouping on careers seeded before categories existed.
+        // Only when blank: a value already set is left alone.
+        var categorised = 0;
+        foreach (var seed in seededCareers)
+        {
+            if (seed.Category is null) continue;
+            if (!existingCareers.TryGetValue(seed.Slug, out var existing)) continue;
+            if (!string.IsNullOrWhiteSpace(existing.Category)) continue;
+
+            existing.Category = seed.Category;
+            existing.CategoryOrder = seed.CategoryOrder;
+            categorised++;
+        }
+
+        var missingCareers = seededCareers
+            .Where(c => !existingCareers.ContainsKey(c.Slug))
+            .ToList();
+
+        if (missingCareers.Count > 0)
+        {
+            var skillsBySlug = await db.Skills.ToDictionaryAsync(
+                s => s.Slug, s => s, StringComparer.OrdinalIgnoreCase, ct);
+            var certsByCode = await db.Certifications.ToDictionaryAsync(
+                c => c.Code, c => c, StringComparer.OrdinalIgnoreCase, ct);
+            var projectsBySlug = await db.Projects.ToDictionaryAsync(
+                p => p.Slug, p => p, StringComparer.OrdinalIgnoreCase, ct);
+
+            foreach (var seed in missingCareers)
+            {
+                var career = BuildCareer(seed, skillsBySlug, certsByCode, projectsBySlug);
+                db.CareerPaths.Add(career);
+                existingCareers[career.Slug] = career;
+            }
+        }
+
+        if (categorised > 0 || missingCareers.Count > 0)
+        {
+            await db.SaveChangesAsync(ct);
+            logger.LogInformation(
+                "Content pack: added {Added} career path(s), grouped {Grouped} existing one(s).",
+                missingCareers.Count, categorised);
+        }
+
+        // --- courses -------------------------------------------------------
+        var haveCourseSlugs = await db.Courses.Select(c => c.Slug).ToListAsync(ct);
+        var haveCourses = haveCourseSlugs.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var added = 0;
+        foreach (var seed in LoadAll<CourseSeed>("courses*.json"))
+        {
+            if (haveCourses.Contains(seed.Slug)) continue;
+            if (!existingCareers.TryGetValue(seed.CareerSlug, out var career))
+            {
+                logger.LogWarning("Course {Course} references unknown career {Career}", seed.Slug, seed.CareerSlug);
+                continue;
+            }
+
+            db.Courses.Add(BuildCourse(seed, career.Id));
+            added++;
+        }
+
+        if (added > 0)
+        {
+            await db.SaveChangesAsync(ct);
+            logger.LogInformation("Content pack: added {Count} course phase(s).", added);
+        }
+    }
+
+    private static Project BuildProject(ProjectSeed p)
+    {
+        var project = new Project
+        {
+            Order = p.Order,
+            Title = p.Title,
+            Slug = p.Slug,
+            Summary = p.Summary,
+            BriefMarkdown = p.BriefMarkdown,
+            TechStack = p.TechStack,
+            Difficulty = Text.ParseEnum(p.Difficulty, DifficultyLevel.Advanced),
+            EstimatedHours = p.EstimatedHours,
+            ArchitectureMermaid = p.ArchitectureMermaid,
+            AcceptanceCriteria = string.Join('\n', p.AcceptanceCriteria),
+            ResumeBullets = string.Join('\n', p.ResumeBullets),
+            SkillSlugs = string.Join(',', p.SkillSlugs)
+        };
+        foreach (var m in p.Milestones.OrderBy(m => m.Order))
+            project.Milestones.Add(new ProjectMilestone
+            {
+                Order = m.Order,
+                Title = m.Title,
+                Description = m.Description,
+                EstimatedHours = m.EstimatedHours
+            });
+        return project;
+    }
+
 }
 
 public class SeedOptions
