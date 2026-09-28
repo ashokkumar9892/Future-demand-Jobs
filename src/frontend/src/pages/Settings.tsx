@@ -206,14 +206,32 @@ export default function Settings() {
             <CardHeader title="Target and depth" />
             <div className="card-pad">
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Target career">
+                <Field
+                  label="Target career"
+                  hint="Paths with a published curriculum are listed first. The dashboard has nothing to plan against without one."
+                >
                   <Select value={careerId} onChange={(e) => setCareerId(e.target.value)}>
                     <option value="">Not set</option>
-                    {(careers.data ?? []).map((career) => (
-                      <option key={career.id} value={career.id}>
-                        {career.rank}. {career.title}
-                      </option>
-                    ))}
+                    {/* Same ordering and labelling as onboarding. This dropdown is
+                        where the dashboard sends someone whose track turned out to
+                        be empty, so offering another empty one unmarked would send
+                        them straight back. */}
+                    {[...(careers.data ?? [])]
+                      .sort((a, b) => {
+                        const aEmpty = (a.publishedPhases ?? 0) === 0 ? 1 : 0;
+                        const bEmpty = (b.publishedPhases ?? 0) === 0 ? 1 : 0;
+                        return aEmpty - bEmpty || a.rank - b.rank;
+                      })
+                      .map((career) => (
+                        <option key={career.id} value={career.id}>
+                          {career.rank}. {career.title}
+                          {career.publishedPhases === 0
+                            ? ' — no curriculum yet'
+                            : career.publishedPhases
+                              ? ` — ${career.publishedPhases} phases`
+                              : ''}
+                        </option>
+                      ))}
                   </Select>
                 </Field>
                 <Field label="Track depth">
