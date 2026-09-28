@@ -8,6 +8,12 @@ public record CareerSummaryDto(
     string Summary,
     string Category,
     int CategoryOrder,
+    /// <summary>
+    /// Course phases published for this career. Zero means the path is listed
+    /// but has no curriculum behind it yet, which the UI has to say out loud:
+    /// choosing one silently produced a dashboard with nothing on it.
+    /// </summary>
+    int PublishedPhases,
     int SalaryMinUsd,
     int SalaryMaxUsd,
     int SeniorSalaryMinUsd,

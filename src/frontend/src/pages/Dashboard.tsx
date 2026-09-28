@@ -84,6 +84,35 @@ export default function Dashboard() {
         }
       />
 
+      {/* A track with no lessons cannot be started, and every panel below it
+          reads as though the learner simply has nothing left to do. Say what is
+          actually happening, and offer the two ways out. */}
+      {data.totalCourses === 0 && data.targetCareerTitle && (
+        <Card className="mb-5 border-amber-500/30">
+          <div className="card-pad">
+            <p className="text-sm font-medium text-ink">
+              No curriculum is published for {data.targetCareerTitle} yet
+            </p>
+            <p className="mt-1 text-[13px] leading-relaxed text-ink-muted">
+              Nothing below is scheduled because there are no lessons to schedule — it does not
+              mean you have finished. You can{' '}
+              <Link to="/settings" className="link font-medium">
+                switch your target career
+              </Link>{' '}
+              to one with a published curriculum, or keep this target and browse{' '}
+              <Link to="/projects" className="link font-medium">
+                projects
+              </Link>{' '}
+              and{' '}
+              <Link to="/practice" className="link font-medium">
+                practice
+              </Link>{' '}
+              in the meantime.
+            </p>
+          </div>
+        </Card>
+      )}
+
       {startToday.data && !startToday.data.deepLink && (
         <div className="mb-5 rounded-xl border border-brand-500/30 bg-brand-600/10 px-4 py-3 text-sm text-ink">
           {startToday.data.message}

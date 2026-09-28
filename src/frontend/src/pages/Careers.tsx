@@ -158,6 +158,9 @@ function CareerCard({ career }: { career: CareerSummary }) {
                 Recommended
               </Badge>
             )}
+            {career.publishedPhases === 0 && (
+              <Badge tone="warning">No curriculum yet</Badge>
+            )}
           </div>
           <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-ink-muted">{career.summary}</p>
         </div>

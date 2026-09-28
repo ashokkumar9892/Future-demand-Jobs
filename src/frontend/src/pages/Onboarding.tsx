@@ -62,7 +62,25 @@ export default function Onboarding() {
     queryFn: () => api.get<CareerSummary[]>('/careers'),
   });
 
-  const primary = careers.data?.find((c) => c.isPrimaryRecommended) ?? careers.data?.[0];
+  // Offer the paths that can actually be studied first. This step used to take
+  // the top six by rank, five of which had no curriculum: choosing one produced
+  // a dashboard with nothing to schedule and no explanation of why. Ordering by
+  // "has lessons" keeps the list self-correcting as curricula are published.
+  const offered = useMemo(() => {
+    const all = careers.data ?? [];
+    return [...all]
+      .sort((a, b) => {
+        const aEmpty = (a.publishedPhases ?? 0) === 0 ? 1 : 0;
+        const bEmpty = (b.publishedPhases ?? 0) === 0 ? 1 : 0;
+        return aEmpty - bEmpty || a.rank - b.rank;
+      })
+      .slice(0, 6);
+  }, [careers.data]);
+
+  const primary =
+    offered.find((c) => c.isPrimaryRecommended && (c.publishedPhases ?? 0) > 0) ??
+    offered[0] ??
+    careers.data?.[0];
   const selectedCareer = careers.data?.find((c) => c.id === (careerId || primary?.id));
 
   const weeklyHours = useMemo(() => {
@@ -245,7 +263,7 @@ export default function Onboarding() {
               hint="Ranked by realistic USA compensation. The first is recommended for a .NET/Angular/Azure background."
             >
               <div className="space-y-2">
-                {careers.data?.slice(0, 6).map((career) => {
+                {offered.map((career) => {
                   const active = (careerId || primary?.id) === career.id;
                   return (
                     <button
@@ -274,10 +292,18 @@ export default function Onboarding() {
                               Recommended
                             </span>
                           )}
+                          {career.publishedPhases === 0 && (
+                            <span className="rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[10px] text-amber-300">
+                              No curriculum yet
+                            </span>
+                          )}
                         </span>
                         <span className="mt-0.5 block text-xs text-ink-faint">
                           {money(career.salaryMinUsd)}–{money(career.salaryMaxUsd)} ·{' '}
                           {career.estimatedHours} hrs · {career.demandOutlook} demand
+                          {career.publishedPhases !== undefined && career.publishedPhases > 0 && (
+                            <> · {career.publishedPhases} phases ready</>
+                          )}
                         </span>
                       </span>
                     </button>
@@ -285,7 +311,9 @@ export default function Onboarding() {
                 })}
               </div>
               <p className="mt-3 text-xs text-ink-faint">
-                All thirteen paths stay browsable — this only sets what the dashboard plans against.
+                All {careers.data?.length ?? 0} paths stay browsable from Career Paths — this only
+                sets what the dashboard plans against. Paths with a published curriculum are listed
+                first, because the dashboard has nothing to schedule without one.
               </p>
             </Step>
           )}

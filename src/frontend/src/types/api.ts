@@ -38,6 +38,13 @@ export interface CareerSummary {
    */
   category?: string;
   categoryOrder?: number;
+  /**
+   * Course phases published for this career. Zero means it is listed but has
+   * no curriculum behind it, which the UI must say rather than let someone
+   * choose it and land on an empty dashboard. Optional for the same
+   * deploy-skew reason as `category`.
+   */
+  publishedPhases?: number;
   salaryMinUsd: number;
   salaryMaxUsd: number;
   seniorSalaryMinUsd: number;

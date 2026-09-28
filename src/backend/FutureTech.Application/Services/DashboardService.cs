@@ -48,9 +48,21 @@ public class DashboardService(
         }));
 
         var coursesCompleted = courses.Count(c => c.LessonIds.Count > 0 && c.LessonIds.All(completedLessonIds.Contains));
-        var totalProjects = await db.Projects.AsNoTracking().CountAsync(ct);
+        // Scoped to the chosen career, not the whole catalogue. Counting every
+        // project in the database told a learner targeting one career that they
+        // had delivered 0 of 18, while that career's own page listed 6.
+        var careerProjectIds = career is null
+            ? await db.Projects.AsNoTracking().Select(p => p.Id).ToListAsync(ct)
+            : await db.CareerProjects.AsNoTracking()
+                .Where(cp => cp.CareerPathId == career.Id)
+                .Select(cp => cp.ProjectId)
+                .ToListAsync(ct);
+
+        var totalProjects = careerProjectIds.Count;
         var projectsCompleted = await db.UserProjectProgress.AsNoTracking()
-            .CountAsync(p => p.UserId == userId && p.Status == ProgressStatus.Completed, ct);
+            .CountAsync(p => p.UserId == userId
+                          && p.Status == ProgressStatus.Completed
+                          && careerProjectIds.Contains(p.ProjectId), ct);
         var practiceAnswered = await db.PracticeAttempts.AsNoTracking().CountAsync(a => a.UserId == userId, ct);
 
         var progressPercent = totalHours == 0 ? 0 : (int)Math.Round(hoursCompleted * 100.0 / totalHours);
@@ -91,7 +103,13 @@ public class DashboardService(
             career?.Title,
             career?.Slug,
             career is null ? "—" : Text.SalaryRange(career.SalaryMinUsd, career.SalaryMaxUsd),
-            remainingHours == 0 ? "Track complete" : StudyMath.MonthLabel(eta),
+            // An empty track is not a finished one. Twelve of the career paths
+            // have no curriculum published yet, and a learner who chose one was
+            // shown 0% progress and "Track complete" at the same time, with
+            // nothing to schedule and no explanation.
+            totalHours == 0 ? "No curriculum yet"
+                : remainingHours == 0 ? "Track complete"
+                : StudyMath.MonthLabel(eta),
             progressPercent,
             game.StudyStreakDays,
             hoursCompleted,

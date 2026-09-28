@@ -54,7 +54,11 @@ public class CareerService(
         var market = await locations.ResolveAsync(country, ct);
         var bands = await locations.BandsForAsync(careers.Select(c => c.Id).ToList(), market.Code, ct);
 
-        return careers.Select(c => ToSummary(c, userLevels, market, Band(bands, c.Id))).ToList();
+        var phases = await PhaseCountsAsync(careers.Select(c => c.Id).ToList(), ct);
+        return careers
+            .Select(c => ToSummary(c, userLevels, market, Band(bands, c.Id),
+                                   phases.TryGetValue(c.Id, out var n) ? n : 0))
+            .ToList();
     }
 
     public async Task<CareerDetailDto> GetAsync(string slug, string? country, CancellationToken ct = default)
@@ -137,7 +141,7 @@ public class CareerService(
         var hours = StudyMath.HoursForTrack(career.EstimatedHours, trackMode);
 
         return new CareerDetailDto(
-            ToSummary(career, userLevels, market, Band(bands, career.Id)),
+            ToSummary(career, userLevels, market, Band(bands, career.Id), courses.Count),
             Text.Lines(career.ResumeKeywords),
             Text.Lines(career.Responsibilities),
             Text.Lines(career.InterviewFocus),
@@ -246,7 +250,9 @@ public class CareerService(
 
         await db.SaveChangesAsync(ct);
         var refreshed = await locations.BandsForAsync([career.Id], target.Code, ct);
-        return ToSummary(career, await CurrentUserLevelsAsync(ct), target, Band(refreshed, career.Id));
+        var phaseCount = await PhaseCountsAsync([career.Id], ct);
+        return ToSummary(career, await CurrentUserLevelsAsync(ct), target, Band(refreshed, career.Id),
+                         phaseCount.TryGetValue(career.Id, out var n) ? n : 0);
     }
 
     // ----- helpers -------------------------------------------------------
@@ -305,8 +311,18 @@ public class CareerService(
     private static CareerSalaryBand? Band(IReadOnlyDictionary<string, CareerSalaryBand> bands, Guid careerId) =>
         bands.TryGetValue(careerId.ToString(), out var band) ? band : null;
 
+    /// <summary>Course phases per career, for the careers asked about.</summary>
+    private async Task<Dictionary<Guid, int>> PhaseCountsAsync(
+        IReadOnlyCollection<Guid> careerIds, CancellationToken ct) =>
+        await db.Courses.AsNoTracking()
+            .Where(c => careerIds.Contains(c.CareerPathId))
+            .GroupBy(c => c.CareerPathId)
+            .Select(g => new { CareerPathId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.CareerPathId, x => x.Count, ct);
+
     private CareerSummaryDto ToSummary(
-        CareerPath c, IReadOnlyDictionary<Guid, int> levels, Country market, CareerSalaryBand? band)
+        CareerPath c, IReadOnlyDictionary<Guid, int> levels, Country market, CareerSalaryBand? band,
+        int publishedPhases)
     {
         var have = 0;
         var need = 0;
@@ -320,6 +336,7 @@ public class CareerService(
             c.Id, c.Rank, c.Title, c.Slug, c.Summary,
             string.IsNullOrWhiteSpace(c.Category) ? "Other" : c.Category,
             c.CategoryOrder,
+            publishedPhases,
             c.SalaryMinUsd, c.SalaryMaxUsd, c.SeniorSalaryMinUsd, c.SeniorSalaryMaxUsd,
             c.TwoHundredKPotential,
             Text.Humanize(c.DemandOutlook), c.DemandNotes,
